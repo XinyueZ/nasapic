@@ -5,4 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="btn_app_close">App close</string>
+
+    <string name="msg_permission_prompt">Without "Read Phone State" and "Write External Storage" the App can\'t work…</string>
+
 </resources>

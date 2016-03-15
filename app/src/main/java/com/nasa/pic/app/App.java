@@ -31,20 +31,11 @@
 
 package com.nasa.pic.app;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import android.support.multidex.MultiDexApplication;
 
 import com.chopping.net.TaskHelper;
-import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
-import com.itbooks.db.DB;
-import com.itbooks.net.bookmark.BookmarkManger;
-import com.itbooks.utils.Utils;
-
-import cn.bmob.v3.Bmob;
-import io.fabric.sdk.android.Fabric;
+import com.nasa.pic.utils.Prefs;
 
 
 /**
@@ -61,11 +52,12 @@ public final class App extends MultiDexApplication {
 		Instance = this;
 	}
 
-	private boolean mShow3GWarning;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		TaskHelper.init( getApplicationContext() );
+		Prefs prefs = Prefs.createInstance( this );
 		Stetho.initialize( Stetho.newInitializerBuilder( this ).enableDumpapp( Stetho.defaultDumperPluginsProvider( this ) )
 				.enableWebKitInspector( Stetho.defaultInspectorModulesProvider( this ) ).build() );
 
