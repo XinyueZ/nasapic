@@ -32,10 +32,18 @@
 package com.nasa.pic.app;
 
 import android.support.multidex.MultiDexApplication;
+import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
 import com.facebook.stetho.Stetho;
+import com.nasa.pic.R;
 import com.nasa.pic.utils.Prefs;
+import com.tinyurl4j.Api;
+import com.tinyurl4j.Api.TinyUrl;
+import com.tinyurl4j.data.Response;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 
 /**
@@ -48,6 +56,7 @@ public final class App extends MultiDexApplication {
 	 * Application's instance.
 	 */
 	public static App Instance;
+
 	{
 		Instance = this;
 	}
@@ -56,11 +65,35 @@ public final class App extends MultiDexApplication {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		TaskHelper.init( getApplicationContext() );
-		Prefs prefs = Prefs.createInstance( this );
-		Stetho.initialize( Stetho.newInitializerBuilder( this ).enableDumpapp( Stetho.defaultDumperPluginsProvider( this ) )
-				.enableWebKitInspector( Stetho.defaultInspectorModulesProvider( this ) ).build() );
+		TaskHelper.init(getApplicationContext());
+		Prefs prefs = Prefs.createInstance(this);
+		Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+				.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 
+
+		String url = Prefs.getInstance().getAppDownloadInfo();
+		if (TextUtils.isEmpty(url) || !url.contains("tinyurl")) {
+			Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(
+					getString(R.string.lbl_store_url, getPackageName()));
+			tinyUrlCall.enqueue(new Callback<Response>() {
+				@Override
+				public void onResponse(Call<Response> call,retrofit2.Response<Response> response) {
+					if (response.isSuccess()) {
+						Prefs.getInstance().setAppDownloadInfo(
+								getString(R.string.lbl_share_download_app, getString(R.string.application_name),
+										response.body().getResult()));
+					} else {
+						onFailure(null,null);
+					}
+				}
+
+				@Override
+				public void onFailure(Call<Response> call, Throwable t) {
+					Prefs.getInstance().setAppDownloadInfo(
+							getString(R.string.lbl_share_download_app, getString(R.string.application_name),
+									getString(R.string.lbl_store_url, getPackageName())));
+				}
+			});
+		}
 	}
-
 }

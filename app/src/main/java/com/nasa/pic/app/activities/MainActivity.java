@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,8 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.nasa.pic.R;
+import com.nasa.pic.utils.Prefs;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+	/**
+	 * The menu to this view.
+	 */
+	private static final int MENU   = R.menu.menu_main;
 
 	/**
 	 * Show single instance of {@link MainActivity}
@@ -69,7 +75,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(
+				MENU,
+				menu
+		);
 		return true;
 	}
 
@@ -81,11 +90,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		int id = item.getItemId();
 
 		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			return true;
-		}
+//		switch (id) {
+//		case R.id.action_share:
+//			return true;
+//		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu( Menu menu ) {
+		MenuItem menuShare = menu.findItem( R.id.action_share );
+		android.support.v7.widget.ShareActionProvider provider
+				= (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider( menuShare );
+
+		String subject = getString( R.string.lbl_share_app_title );
+		String text = getString(
+				R.string.lbl_share_app_content,
+				getString( R.string.application_name ),
+				Prefs.getInstance()
+						.getAppDownloadInfo()
+		);
+
+		provider.setShareIntent( com.chopping.utils.Utils.getDefaultShareIntent(
+				provider,
+				subject,
+				text
+		) );
+
+		return super.onPrepareOptionsMenu( menu );
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
