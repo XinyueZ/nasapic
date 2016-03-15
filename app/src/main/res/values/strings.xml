@@ -7,7 +7,13 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="btn_yes">Yes</string>
+    <string name="btn_no">No</string>
     <string name="btn_app_close">App close</string>
+    <string name="btn_confirm">Confirm</string>
+    <string name="btn_ok">Ok</string>
+    <string name="btn_agree">I agree.</string>
+    <string name="btn_not_agree">I do not agree.</string>
 
     <string name="msg_permission_prompt">Without "Read Phone State" and "Write External Storage" the App can\'t work…</string>
 
@@ -17,4 +23,25 @@
     <string name="lbl_share_download_app">Download %1$s\n%2$s</string>
 
     <string name="action_share">Share</string>
+    <string name="action_about">About</string>
+
+
+    <!-- Shown in the 'About' window of the app. -->
+    <string name="about_body">&lt;b&gt;%1$s &lt;/b&gt;&lt;br&gt;Version %2$s &lt;br&gt;</string>
+    <!-- Shown as a link in the About screen of the app; user can click it to see the licenses. -->
+    <string name="about_licenses">Open Source Licenses</string>
+    <!-- Shown as a link in the About screen of the app; user can click to see the EULA. -->
+    <string name="about_eula">End User License Agreement</string>
+    <string name="about_eula_legal_text">Your use of this application is governed by a)Activating permissions of
+        hardware that the features of this application need and work well. b)The Google Terms of
+        Service (http://www.google.com/intl/en/policies/terms/), Google\'s Privacy
+        Policy(http://www.google.com/intl/en/policies/privacy/). c)Any applicable Google service-specific terms of service of privacy
+        policies. Google\'s terms of service and privacy policies may be updated from time to time and without
+        notice.\n\n\nBy using the application, your agree to the use of your data and permissions of your hardware in
+        accordance with Google\'s Privacy Policy and Google Terms of Service.</string>
+    <string name="play_service">This application needs Google Play Service, you must install it first.</string>
+    <string name="play_service_url">market://details?id=com.google.android.gms</string>
+    <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
+
+
 </resources>

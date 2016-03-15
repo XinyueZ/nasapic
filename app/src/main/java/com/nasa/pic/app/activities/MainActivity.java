@@ -1,35 +1,84 @@
 package com.nasa.pic.app.activities;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.chopping.activities.BaseActivity;
+import com.chopping.application.BasicPrefs;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasa.pic.R;
+import com.nasa.pic.app.events.EULAConfirmedEvent;
+import com.nasa.pic.app.events.EULARejectEvent;
+import com.nasa.pic.app.fragments.AboutDialogFragment;
+import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.utils.Prefs;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 	/**
 	 * The menu to this view.
 	 */
-	private static final int MENU   = R.menu.menu_main;
+	private static final int MENU = R.menu.menu_main;
+
+	/**
+	 * Main layout for this component.
+	 */
+	private static final int LAYOUT = R.layout.activity_main;
+
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+
+
+	/**
+	 * Handler for {@link  EULARejectEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link  EULARejectEvent}.
+	 */
+	public void onEvent(EULARejectEvent e) {
+		finish();
+	}
+
+	/**
+	 * Handler for {@link EULAConfirmedEvent}
+	 *
+	 * @param e
+	 * 		Event {@link  EULAConfirmedEvent}.
+	 */
+	public void onEvent(EULAConfirmedEvent e) {
+
+
+	}
+	//------------------------------------------------
 
 	/**
 	 * Show single instance of {@link MainActivity}
 	 *
-	 * @param cxt {@link Activity}.
+	 * @param cxt
+	 * 		{@link Activity}.
 	 */
 	public static void showInstance(Activity cxt) {
 		Intent intent = new Intent(cxt, MainActivity.class);
@@ -37,29 +86,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		ActivityCompat.startActivity(cxt, intent, null);
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
 
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+	/**
+	 * Show  {@link android.support.v4.app.DialogFragment}.
+	 *
+	 * @param _dlgFrg
+	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
+	 * @param _tagName
+	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
+	 * 		android.support.v4.app.DialogFragment} can been seen.
+	 */
+	protected void showDialogFragment(DialogFragment _dlgFrg, String _tagName) {
+		try {
+			if (_dlgFrg != null) {
+				DialogFragment dialogFragment = _dlgFrg;
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				// Ensure that there's only one dialog to the user.
+				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
+				if (prev != null) {
+					ft.remove(prev);
+				}
+				try {
+					if (TextUtils.isEmpty(_tagName)) {
+						dialogFragment.show(ft, "dlg");
+					} else {
+						dialogFragment.show(ft, _tagName);
+					}
+				} catch (Exception _e) {
+				}
 			}
-		});
-
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-				R.string.navigation_drawer_close);
-		drawer.setDrawerListener(toggle);
-		toggle.syncState();
-
-		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-		navigationView.setNavigationItemSelectedListener(this);
+		} catch (Exception _e) {
+		}
 	}
 
 	@Override
@@ -75,10 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(
-				MENU,
-				menu
-		);
+		getMenuInflater().inflate(MENU, menu);
 		return true;
 	}
 
@@ -90,35 +144,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		int id = item.getItemId();
 
 		//noinspection SimplifiableIfStatement
-//		switch (id) {
-//		case R.id.action_share:
-//			return true;
-//		}
+		switch (id) {
+		case R.id.action_about:
+			showDialogFragment(AboutDialogFragment.newInstance(this), null);
+			break;
+		}
 
 		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu( Menu menu ) {
-		MenuItem menuShare = menu.findItem( R.id.action_share );
-		android.support.v7.widget.ShareActionProvider provider
-				= (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider( menuShare );
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem menuShare = menu.findItem(R.id.action_share);
+		android.support.v7.widget.ShareActionProvider provider =
+				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
 
-		String subject = getString( R.string.lbl_share_app_title );
-		String text = getString(
-				R.string.lbl_share_app_content,
-				getString( R.string.application_name ),
-				Prefs.getInstance()
-						.getAppDownloadInfo()
-		);
+		String subject = getString(R.string.lbl_share_app_title);
+		String text = getString(R.string.lbl_share_app_content, getString(R.string.application_name),
+				Prefs.getInstance().getAppDownloadInfo());
 
-		provider.setShareIntent( com.chopping.utils.Utils.getDefaultShareIntent(
-				provider,
-				subject,
-				text
-		) );
+		provider.setShareIntent(com.chopping.utils.Utils.getDefaultShareIntent(provider, subject, text));
 
-		return super.onPrepareOptionsMenu( menu );
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")
@@ -151,5 +198,99 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
+	}
+
+
+
+	/**
+	 * To confirm whether the validation of the Play-service of Google Inc.
+	 */
+	private void checkPlayService() {
+		final int isFound = GooglePlayServicesUtil.isGooglePlayServicesAvailable( this );
+		if( isFound == ConnectionResult.SUCCESS ) {//Ignore update.
+			//The "End User License Agreement" must be confirmed before you use this application.
+			if( !Prefs.getInstance()
+					.isEULAOnceConfirmed() ) {
+				showDialogFragment(
+						new EulaConfirmationDialog(),
+						null
+				);
+			}
+		} else {
+			new Builder( this ).setTitle( R.string.application_name )
+					.setMessage( R.string.play_service )
+					.setCancelable( false )
+					.setPositiveButton(
+							R.string.btn_yes,
+							new DialogInterface.OnClickListener() {
+								public void onClick( DialogInterface dialog, int whichButton ) {
+									dialog.dismiss();
+									Intent intent = new Intent( Intent.ACTION_VIEW );
+									intent.setData( Uri.parse( getString( R.string.play_service_url ) ) );
+									try {
+										startActivity( intent );
+									} catch( ActivityNotFoundException e0 ) {
+										intent.setData( Uri.parse( getString( R.string.play_service_web ) ) );
+										try {
+											startActivity( intent );
+										} catch( Exception e1 ) {
+											//Ignore now.
+										}
+									} finally {
+										finish();
+									}
+								}
+							}
+					)
+					.setCancelable( isFound == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED )
+					.create()
+					.show();
+		}
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(LAYOUT);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null)
+						.show();
+			}
+		});
+
+		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+				R.string.navigation_drawer_close);
+		drawer.addDrawerListener(toggle);
+		toggle.syncState();
+
+		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+		navigationView.setNavigationItemSelectedListener(this);
+	}
+
+
+
+
+	@Override
+	protected BasicPrefs getPrefs() {
+		return Prefs.getInstance();
+	}
+
+	@Override
+	protected void onAppConfigIgnored() {
+		super.onAppConfigIgnored();
+		checkPlayService();
+	}
+
+	@Override
+	protected void onAppConfigLoaded() {
+		super.onAppConfigLoaded();
+		checkPlayService();
 	}
 }
