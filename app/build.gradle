@@ -94,7 +94,7 @@ dependencies {
     compile 'com.facebook.stetho:stetho-okhttp:1.0.0'
     compile 'com.github.hotchemi:permissionsdispatcher:1.2.1@aar'
     apt 'com.github.hotchemi:permissionsdispatcher-processor:1.2.1'
-
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':volley_cz')
     compile project(':ChoppingBootstrap')
 }
