@@ -1,18 +1,21 @@
 package com.nasa.pic.app.activities;
 
 import android.Manifest.permission;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.nasa.pic.R;
+import com.nasa.pic.databinding.ActivitySplashBinding;
 import com.nasa.pic.utils.Prefs;
 
 import permissions.dispatcher.DeniedPermissions;
@@ -30,6 +33,29 @@ public final class SplashActivity extends BaseActivity {
 	 * Main layout for this component.
 	 */
 	private static final int LAYOUT = R.layout.activity_splash;
+	/**
+	 * Data-binding.
+	 */
+	private ActivitySplashBinding mBinding;
+
+
+	private void showSplash() {
+		mBinding.splashFl.post(new Runnable() {
+			@Override
+			public void run() {
+				mBinding.splashFl.show(2000);
+			}
+		});
+	}
+
+	private void permissionTest() {
+		mBinding.splashFl.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				SplashActivityPermissionsDispatcher.getPermissionsWithCheck(SplashActivity.this);
+			}
+		}, 2500);
+	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -63,19 +89,24 @@ public final class SplashActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		super.onCreate(savedInstanceState);
-		setContentView(LAYOUT);
+		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
+		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
+		mBinding.splashFl.hide();
 	}
 
 	@Override
 	protected void onAppConfigLoaded() {
 		super.onAppConfigLoaded();
-		SplashActivityPermissionsDispatcher.getPermissionsWithCheck(this);
+		showSplash();
+		permissionTest();
 	}
+
 
 	@Override
 	protected void onAppConfigIgnored() {
 		super.onAppConfigIgnored();
-		SplashActivityPermissionsDispatcher.getPermissionsWithCheck(this);
+		showSplash();
+		permissionTest();
 	}
 
 	@Override
