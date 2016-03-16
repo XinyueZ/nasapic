@@ -185,23 +185,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		int id = item.getItemId();
 
 		switch (id) {
-		case R.id.nav_camera:
-			// Handle the camera action
-			break;
-		case R.id.nav_gallery:
-
-			break;
-		case R.id.nav_slideshow:
-
-			break;
-		case R.id.nav_manage:
-
-			break;
-		case R.id.nav_share:
-
-			break;
-		case R.id.nav_send:
-
+		case R.id.action_app_list:
+			BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.bottomSheet);
+			behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 			break;
 		}
 
@@ -304,11 +290,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 				)
 				.commit();
 
-		BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.coordinatorLayout);
+		BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.bottomSheet);
 		behavior.setBottomSheetCallback( new BottomSheetCallback() {
 			@Override
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
-
+				switch (newState) {
+				case BottomSheetBehavior.STATE_EXPANDED:
+					mBinding.bottomSheetHeadIv.setVisibility(View.GONE);
+					break;
+				case BottomSheetBehavior.STATE_COLLAPSED:
+					mBinding.bottomSheetHeadIv.setVisibility(View.VISIBLE);
+				}
 			}
 
 			@Override

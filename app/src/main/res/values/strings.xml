@@ -43,5 +43,7 @@
     <string name="play_service_url">market://details?id=com.google.android.gms</string>
     <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
 
+    <string name="action_more_apps">More Apps</string>
+
 
 </resources>
