@@ -35,6 +35,7 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.nasa.pic.R;
 import com.nasa.pic.utils.Prefs;
@@ -42,6 +43,7 @@ import com.tinyurl4j.Api;
 import com.tinyurl4j.Api.TinyUrl;
 import com.tinyurl4j.data.Response;
 
+import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -65,6 +67,7 @@ public final class App extends MultiDexApplication {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Fabric.with(this, new Crashlytics());
 		TaskHelper.init(getApplicationContext());
 		Prefs prefs = Prefs.createInstance(this);
 		Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

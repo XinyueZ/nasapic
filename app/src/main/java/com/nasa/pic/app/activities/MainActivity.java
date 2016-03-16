@@ -4,8 +4,12 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -23,6 +27,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
@@ -33,6 +38,8 @@ import com.nasa.pic.app.events.EULAConfirmedEvent;
 import com.nasa.pic.app.events.EULARejectEvent;
 import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
+import com.nasa.pic.app.fragments.AppListImpFragment;
+import com.nasa.pic.databinding.ActivityMainBinding;
 import com.nasa.pic.utils.Prefs;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,7 +52,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	 * Main layout for this component.
 	 */
 	private static final int LAYOUT = R.layout.activity_main;
-
+	/**
+	 * Data-binding.
+	 */
+	private ActivityMainBinding mBinding;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -251,7 +261,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(LAYOUT);
+		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
+		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
@@ -282,15 +293,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		return Prefs.getInstance();
 	}
 
+	/**
+	 * Show all external applications links.
+	 */
+	private void showAppList() {
+		getSupportFragmentManager().beginTransaction()
+				.replace(
+						R.id.app_list_fl,
+						AppListImpFragment.newInstance( this )
+				)
+				.commit();
+
+		BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.coordinatorLayout);
+		behavior.setBottomSheetCallback( new BottomSheetCallback() {
+			@Override
+			public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+			}
+
+			@Override
+			public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+			}
+		});
+	}
+
+
 	@Override
 	protected void onAppConfigIgnored() {
 		super.onAppConfigIgnored();
+		onConfigFinished();
+	}
+
+	private void onConfigFinished() {
 		checkPlayService();
+		showAppList();
 	}
 
 	@Override
 	protected void onAppConfigLoaded() {
 		super.onAppConfigLoaded();
-		checkPlayService();
+		onConfigFinished();
 	}
 }
