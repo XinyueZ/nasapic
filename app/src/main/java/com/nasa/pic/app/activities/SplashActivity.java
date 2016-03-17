@@ -1,6 +1,7 @@
 package com.nasa.pic.app.activities;
 
 import android.Manifest.permission;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,7 +15,10 @@ import android.view.WindowManager;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.PeriodicTask;
 import com.nasa.pic.R;
+import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivitySplashBinding;
 import com.nasa.pic.utils.Prefs;
 
@@ -99,6 +103,7 @@ public final class SplashActivity extends BaseActivity {
 		super.onAppConfigLoaded();
 		showSplash();
 		permissionTest();
+		startAppGuardService(this);
 	}
 
 
@@ -107,10 +112,23 @@ public final class SplashActivity extends BaseActivity {
 		super.onAppConfigIgnored();
 		showSplash();
 		permissionTest();
+		startAppGuardService(this);
 	}
 
 	@Override
 	protected BasicPrefs getPrefs() {
 		return Prefs.getInstance();
+	}
+
+
+	public static void startAppGuardService(Context cxt) {
+		long scheduleSec = 60 * 2;
+		//		long scheduleSec = 10800L;
+		long flexSecs = 60L;
+		String tag = System.currentTimeMillis() + "";
+		PeriodicTask scheduleTask = new PeriodicTask.Builder().setService(AppGuardService.class).setPeriod(scheduleSec)
+				.setFlex(flexSecs).setTag(tag).setPersisted(true).setRequiredNetwork(
+						com.google.android.gms.gcm.Task.NETWORK_STATE_ANY).setRequiresCharging(false).build();
+		GcmNetworkManager.getInstance(cxt).schedule(scheduleTask);
 	}
 }

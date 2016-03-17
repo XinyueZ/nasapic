@@ -23,8 +23,8 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.nasa.pic.R;
-import com.nasa.pic.app.events.EULAConfirmedEvent;
-import com.nasa.pic.app.events.EULARejectEvent;
+import com.nasa.pic.events.EULAConfirmedEvent;
+import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.utils.Prefs;
 
 import de.greenrobot.event.EventBus;

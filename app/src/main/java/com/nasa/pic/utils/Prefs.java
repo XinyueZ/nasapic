@@ -21,6 +21,10 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static final String KEY_APP_DOWNLOAD           = "key.app.download";
 
+	private static final String KEY_API_COUNT = "api_count";
+
+	private static final String KEY_CURRENT_API_POSITION = "key.api.position";
+
 	/**
 	 * The Instance.
 	 */
@@ -113,5 +117,15 @@ public final class Prefs extends BasicPrefs {
 	}
 
 
+	public void setCurrentApiPosition(int pos) {
+		setInt(KEY_CURRENT_API_POSITION, pos);
+	}
 
-}
+	public int getCurrentApiPosition() {
+		return getInt(KEY_CURRENT_API_POSITION, 0);
+	}
+
+	public int getApiCount() {
+		return getInt(KEY_API_COUNT, 3);
+	}
+ }
