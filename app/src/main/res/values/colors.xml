@@ -6,4 +6,9 @@
     <color name="common_black">#000000</color>
     <color name="common_white">#FFFFFF</color>
     <color name="common_transparent">@android:color/transparent</color>
+
+    <color name="c_refresh_1">#4CAF50</color>
+    <color name="c_refresh_2">#3F51B5</color>
+    <color name="c_refresh_3">#F44336</color>
+    <color name="c_refresh_4">#009688</color>
 </resources>

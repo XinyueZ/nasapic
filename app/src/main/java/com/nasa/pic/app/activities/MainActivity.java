@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +35,7 @@ import android.view.ViewGroup;
 
 import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
+import com.chopping.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasa.pic.R;
@@ -313,6 +315,19 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		setSupportActionBar(mBinding.toolbar);
+
+		//Pull-2-load indicator
+	 	int actionbarHeight = Utils.getActionBarHeight(App.Instance);
+		mBinding.contentSrl.setOnRefreshListener( new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				loadList();
+			}
+		} );
+		mBinding.contentSrl.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3, R.color.c_refresh_4);
+		mBinding.contentSrl.setProgressViewEndTarget(true,  actionbarHeight * 2);
+		mBinding.contentSrl.setProgressViewOffset(false, 0, actionbarHeight * 2);
+		mBinding.contentSrl.setRefreshing(true);
 	}
 
 	@Override

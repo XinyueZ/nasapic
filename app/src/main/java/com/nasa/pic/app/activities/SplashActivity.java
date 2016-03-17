@@ -72,6 +72,7 @@ public final class SplashActivity extends BaseActivity {
 	@NeedsPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE })
 	void getPermissions() {
 		MainActivity.showInstance(this);
+		finish();
 	}
 
 
