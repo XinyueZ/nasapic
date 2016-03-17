@@ -31,11 +31,6 @@ public final class AppGuardService extends GcmTaskService {
 	public static retrofit2.Retrofit Retrofit;
 
 
-	@Override
-	public void onCreate() {
-		buildRetrofit();
-		super.onCreate();
-	}
 
 	@Override
 	public int onRunTask( TaskParams taskParams ) {
