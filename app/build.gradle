@@ -10,6 +10,7 @@ buildscript {
 def buildNumber = 'bld' + (System.env.BUILD_NUMBER ?: 'SNAPSHOT')
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'realm-android'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -115,6 +116,9 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+
+
+    compile 'io.reactivex:rxjava:1.1.0'
 }
 
 

@@ -1,5 +1,8 @@
 package com.nasa.pic.app.activities;
 
+import java.util.Calendar;
+import java.util.UUID;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -22,27 +25,38 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chopping.activities.BaseActivity;
+import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasa.pic.R;
-import com.nasa.pic.events.EULAConfirmedEvent;
-import com.nasa.pic.events.EULARejectEvent;
+import com.nasa.pic.api.Api;
+import com.nasa.pic.app.App;
+import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
+import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityMainBinding;
+import com.nasa.pic.ds.PhotoDB;
+import com.nasa.pic.ds.RequestPhotoList;
+import com.nasa.pic.events.EULAConfirmedEvent;
+import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.utils.Prefs;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+import io.realm.RealmObject;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import io.realm.Sort;
+
+public class MainActivity extends RestfulActivity implements NavigationView.OnNavigationItemSelectedListener {
 	/**
 	 * The menu to this view.
 	 */
@@ -59,7 +73,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
-
 
 
 	/**
@@ -186,7 +199,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 		switch (id) {
 		case R.id.action_app_list:
-			BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.bottomSheet);
+			BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
 			behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 			break;
 		}
@@ -197,61 +210,116 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	}
 
 
-
 	/**
 	 * To confirm whether the validation of the Play-service of Google Inc.
 	 */
 	private void checkPlayService() {
-		final int isFound = GooglePlayServicesUtil.isGooglePlayServicesAvailable( this );
-		if( isFound == ConnectionResult.SUCCESS ) {//Ignore update.
+		final int isFound = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (isFound == ConnectionResult.SUCCESS) {//Ignore update.
 			//The "End User License Agreement" must be confirmed before you use this application.
-			if( !Prefs.getInstance()
-					.isEULAOnceConfirmed() ) {
-				showDialogFragment(
-						new EulaConfirmationDialog(),
-						null
-				);
+			if (!Prefs.getInstance().isEULAOnceConfirmed()) {
+				showDialogFragment(new EulaConfirmationDialog(), null);
 			}
 		} else {
-			new Builder( this ).setTitle( R.string.application_name )
-					.setMessage( R.string.play_service )
-					.setCancelable( false )
-					.setPositiveButton(
-							R.string.btn_yes,
-							new DialogInterface.OnClickListener() {
-								public void onClick( DialogInterface dialog, int whichButton ) {
-									dialog.dismiss();
-									Intent intent = new Intent( Intent.ACTION_VIEW );
-									intent.setData( Uri.parse( getString( R.string.play_service_url ) ) );
-									try {
-										startActivity( intent );
-									} catch( ActivityNotFoundException e0 ) {
-										intent.setData( Uri.parse( getString( R.string.play_service_web ) ) );
-										try {
-											startActivity( intent );
-										} catch( Exception e1 ) {
-											//Ignore now.
-										}
-									} finally {
-										finish();
-									}
+			new Builder(this).setTitle(R.string.application_name).setMessage(R.string.play_service).setCancelable(false)
+					.setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							dialog.dismiss();
+							Intent intent = new Intent(Intent.ACTION_VIEW);
+							intent.setData(Uri.parse(getString(R.string.play_service_url)));
+							try {
+								startActivity(intent);
+							} catch (ActivityNotFoundException e0) {
+								intent.setData(Uri.parse(getString(R.string.play_service_web)));
+								try {
+									startActivity(intent);
+								} catch (Exception e1) {
+									//Ignore now.
 								}
+							} finally {
+								finish();
 							}
-					)
-					.setCancelable( isFound == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED )
-					.create()
-					.show();
+						}
+					}).setCancelable(isFound == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED).create().show();
 		}
+	}
+
+
+	@Override
+	protected void loadList() {
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1;
+		String timeZone = calendar.getTimeZone().getID();
+
+		loadPhotoList(year, month, timeZone);
+	}
+
+
+	@Override
+	protected void queryLocalData() {
+		mBinding.responsesRv.setLayoutManager(new LinearLayoutManager(this));
+		super.queryLocalData();
+	}
+
+
+	@Override
+	protected RealmResults<? extends RealmObject> createQuery(RealmQuery<? extends RealmObject> q) {
+		RealmResults<? extends RealmObject> results = q.findAllSortedAsync("date", Sort.DESCENDING);
+		return results;
+	}
+
+
+	@Override
+	protected void buildViews() {
+		if (isDataLoaded()) {
+			if (mBinding.getAdapter() == null) {
+				mBinding.setAdapter(new PhotoListAdapter());
+			}
+			if (mBinding.getAdapter().getData() == null) {
+				mBinding.getAdapter().setData(getData());
+			}
+			mBinding.getAdapter().notifyDataSetChanged();
+		}
+	}
+
+	protected Class<? extends RealmObject> getDataClazz() {
+		return PhotoDB.class;
+	}
+
+	@Override
+	protected void sendPending() {
+
+	}
+
+	@Override
+	protected void onRestApiSuccess() {
+		mBinding.contentSrl.setRefreshing(false);
+	}
+
+	private void loadPhotoList(int year, int month, String timeZone) {
+		RequestPhotoList requestPhotoList = new RequestPhotoList();
+		requestPhotoList.setReqId(UUID.randomUUID().toString());
+		requestPhotoList.setYear(year);
+		requestPhotoList.setMonth(month);
+		requestPhotoList.setTimeZone(timeZone);
+		App.Instance.getApiManager().execAsync(
+				AppGuardService.Retrofit.create(Api.class).getPhotoMonthList(requestPhotoList), requestPhotoList);
+	}
+
+
+	@Override
+	protected void initDataBinding() {
+		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
+		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
+		setSupportActionBar(mBinding.toolbar);
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
-		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
 
+		//FAB
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -261,17 +329,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			}
 		});
 
+		//Navi-drawer
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-				R.string.navigation_drawer_close);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, mBinding.toolbar,
+				R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
-
 		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 	}
-
-
 
 
 	@Override
@@ -283,15 +349,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	 * Show all external applications links.
 	 */
 	private void showAppList() {
-		getSupportFragmentManager().beginTransaction()
-				.replace(
-						R.id.app_list_fl,
-						AppListImpFragment.newInstance( this )
-				)
+		getSupportFragmentManager().beginTransaction().replace(R.id.app_list_fl, AppListImpFragment.newInstance(this))
 				.commit();
 
-		BottomSheetBehavior behavior = BottomSheetBehavior.from( mBinding.bottomSheet);
-		behavior.setBottomSheetCallback( new BottomSheetCallback() {
+		BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
+		behavior.setBottomSheetCallback(new BottomSheetCallback() {
 			@Override
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
 				switch (newState) {

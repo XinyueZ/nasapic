@@ -101,18 +101,18 @@ public final class SplashActivity extends BaseActivity {
 	@Override
 	protected void onAppConfigLoaded() {
 		super.onAppConfigLoaded();
+		startAppGuardService(this);
 		showSplash();
 		permissionTest();
-		startAppGuardService(this);
 	}
 
 
 	@Override
 	protected void onAppConfigIgnored() {
 		super.onAppConfigIgnored();
+		startAppGuardService(this);
 		showSplash();
 		permissionTest();
-		startAppGuardService(this);
 	}
 
 	@Override

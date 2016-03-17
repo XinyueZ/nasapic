@@ -45,7 +45,7 @@ public final class AppGuardService extends GcmTaskService {
 		String meta = prefs.getApiMeta();
 		int apiIndex = curPos % count;
 		String apiUrl = String.format(meta, apiIndex);
-		Retrofit = new retrofit2.Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+		Retrofit = new retrofit2.Retrofit.Builder().addConverterFactory(GsonConverterFactory.create(GSON))
 				.baseUrl(apiUrl).build();
 		LL.d("Retrofit url: " + apiUrl);
 		prefs.setCurrentApiPosition(++curPos);

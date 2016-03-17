@@ -35,6 +35,8 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
+import com.chopping.rest.RestApiManager;
+import com.chopping.utils.RestUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.nasa.pic.R;
@@ -63,10 +65,19 @@ public final class App extends MultiDexApplication {
 		Instance = this;
 	}
 
+	private RestApiManager mApiManager;
+
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		String[] fireInfo = RestUtils.initRest(
+				this,
+				true
+		);
+		mApiManager = new RestApiManager();
+		mApiManager.onCreate();
+
 		Fabric.with(this, new Crashlytics());
 		TaskHelper.init(getApplicationContext());
 		Prefs prefs = Prefs.createInstance(this);
@@ -98,5 +109,10 @@ public final class App extends MultiDexApplication {
 				}
 			});
 		}
+	}
+
+
+	public RestApiManager getApiManager() {
+		return mApiManager;
 	}
 }
