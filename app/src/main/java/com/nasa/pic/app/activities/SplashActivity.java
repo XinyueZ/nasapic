@@ -122,6 +122,7 @@ public final class SplashActivity extends BaseActivity {
 
 
 	public static void startAppGuardService(Context cxt) {
+		AppGuardService.buildRetrofit();
 		long scheduleSec = 60 * 2;
 		//		long scheduleSec = 10800L;
 		long flexSecs = 60L;

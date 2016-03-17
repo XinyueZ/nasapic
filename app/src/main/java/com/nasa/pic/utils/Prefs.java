@@ -25,6 +25,8 @@ public final class Prefs extends BasicPrefs {
 
 	private static final String KEY_CURRENT_API_POSITION = "key.api.position";
 
+	private static final String KEY_API_META = "api_meta";
+
 	/**
 	 * The Instance.
 	 */
@@ -127,5 +129,9 @@ public final class Prefs extends BasicPrefs {
 
 	public int getApiCount() {
 		return getInt(KEY_API_COUNT, 3);
+	}
+
+	public String getApiMeta() {
+		return getString(KEY_API_META, null);
 	}
  }
