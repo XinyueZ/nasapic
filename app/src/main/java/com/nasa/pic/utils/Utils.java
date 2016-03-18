@@ -68,7 +68,6 @@ public final class Utils {
 			public void onResponse(Call<Response> call,  retrofit2.Response<Response> res ) {
 				if(res.isSuccess()) {
 					Response response  = res.body();
-					String subject = title;
 					String text = App.Instance.getString( R.string.lbl_share_item_content,
 							desc,
 							TextUtils.isEmpty( response.getResult() ) ? url:
@@ -78,7 +77,7 @@ public final class Utils {
 					);
 					intent.putExtra(
 							Intent.EXTRA_SUBJECT,
-							subject
+							title
 					);
 					intent.putExtra(
 							Intent.EXTRA_TEXT,
@@ -92,7 +91,6 @@ public final class Utils {
 
 			@Override
 			public void onFailure( Call<Response> call, Throwable t ) {
-				String subject = title;
 				String text = App.Instance.getString( R.string.lbl_share_item_content,
 						desc,
 						url,
@@ -100,7 +98,7 @@ public final class Utils {
 				);
 				intent.putExtra(
 						Intent.EXTRA_SUBJECT,
-						subject
+						title
 				);
 				intent.putExtra(
 						Intent.EXTRA_TEXT,
