@@ -8,4 +8,6 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="padding_eula">16dp</dimen>
+
+    <dimen name="basic_card_width">318dp</dimen>
 </resources>
