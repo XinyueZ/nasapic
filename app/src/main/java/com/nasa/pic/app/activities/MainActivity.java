@@ -17,24 +17,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chopping.activities.RestfulActivity;
-import com.chopping.application.BasicPrefs;
-import com.chopping.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasa.pic.R;
@@ -46,7 +38,6 @@ import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityMainBinding;
-import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
@@ -57,7 +48,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class MainActivity extends RestfulActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppBasicActivity implements NavigationView.OnNavigationItemSelectedListener {
 	/**
 	 * The menu to this view.
 	 */
@@ -110,38 +101,6 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		ActivityCompat.startActivity(cxt, intent, null);
 	}
 
-
-	/**
-	 * Show  {@link android.support.v4.app.DialogFragment}.
-	 *
-	 * @param _dlgFrg
-	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
-	 * @param _tagName
-	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
-	 * 		android.support.v4.app.DialogFragment} can been seen.
-	 */
-	protected void showDialogFragment(DialogFragment _dlgFrg, String _tagName) {
-		try {
-			if (_dlgFrg != null) {
-				DialogFragment dialogFragment = _dlgFrg;
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				// Ensure that there's only one dialog to the user.
-				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
-				if (prev != null) {
-					ft.remove(prev);
-				}
-				try {
-					if (TextUtils.isEmpty(_tagName)) {
-						dialogFragment.show(ft, "dlg");
-					} else {
-						dialogFragment.show(ft, _tagName);
-					}
-				} catch (Exception _e) {
-				}
-			}
-		} catch (Exception _e) {
-		}
-	}
 
 	@Override
 	public void onBackPressed() {
@@ -262,7 +221,7 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 
 	@Override
 	protected void queryLocalData() {
-		com.nasa.pic.utils.Utils.buildListView(this, mBinding.responsesRv);
+		buildListView(this, mBinding.responsesRv);
 		super.queryLocalData();
 	}
 
@@ -287,9 +246,6 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		}
 	}
 
-	protected Class<? extends RealmObject> getDataClazz() {
-		return PhotoDB.class;
-	}
 
 	@Override
 	protected void sendPending() {
@@ -319,17 +275,7 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		setSupportActionBar(mBinding.toolbar);
 
 		//Pull-2-load indicator
-	 	int actionbarHeight = Utils.getActionBarHeight(App.Instance);
-		mBinding.contentSrl.setOnRefreshListener( new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				loadList();
-			}
-		} );
-		mBinding.contentSrl.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3, R.color.c_refresh_4);
-		mBinding.contentSrl.setProgressViewEndTarget(true,  actionbarHeight * 2);
-		mBinding.contentSrl.setProgressViewOffset(false, 0, actionbarHeight * 2);
-		mBinding.contentSrl.setRefreshing(true);
+		initPull2Load(mBinding.contentSrl);
 	}
 
 	@Override
@@ -357,10 +303,6 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 	}
 
 
-	@Override
-	protected BasicPrefs getPrefs() {
-		return Prefs.getInstance();
-	}
 
 	/**
 	 * Show all external applications links.
@@ -396,14 +338,16 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		onConfigFinished();
 	}
 
-	private void onConfigFinished() {
-		checkPlayService();
-		showAppList();
-	}
+
 
 	@Override
 	protected void onAppConfigLoaded() {
 		super.onAppConfigLoaded();
 		onConfigFinished();
+	}
+
+	private void onConfigFinished() {
+		checkPlayService();
+		showAppList();
 	}
 }

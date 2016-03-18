@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -14,23 +13,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.chopping.activities.RestfulActivity;
-import com.chopping.application.BasicPrefs;
-import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.databinding.ActivityMorePhotosBinding;
 import com.nasa.pic.ds.Photo;
 import com.nasa.pic.ds.PhotoDB;
-import com.nasa.pic.utils.Prefs;
 
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public final class MorePhotosActivity extends RestfulActivity {
+public final class MorePhotosActivity extends AppBasicActivity {
 	/**
 	 * Data-binding.
 	 */
@@ -80,25 +75,15 @@ public final class MorePhotosActivity extends RestfulActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(R.string.lbl_more_photos);
 
-		//Pull-2-load indicator
-		int actionbarHeight = Utils.getActionBarHeight(App.Instance);
-		mBinding.contentSrl.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				loadList();
-			}
-		});
-		mBinding.contentSrl.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3,
-				R.color.c_refresh_4);
-		mBinding.contentSrl.setProgressViewEndTarget(true, actionbarHeight * 2);
-		mBinding.contentSrl.setProgressViewOffset(false, 0, actionbarHeight * 2);
-		mBinding.contentSrl.setRefreshing(true);
+
+		initPull2Load(mBinding.contentSrl);
 	}
+
 
 
 	@Override
 	protected void queryLocalData() {
-		com.nasa.pic.utils.Utils.buildListView(this, mBinding.responsesRv);
+		buildListView(this, mBinding.responsesRv);
 		super.queryLocalData();
 	}
 
@@ -119,9 +104,6 @@ public final class MorePhotosActivity extends RestfulActivity {
 	}
 
 
-	protected Class<? extends RealmObject> getDataClazz() {
-		return PhotoDB.class;
-	}
 
 
 	@Override
@@ -194,8 +176,4 @@ public final class MorePhotosActivity extends RestfulActivity {
 	}
 
 
-	@Override
-	protected BasicPrefs getPrefs() {
-		return Prefs.getInstance();
-	}
 }
