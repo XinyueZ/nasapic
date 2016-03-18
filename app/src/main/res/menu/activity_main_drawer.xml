@@ -21,6 +21,11 @@
             <!--android:title="Tools" />-->
 
         <item
+            android:id="@+id/action_more_photos"
+            android:icon="@drawable/ic_more_photos_menu"
+            android:title="@string/action_more_photos" />
+
+        <item
             android:id="@+id/action_app_list"
             android:icon="@drawable/ic_app_list"
             android:title="@string/action_more_apps" />

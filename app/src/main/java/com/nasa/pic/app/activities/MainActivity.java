@@ -1,6 +1,5 @@
 package com.nasa.pic.app.activities;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -27,7 +26,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
-import android.support.v7.widget.GridLayoutManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,9 +34,6 @@ import android.view.ViewGroup;
 
 import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
-import com.chopping.application.LL;
-import com.chopping.utils.DeviceUtils;
-import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -204,6 +199,9 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 		int id = item.getItemId();
 
 		switch (id) {
+		case R.id.action_more_photos:
+			MorePhotosActivity.showInstance(this);
+			break;
 		case R.id.action_app_list:
 			BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
 			behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -264,15 +262,7 @@ public class MainActivity extends RestfulActivity implements NavigationView.OnNa
 
 	@Override
 	protected void queryLocalData() {
-		ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
-		LL.d("Screen width: " + screenSize.Width);
-		float basic = getResources().getDimension(R.dimen.basic_card_width);
-		LL.d("Basic: " + basic);
-		float div = screenSize.Width / basic;
-		LL.d("Div: " + div);
-		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
-		LL.d("CardCount: " + cardCount);
-		mBinding.responsesRv.setLayoutManager(new GridLayoutManager(this, cardCount.intValue()));
+		com.nasa.pic.utils.Utils.buildListView(this, mBinding.responsesRv);
 		super.queryLocalData();
 	}
 

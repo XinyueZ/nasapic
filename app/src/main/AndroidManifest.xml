@@ -26,15 +26,19 @@
 
 
         <activity
-            android:name=".app.activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".app.activities.MainActivity" >
 
         </activity>
 
 
         <activity
-            android:name=".app.activities.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".app.activities.MorePhotosActivity" >
+
+        </activity>
+
+
+        <activity
+            android:name=".app.activities.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

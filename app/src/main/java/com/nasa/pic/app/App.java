@@ -36,6 +36,7 @@ import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
 import com.chopping.rest.RestApiManager;
+import com.chopping.rest.RestFireManager;
 import com.chopping.utils.RestUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -66,7 +67,7 @@ public final class App extends MultiDexApplication {
 	}
 
 	private RestApiManager mApiManager;
-
+	private RestFireManager mFireManager;
 
 	@Override
 	public void onCreate() {
@@ -75,6 +76,15 @@ public final class App extends MultiDexApplication {
 				this,
 				true
 		);
+		if( fireInfo != null ) {
+			mFireManager = new RestFireManager(
+					fireInfo[ 0 ],
+					fireInfo[ 1 ],
+					Integer.valueOf( fireInfo[ 2 ] ),
+					"reqTime"
+			);
+		}
+		mFireManager.onCreate( this );
 		mApiManager = new RestApiManager();
 		mApiManager.onCreate();
 
@@ -114,5 +124,10 @@ public final class App extends MultiDexApplication {
 
 	public RestApiManager getApiManager() {
 		return mApiManager;
+	}
+
+
+	public RestFireManager getFireManager() {
+		return mFireManager;
 	}
 }
