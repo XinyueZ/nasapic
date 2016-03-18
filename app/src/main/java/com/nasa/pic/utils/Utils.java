@@ -26,88 +26,56 @@ public final class Utils {
 	public static void facebookShare(Context cxt, PhotoDB photoDB) {
 		final WebDialog fbDlg;
 		Bundle postParams = new Bundle();
-		String title = !TextUtils.isEmpty(photoDB.getTitle()) ? photoDB.getTitle() : null;
-		String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : null;
+		String title = !TextUtils.isEmpty(photoDB.getTitle()) ? photoDB.getTitle() : "";
+		String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : "";
 		String url = !TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getHd() :
 				photoDB.getUrls().getNormal();
-		if (desc == null && title == null) {
-			fbDlg = new WebDialog.FeedDialogBuilder(cxt, cxt.getString(R.string.applicationId), postParams).setLink(url)
-					.build();
-		} else if (desc != null && title == null) {
-			fbDlg = new WebDialog.FeedDialogBuilder(cxt, cxt.getString(R.string.applicationId), postParams)
-					.setDescription(desc).setLink(url).build();
-		} else if (desc == null && title != null) {
-			fbDlg = new WebDialog.FeedDialogBuilder(cxt, cxt.getString(R.string.applicationId), postParams).setName(
-					title).setLink(url).build();
-		} else {
+		if (!TextUtils.isEmpty(url)) {
 			fbDlg = new WebDialog.FeedDialogBuilder(cxt, cxt.getString(R.string.applicationId), postParams).setName(
 					title).setDescription(desc).setLink(url).build();
+			fbDlg.setOnCompleteListener(new OnCompleteListener() {
+				@Override
+				public void onComplete(Bundle bundle, FacebookException e) {
+					fbDlg.dismiss();
+				}
+			});
+			fbDlg.show();
 		}
-		fbDlg.setOnCompleteListener(new OnCompleteListener() {
-			@Override
-			public void onComplete(Bundle bundle, FacebookException e) {
-				fbDlg.dismiss();
-			}
-		});
-		fbDlg.show();
 	}
 
 
-	public static void share(  PhotoDB photoDB, final Intent intent) {
-		final String title = !TextUtils.isEmpty(photoDB.getTitle()) ? photoDB.getTitle() : null;
-		final String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : null;
+	public static void share(PhotoDB photoDB, final Intent intent) {
+		final String title = !TextUtils.isEmpty(photoDB.getTitle()) ? photoDB.getTitle() : "";
+		final String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : "";
 		final String url = !TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getHd() :
 				photoDB.getUrls().getNormal();
-
-
-
-		Call<Response> tinyUrlCall = Api.Retrofit.create( TinyUrl.class )
-				.getTinyUrl( url );
-		tinyUrlCall.enqueue( new Callback<Response>() {
-			@Override
-			public void onResponse(Call<Response> call,  retrofit2.Response<Response> res ) {
-				if(res.isSuccess()) {
-					Response response  = res.body();
-					String text = App.Instance.getString( R.string.lbl_share_item_content,
-							desc,
-							TextUtils.isEmpty( response.getResult() ) ? url:
-									response.getResult(),
-							Prefs.getInstance()
-									.getAppDownloadInfo()
-					);
-					intent.putExtra(
-							Intent.EXTRA_SUBJECT,
-							title
-					);
-					intent.putExtra(
-							Intent.EXTRA_TEXT,
-							text
-					);
-					EventBus.getDefault().post(new CompleteShareEvent(intent));
-				} else {
-					onFailure( null, null );
+		if (!TextUtils.isEmpty(url)) {
+			Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(url);
+			tinyUrlCall.enqueue(new Callback<Response>() {
+				@Override
+				public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
+					if (res.isSuccess()) {
+						Response response = res.body();
+						String text = App.Instance.getString(R.string.lbl_share_item_content, desc,
+								TextUtils.isEmpty(response.getResult()) ? url : response.getResult(),
+								Prefs.getInstance().getAppDownloadInfo());
+						intent.putExtra(Intent.EXTRA_SUBJECT, title);
+						intent.putExtra(Intent.EXTRA_TEXT, text);
+						EventBus.getDefault().post(new CompleteShareEvent(intent));
+					} else {
+						onFailure(null, null);
+					}
 				}
-			}
 
-			@Override
-			public void onFailure( Call<Response> call, Throwable t ) {
-				String text = App.Instance.getString( R.string.lbl_share_item_content,
-						desc,
-						url,
-						Prefs.getInstance().getAppDownloadInfo()
-				);
-				intent.putExtra(
-						Intent.EXTRA_SUBJECT,
-						title
-				);
-				intent.putExtra(
-						Intent.EXTRA_TEXT,
-						text
-				);
-				EventBus.getDefault().post(new CompleteShareEvent(intent));
-			}
-		} );
-
+				@Override
+				public void onFailure(Call<Response> call, Throwable t) {
+					String text = App.Instance.getString(R.string.lbl_share_item_content, desc, url,
+							Prefs.getInstance().getAppDownloadInfo());
+					intent.putExtra(Intent.EXTRA_SUBJECT, title);
+					intent.putExtra(Intent.EXTRA_TEXT, text);
+					EventBus.getDefault().post(new CompleteShareEvent(intent));
+				}
+			});
+		}
 	}
-
 }
