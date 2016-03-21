@@ -13,11 +13,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.nasa.pic.BR;
 import com.nasa.pic.R;
 import com.nasa.pic.events.FBShareEvent;
+import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
@@ -108,7 +110,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
 		final T entry = mVisibleData.get(position);
 		holder.mBinding.setVariable(BR.photoDB, entry);
-
+		holder.mBinding.setVariable(BR.handler, new ListItemHandlers(holder, this));
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
 
 		MenuItem fbShareMi = holder.mToolbar.getMenu().findItem(R.id.action_fb_share_item);
@@ -146,6 +148,25 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 			mBinding = binding;
 			mToolbar = (Toolbar) binding.getRoot().findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(MENU_LIST_ITEM);
+		}
+	}
+
+	public static final class ListItemHandlers  {
+		private ViewHolder mViewHolder;
+		private PhotoListAdapter   mAdapter;
+
+		public ListItemHandlers(ViewHolder viewHolder, PhotoListAdapter adapter) {
+			mViewHolder = viewHolder;
+			mAdapter = adapter;
+		}
+
+		public void onOpenPhoto( View view ) {
+			int pos = mViewHolder.getAdapterPosition();
+			if( pos != RecyclerView.NO_POSITION ) {
+				EventBus.getDefault()
+						.post( new OpenPhotoEvent((RealmObject) mAdapter.getData().get( pos ))
+						 );
+			}
 		}
 	}
 }

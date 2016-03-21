@@ -169,7 +169,6 @@ public final class MorePhotosActivity extends AppBasicActivity {
 		// Respond to the action bar's Up/Home button
 		case android.R.id.home:
 			ActivityCompat.finishAfterTransition(this);
-			MainActivity.showInstance(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

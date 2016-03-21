@@ -7,6 +7,7 @@
     <color name="common_white">#FFFFFF</color>
     <color name="common_transparent">@android:color/transparent</color>
     <color name="grey_500">#9E9E9E</color>
+    <color name="grey_500_half">#809E9E9E</color>
 
     <color name="c_refresh_1">#4CAF50</color>
     <color name="c_refresh_2">#3F51B5</color>

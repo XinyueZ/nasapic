@@ -24,6 +24,7 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareEvent;
+import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.utils.Prefs;
 
@@ -43,8 +44,7 @@ public abstract class AppBasicActivity extends RestfulActivity {
 	 * 		Event {@link com.nasa.pic.events.FBShareEvent}.
 	 */
 	public void onEvent(FBShareEvent e) {
-		com.nasa.pic.utils.Utils.facebookShare(
-				this, (PhotoDB) e.getObject());
+		com.nasa.pic.utils.Utils.facebookShare(this, (PhotoDB) e.getObject());
 	}
 
 	/**
@@ -55,7 +55,7 @@ public abstract class AppBasicActivity extends RestfulActivity {
 	 */
 	public void onEvent(ShareEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
-		com.nasa.pic.utils.Utils.share( photoDB, e.getIntent());
+		com.nasa.pic.utils.Utils.share(photoDB, e.getIntent());
 	}
 
 
@@ -68,10 +68,24 @@ public abstract class AppBasicActivity extends RestfulActivity {
 	public void onEvent(CompleteShareEvent e) {
 		ActivityCompat.startActivity(this, e.getIntent(), null);
 	}
+
+	/**
+	 * Handler for {@link com.nasa.pic.events.OpenPhotoEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.nasa.pic.events.OpenPhotoEvent}.
+	 */
+	public void onEvent(OpenPhotoEvent e) {
+		PhotoDB photoDB = (PhotoDB) e.getObject();
+		PhotoViewActivity.showInstance(this,
+				TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
+						photoDB.getUrls().getHd(), photoDB.getDescription(), photoDB.getDate());
+	}
+
 	//------------------------------------------------
 
 
-	protected   void buildListView(Context cxt, RecyclerView recyclerView) {
+	protected void buildListView(Context cxt, RecyclerView recyclerView) {
 		ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
 		LL.d("Screen width: " + screenSize.Width);
 		float basic = cxt.getResources().getDimension(R.dimen.basic_card_width);
@@ -82,12 +96,13 @@ public abstract class AppBasicActivity extends RestfulActivity {
 		LL.d("CardCount: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
 	}
+
 	@Override
 	protected Class<? extends RealmObject> getDataClazz() {
 		return PhotoDB.class;
 	}
 
-	protected void initPull2Load( SwipeRefreshLayout swipeRefreshLayout ) {
+	protected void initPull2Load(SwipeRefreshLayout swipeRefreshLayout) {
 		int actionbarHeight = Utils.getActionBarHeight(App.Instance);
 		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override

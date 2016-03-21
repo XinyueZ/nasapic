@@ -10,4 +10,6 @@
     <dimen name="padding_eula">16dp</dimen>
 
     <dimen name="basic_card_width">318dp</dimen>
+    <dimen name="bottom_sheet_description">100dp</dimen>
+    <dimen name="bottom_sheet_app_list">100dp</dimen>
 </resources>

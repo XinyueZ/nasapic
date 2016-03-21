@@ -26,16 +26,16 @@
 
 
         <activity
-            android:name=".app.activities.MainActivity" >
-
-        </activity>
+            android:name=".app.activities.MainActivity" />
 
 
         <activity
-            android:name=".app.activities.MorePhotosActivity" >
+            android:name=".app.activities.MorePhotosActivity" />
 
-        </activity>
 
+
+        <activity
+            android:name=".app.activities.PhotoViewActivity" />
 
         <activity
             android:name=".app.activities.SplashActivity" >
@@ -48,7 +48,6 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0bf5835ac1569fe382ff64839c0be3d3ed9396b9" />
-
 
 
 

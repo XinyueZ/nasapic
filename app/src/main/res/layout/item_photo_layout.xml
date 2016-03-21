@@ -8,6 +8,10 @@
 
         <import type="java.text.SimpleDateFormat" />
 
+        <import type="com.nasa.pic.app.adapters.PhotoListAdapter" />
+
+        <import type="com.nasa.pic.app.adapters.PhotoListAdapter.ListItemHandlers" />
+
         <variable
             name="photoDB"
             type="PhotoDB" />
@@ -17,12 +21,17 @@
             type="SimpleDateFormat" />
 
 
+        <variable
+            name="handler"
+            type="ListItemHandlers" />
+
     </data>
 
     <android.support.v7.widget.CardView
         style="@style/PhotoCardView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{handler.onOpenPhoto}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +68,6 @@
             </FrameLayout>
 
 
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -70,14 +78,15 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="wrap_content"
-                android:minHeight="26dp"
-                android:layout_height="26dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginBottom="@dimen/activity_vertical_margin" />
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:minHeight="26dp" />
             </FrameLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
