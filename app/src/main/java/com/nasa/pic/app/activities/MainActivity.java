@@ -48,7 +48,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class MainActivity extends AppBasicActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppRestfulActivity implements NavigationView.OnNavigationItemSelectedListener {
 	/**
 	 * The menu to this view.
 	 */

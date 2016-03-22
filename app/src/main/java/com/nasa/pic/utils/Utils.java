@@ -34,7 +34,6 @@ public final class Utils {
 	}
 
 
-
 	public static void facebookShare(Context cxt, String title, String description, String url) {
 		final WebDialog fbDlg;
 		Bundle postParams = new Bundle();
@@ -57,6 +56,11 @@ public final class Utils {
 		final String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : "";
 		final String url = !TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getHd() :
 				photoDB.getUrls().getNormal();
+		share(title, desc, url, intent);
+	}
+
+
+	public static void share(final String title, final String description, final String url, final Intent intent) {
 		if (!TextUtils.isEmpty(url)) {
 			Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(url);
 			tinyUrlCall.enqueue(new Callback<Response>() {
@@ -64,7 +68,7 @@ public final class Utils {
 				public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
 					if (res.isSuccess()) {
 						Response response = res.body();
-						String text = App.Instance.getString(R.string.lbl_share_item_content, desc,
+						String text = App.Instance.getString(R.string.lbl_share_item_content, description,
 								TextUtils.isEmpty(response.getResult()) ? url : response.getResult(),
 								Prefs.getInstance().getAppDownloadInfo());
 						intent.putExtra(Intent.EXTRA_SUBJECT, title);
@@ -77,7 +81,7 @@ public final class Utils {
 
 				@Override
 				public void onFailure(Call<Response> call, Throwable t) {
-					String text = App.Instance.getString(R.string.lbl_share_item_content, desc, url,
+					String text = App.Instance.getString(R.string.lbl_share_item_content, description, url,
 							Prefs.getInstance().getAppDownloadInfo());
 					intent.putExtra(Intent.EXTRA_SUBJECT, title);
 					intent.putExtra(Intent.EXTRA_TEXT, text);

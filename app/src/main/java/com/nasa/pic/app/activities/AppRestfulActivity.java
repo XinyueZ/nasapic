@@ -31,7 +31,7 @@ import com.nasa.pic.utils.Prefs;
 import io.realm.RealmObject;
 
 
-public abstract class AppBasicActivity extends RestfulActivity {
+public abstract class AppRestfulActivity extends RestfulActivity {
 
 	//------------------------------------------------
 	//Subscribes, event-handlers

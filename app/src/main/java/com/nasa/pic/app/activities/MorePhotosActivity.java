@@ -25,7 +25,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public final class MorePhotosActivity extends AppBasicActivity {
+public final class MorePhotosActivity extends AppRestfulActivity {
 	/**
 	 * Data-binding.
 	 */

@@ -35,7 +35,7 @@
 
 
         <activity
-            android:name=".app.activities.PhotoViewActivity" />
+            android:name=".app.activities.PhotoViewActivity"  />
 
         <activity
             android:name=".app.activities.SplashActivity" >

@@ -12,8 +12,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +30,12 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.ActivityPhotoViewBinding;
 import com.nasa.pic.utils.Prefs;
 import com.squareup.picasso.Picasso;
+import com.tinyurl4j.Api;
+import com.tinyurl4j.Api.TinyUrl;
+import com.tinyurl4j.data.Response;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
 import static android.R.id.home;
@@ -64,7 +71,13 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	private String mDescription;
 	//[End]
 
-	public static void showInstance(Context cxt,  String title, String description,String urlToPhoto, Date datetime) {
+	/**
+	 * A tinyurl to the {@link com.nasa.pic.ds.PhotoDB}.
+	 */
+	private String mSharedUrl;
+
+
+	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, Date datetime) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
 		intent.putExtra(EXTRAS_TITLE, title);
 		intent.putExtra(EXTRAS_DATE, datetime);
@@ -108,7 +121,6 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		String datetime = DateTimeUtils.timeConvert2(App.Instance, mDatetime.getTime());
 		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
-
 
 		initPull2Load(mBinding.contentSrl);
 		loadImage();
@@ -188,7 +200,36 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		getMenuInflater().inflate(MENU, menu);
+		Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(mUrl2Photo);
+		tinyUrlCall.enqueue(new Callback<Response>() {
+			@Override
+			public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
+				if (res.isSuccess()) {
+					Response response = res.body();
+					mSharedUrl = !TextUtils.isEmpty(response.getResult()) ? response.getResult() : mUrl2Photo;
+					buildFbShareMenu(menu);
+				} else {
+					onFailure(null, null);
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Response> call, Throwable t) {
+				mSharedUrl = mUrl2Photo;
+				buildFbShareMenu(menu);
+			}
+		});
 		return true;
+	}
+
+	private void buildFbShareMenu(Menu menu) {
+		MenuItem menuShare = menu.findItem(R.id.action_share_photo);
+		menuShare.setVisible(true);
+		android.support.v7.widget.ShareActionProvider provider =
+				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+		String text = App.Instance.getString(R.string.lbl_share_item_content, mDescription, mSharedUrl,
+				Prefs.getInstance().getAppDownloadInfo());
+		provider.setShareIntent(Utils.getDefaultShareIntent(provider, mTitle, text));
 	}
 
 
