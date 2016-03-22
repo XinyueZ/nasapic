@@ -4,6 +4,10 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
+
         <import type="com.nasa.pic.ds.PhotoDB" />
 
         <import type="java.text.SimpleDateFormat" />
@@ -38,11 +42,29 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                app:imageNormalUrl="@{photoDB.getUrls()}" />
+                android:background="@color/common_black">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.GONE : View.VISIBLE }'
+                    app:imageNormalUrl="@{photoDB.getUrls()}" />
+
+                <ImageButton
+                    android:id="@+id/play_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/common_transparent"
+                    android:onClick="@{handler.onOpenPhoto}"
+                    android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.VISIBLE: View.GONE}'
+                    app:srcCompat="@drawable/ic_play" />
+            </FrameLayout>
+
 
             <FrameLayout
                 android:layout_width="match_parent"

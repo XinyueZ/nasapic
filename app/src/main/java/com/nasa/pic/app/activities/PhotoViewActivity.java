@@ -50,6 +50,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	private static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
 	private static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
 	private static final String EXTRAS_DATE = "com.nasa.pic.app.activities.PhotoViewActivity.datetime";
+	private static final String EXTRAS_TYPE = "com.nasa.pic.app.activities.PhotoViewActivity.type";
 	/**
 	 * Data-binding.
 	 */
@@ -65,6 +66,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	private static final int MENU = R.menu.menu_photo_view;
 
 	//[Begin for photo's info]
+	private String mType;
 	private String mTitle;
 	private Date mDatetime;
 	private String mUrl2Photo;
@@ -77,8 +79,9 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	private String mSharedUrl;
 
 
-	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, Date datetime) {
+	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, Date datetime, String type) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TYPE, type);
 		intent.putExtra(EXTRAS_TITLE, title);
 		intent.putExtra(EXTRAS_DATE, datetime);
 		intent.putExtra(EXTRAS_DESCRIPTION, description);
@@ -94,12 +97,14 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		setContentView(LAYOUT);
 
 		if (savedInstanceState != null) {
+			mType =  savedInstanceState.getString(EXTRAS_TYPE);
 			mTitle = savedInstanceState.getString(EXTRAS_TITLE);
 			mUrl2Photo = savedInstanceState.getString(EXTRAS_URL_TO_PHOTO);
 			mDescription = savedInstanceState.getString(EXTRAS_DESCRIPTION);
 			mDatetime = (Date) savedInstanceState.getSerializable(EXTRAS_DATE);
 		} else {
 			Intent intent = getIntent();
+			mType =  intent.getStringExtra(EXTRAS_TYPE);
 			mTitle = intent.getStringExtra(EXTRAS_TITLE);
 			mUrl2Photo = intent.getStringExtra(EXTRAS_URL_TO_PHOTO);
 			mDescription = intent.getStringExtra(EXTRAS_DESCRIPTION);
@@ -121,7 +126,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		String datetime = DateTimeUtils.timeConvert2(App.Instance, mDatetime.getTime());
 		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
-
+		mBinding.setType(mType);
 		initPull2Load(mBinding.contentSrl);
 		loadImage();
 	}
@@ -146,10 +151,11 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		outState.putSerializable(EXTRAS_TYPE, mType);
 		outState.putSerializable(EXTRAS_TITLE, mTitle);
 		outState.putSerializable(EXTRAS_DATE, mDatetime);
-		outState.putString(EXTRAS_DESCRIPTION, mDescription);
 		outState.putString(EXTRAS_URL_TO_PHOTO, mUrl2Photo);
+		outState.putString(EXTRAS_DESCRIPTION, mDescription);
 	}
 
 
@@ -167,8 +173,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 			@Override
 			protected Bitmap doInBackground(Object... params) {
 				try {
-					return Picasso.with(App.Instance).load(Utils.uriStr2URI(mUrl2Photo).toASCIIString()).placeholder(
-							R.drawable.placeholder).get();
+					return Picasso.with(App.Instance).load(Utils.uriStr2URI(mUrl2Photo).toASCIIString()).get();
 				} catch (IOException e) {
 					return null;
 				}

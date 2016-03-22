@@ -82,7 +82,8 @@ public abstract class AppRestfulActivity extends RestfulActivity {
 				photoDB.getDescription(),
 				TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
 						photoDB.getUrls().getHd(),
-				photoDB.getDate());
+				photoDB.getDate(),
+				photoDB.getType());
 	}
 
 	//------------------------------------------------

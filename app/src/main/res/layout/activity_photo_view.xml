@@ -4,6 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".app.activities.PhotoViewActivity">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="android.text.TextUtils" />
+
+        <variable
+            name="type"
+            type="String" />
+
+    </data>
+
+
     <android.support.design.widget.CoordinatorLayout
         android:id="@id/error_content"
         android:layout_width="match_parent"
@@ -13,9 +26,9 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:background="@color/common_transparent"
             android:layout_height="wrap_content"
-            app:theme="@style/AppBarOverlay"  >
+            android:background="@color/common_transparent"
+            app:theme="@style/AppBarOverlay">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -31,11 +44,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <uk.co.senab.photoview.PhotoView
-                android:id="@+id/big_img_iv"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:background="@color/common_black">
 
+                <uk.co.senab.photoview.PhotoView
+                    android:id="@+id/big_img_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility='@{!TextUtils.equals(type, "image") ? View.GONE : View.VISIBLE }' />
+
+                <ImageButton
+                    android:id="@+id/play_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/common_transparent"
+                    android:visibility='@{!TextUtils.equals(type, "image") ? View.VISIBLE: View.GONE}'
+                    app:srcCompat="@drawable/ic_play" />
+            </FrameLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <FrameLayout
@@ -79,7 +107,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="5dp"
                             android:background="@color/common_transparent"
-                            android:src="@drawable/ic_photo_datetime" />
+                            app:srcCompat="@drawable/ic_photo_datetime" />
 
                         <TextView
                             android:id="@+id/datetime_tv"
