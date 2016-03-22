@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,12 +15,15 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
+import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
@@ -91,7 +95,10 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		mBinding.bigImgIv.setZoomable(true);
 
 		mBinding.descriptionTv.setText(mDescription);
-
+		mBinding.descriptionTv.setTextColor(Color.WHITE);
+		String datetime = DateTimeUtils.timeConvert2(App.Instance, mDatetime.getTime());
+		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
+		mBinding.datetimeTv.setTextColor(Color.WHITE);
 
 		BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
 		behavior.setBottomSheetCallback(new BottomSheetCallback() {
@@ -99,12 +106,12 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 			public void onStateChanged(@NonNull View bottomSheet, int newState) {
 				switch (newState) {
 				case BottomSheetBehavior.STATE_EXPANDED:
-					if(getSupportActionBar().isShowing()) {
+					if (getSupportActionBar().isShowing()) {
 						getSupportActionBar().hide();
 					}
 					break;
 				case BottomSheetBehavior.STATE_COLLAPSED:
-					if(!getSupportActionBar().isShowing()) {
+					if (!getSupportActionBar().isShowing()) {
 						getSupportActionBar().show();
 					}
 				}
@@ -115,7 +122,24 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 
 			}
 		});
-		showImage();
+		initPull2Load(mBinding.contentSrl);
+		loadImage();
+	}
+
+
+	protected void initPull2Load(SwipeRefreshLayout swipeRefreshLayout) {
+		int actionbarHeight = Utils.getActionBarHeight(App.Instance);
+		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				loadImage();
+			}
+		});
+		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3,
+				R.color.c_refresh_4);
+		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
+		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
+		swipeRefreshLayout.setRefreshing(true);
 	}
 
 
@@ -131,12 +155,19 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	/**
 	 * Show remote image.
 	 */
-	private void showImage() {
+	private void loadImage() {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Bitmap>() {
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
+			}
+
 			@Override
 			protected Bitmap doInBackground(Object... params) {
 				try {
-					return Picasso.with(App.Instance).load(Utils.uriStr2URI(mUrl2Photo).toASCIIString()).get();
+					return Picasso.with(App.Instance).load(Utils.uriStr2URI(mUrl2Photo).toASCIIString()).placeholder(
+							R.drawable.placeholder).get();
 				} catch (IOException e) {
 					return null;
 				}
@@ -148,6 +179,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 				if (bitmap != null) {
 					mBinding.bigImgIv.setImageBitmap(bitmap);
 				}
+				mBinding.contentSrl.setRefreshing(false);
 			}
 		});
 	}
@@ -170,7 +202,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	}
 
 	private void handleToolbar() {
-		if(getSupportActionBar().isShowing()) {
+		if (getSupportActionBar().isShowing()) {
 			getSupportActionBar().hide();
 		} else {
 			getSupportActionBar().show();

@@ -64,7 +64,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_more_photos" />
+            android:src="@drawable/ic_more_photos"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:backgroundTint="@color/colorAccent"
+            app:rippleColor="@color/colorPrimaryDark"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

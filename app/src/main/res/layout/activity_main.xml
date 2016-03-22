@@ -12,7 +12,6 @@
     </data>
 
 
-
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -51,7 +50,7 @@
                 <android.support.v4.widget.SwipeRefreshLayout
                     android:id="@+id/content_srl"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/responses_rv"
@@ -72,7 +71,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="@dimen/fab_margin"
-                android:src="@android:drawable/ic_dialog_email" />
+                android:src="@android:drawable/ic_dialog_email"
+                app:elevation="6dp"
+                app:pressedTranslationZ="12dp"
+                app:backgroundTint="@color/colorAccent"
+                app:rippleColor="@color/colorPrimaryDark" />
 
             <LinearLayout
                 android:id="@+id/bottom_sheet"

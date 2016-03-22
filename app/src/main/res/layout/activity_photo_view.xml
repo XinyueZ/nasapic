@@ -13,8 +13,7 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme">
+            android:layout_height="wrap_content">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -25,11 +24,17 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <uk.co.senab.photoview.PhotoView
-            android:id="@+id/big_img_iv"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/content_srl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
+            <uk.co.senab.photoview.PhotoView
+                android:id="@+id/big_img_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <FrameLayout
             android:id="@+id/bottom_sheet"
@@ -48,13 +53,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/description_tv"
-                    style="@style/TextAppearance.AppCompat.Large"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/common_white"
-                    android:lineSpacingExtra="5dp" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/description_tv"
+                        style="@style/TextAppearance.AppCompat.Large"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="5dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:background="@color/common_transparent"
+                            android:src="@drawable/ic_photo_datetime" />
+
+                        <TextView
+                            android:id="@+id/datetime_tv"
+                            style="@style/TextAppearance.AppCompat.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="5dp" />
+                    </LinearLayout>
+                </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </FrameLayout>
 
