@@ -10,13 +10,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +31,15 @@ import com.squareup.picasso.Picasso;
 
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
+import static android.R.id.home;
+
 /**
  * Show big image as photo.
  *
  * @author Xinyue Zhao
  */
 public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapListener {
+	private static final String EXTRAS_TITLE = "com.nasa.pic.app.activities.PhotoViewActivity.title";
 	private static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
 	private static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
 	private static final String EXTRAS_DATE = "com.nasa.pic.app.activities.PhotoViewActivity.datetime";
@@ -51,15 +52,21 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	 */
 	private static final int LAYOUT = R.layout.activity_photo_view;
 
+	/**
+	 * The menu to this view.
+	 */
+	private static final int MENU = R.menu.menu_photo_view;
 
 	//[Begin for photo's info]
+	private String mTitle;
 	private Date mDatetime;
 	private String mUrl2Photo;
 	private String mDescription;
 	//[End]
 
-	public static void showInstance(Context cxt, String urlToPhoto, String description, Date datetime) {
+	public static void showInstance(Context cxt,  String title, String description,String urlToPhoto, Date datetime) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TITLE, title);
 		intent.putExtra(EXTRAS_DATE, datetime);
 		intent.putExtra(EXTRAS_DESCRIPTION, description);
 		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
@@ -74,14 +81,16 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		setContentView(LAYOUT);
 
 		if (savedInstanceState != null) {
-			mDatetime = (Date) savedInstanceState.getSerializable(EXTRAS_DATE);
+			mTitle = savedInstanceState.getString(EXTRAS_TITLE);
 			mUrl2Photo = savedInstanceState.getString(EXTRAS_URL_TO_PHOTO);
 			mDescription = savedInstanceState.getString(EXTRAS_DESCRIPTION);
+			mDatetime = (Date) savedInstanceState.getSerializable(EXTRAS_DATE);
 		} else {
 			Intent intent = getIntent();
-			mDatetime = (Date) intent.getSerializableExtra(EXTRAS_DATE);
+			mTitle = intent.getStringExtra(EXTRAS_TITLE);
 			mUrl2Photo = intent.getStringExtra(EXTRAS_URL_TO_PHOTO);
 			mDescription = intent.getStringExtra(EXTRAS_DESCRIPTION);
+			mDatetime = (Date) intent.getSerializableExtra(EXTRAS_DATE);
 		}
 
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
@@ -100,28 +109,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
 
-		BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
-		behavior.setBottomSheetCallback(new BottomSheetCallback() {
-			@Override
-			public void onStateChanged(@NonNull View bottomSheet, int newState) {
-				switch (newState) {
-				case BottomSheetBehavior.STATE_EXPANDED:
-					if (getSupportActionBar().isShowing()) {
-						getSupportActionBar().hide();
-					}
-					break;
-				case BottomSheetBehavior.STATE_COLLAPSED:
-					if (!getSupportActionBar().isShowing()) {
-						getSupportActionBar().show();
-					}
-				}
-			}
 
-			@Override
-			public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-			}
-		});
 		initPull2Load(mBinding.contentSrl);
 		loadImage();
 	}
@@ -146,6 +134,7 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		outState.putSerializable(EXTRAS_TITLE, mTitle);
 		outState.putSerializable(EXTRAS_DATE, mDatetime);
 		outState.putString(EXTRAS_DESCRIPTION, mDescription);
 		outState.putString(EXTRAS_URL_TO_PHOTO, mUrl2Photo);
@@ -184,34 +173,35 @@ public final class PhotoViewActivity extends BaseActivity implements OnPhotoTapL
 		});
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// Respond to the action bar's Up/Home button
-		case android.R.id.home:
-			ActivityCompat.finishAfterTransition(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 
 	@Override
 	public void onPhotoTap(View view, float v, float v1) {
-		handleToolbar();
-	}
-
-	private void handleToolbar() {
-		if (getSupportActionBar().isShowing()) {
-			getSupportActionBar().hide();
-		} else {
-			getSupportActionBar().show();
-		}
 	}
 
 
 	@Override
 	protected BasicPrefs getPrefs() {
 		return Prefs.getInstance();
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		getMenuInflater().inflate(MENU, menu);
+		return true;
+	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case home:
+			ActivityCompat.finishAfterTransition(this);
+			break;
+		case R.id.action_fb_share_photo:
+			com.nasa.pic.utils.Utils.facebookShare(this, mTitle, mDescription, mUrl2Photo);
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

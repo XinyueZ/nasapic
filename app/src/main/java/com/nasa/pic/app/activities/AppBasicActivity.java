@@ -78,8 +78,11 @@ public abstract class AppBasicActivity extends RestfulActivity {
 	public void onEvent(OpenPhotoEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
 		PhotoViewActivity.showInstance(this,
+				TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
+				photoDB.getDescription(),
 				TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
-						photoDB.getUrls().getHd(), photoDB.getDescription(), photoDB.getDate());
+						photoDB.getUrls().getHd(),
+				photoDB.getDate());
 	}
 
 	//------------------------------------------------

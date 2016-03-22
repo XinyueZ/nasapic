@@ -30,9 +30,17 @@ public final class Utils {
 		String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : "";
 		String url = !TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getHd() :
 				photoDB.getUrls().getNormal();
+		facebookShare(cxt, title, desc, url);
+	}
+
+
+
+	public static void facebookShare(Context cxt, String title, String description, String url) {
+		final WebDialog fbDlg;
+		Bundle postParams = new Bundle();
 		if (!TextUtils.isEmpty(url)) {
 			fbDlg = new WebDialog.FeedDialogBuilder(cxt, cxt.getString(R.string.applicationId), postParams).setName(
-					title).setDescription(desc).setLink(url).build();
+					title).setDescription(description).setLink(url).build();
 			fbDlg.setOnCompleteListener(new OnCompleteListener() {
 				@Override
 				public void onComplete(Bundle bundle, FacebookException e) {

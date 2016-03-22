@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/action_fb_share_photo"
+        android:title="@string/action_share_fb"
+        android:icon="@drawable/ic_share_fb_photo"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_share_photo"
+        android:title="@string/action_share"
+        android:icon="@drawable/ic_share_photo"
+        app:showAsAction="always"
+        app:actionProviderClass="com.nasa.pic.utils.DynamicShareActionProvider" />
+</menu>
