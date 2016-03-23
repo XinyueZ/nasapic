@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.nasa.pic.app.activities.AppNormalActivity;
+import com.nasa.pic.app.activities.FacebookShareHelperActivity;
 import com.nasa.pic.utils.Utils;
 
 
@@ -29,7 +30,7 @@ public final class ActionBroadcastReceiver extends BroadcastReceiver {
 
 		switch (actionId) {
 		case ACTION_ACTION_BUTTON_1:
-			Utils.facebookShare(context, title, description, urlToShare);
+			FacebookShareHelperActivity.showInstance(context, intent);
 			break;
 		case ACTION_ACTION_BUTTON_2:
 			Utils.share(context, title, description, urlToShare);

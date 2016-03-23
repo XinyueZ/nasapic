@@ -41,6 +41,15 @@
         <activity
             android:name=".app.activities.WebViewActivity"  />
 
+
+
+        <activity
+            android:name=".app.activities.FacebookShareHelperActivity"
+            android:noHistory="true"
+            android:excludeFromRecents="true" />
+
+
+
         <activity
             android:name=".app.activities.SplashActivity" >
             <intent-filter>

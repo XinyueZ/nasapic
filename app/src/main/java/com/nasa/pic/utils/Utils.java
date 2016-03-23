@@ -13,6 +13,7 @@ import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
+import com.nasa.pic.events.FBShareCompleteEvent;
 import com.tinyurl4j.Api;
 import com.tinyurl4j.Api.TinyUrl;
 import com.tinyurl4j.data.Response;
@@ -24,8 +25,6 @@ import retrofit2.Callback;
 public final class Utils {
 
 	public static void facebookShare(Context cxt, PhotoDB photoDB) {
-		final WebDialog fbDlg;
-		Bundle postParams = new Bundle();
 		String title = !TextUtils.isEmpty(photoDB.getTitle()) ? photoDB.getTitle() : "";
 		String desc = !TextUtils.isEmpty(photoDB.getDescription()) ? photoDB.getDescription() : "";
 		String url = !TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getHd() :
@@ -43,6 +42,7 @@ public final class Utils {
 			fbDlg.setOnCompleteListener(new OnCompleteListener() {
 				@Override
 				public void onComplete(Bundle bundle, FacebookException e) {
+					EventBus.getDefault().post(new FBShareCompleteEvent());
 					fbDlg.dismiss();
 				}
 			});
