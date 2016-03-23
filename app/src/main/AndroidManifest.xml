@@ -37,6 +37,10 @@
         <activity
             android:name=".app.activities.PhotoViewActivity"  />
 
+
+        <activity
+            android:name=".app.activities.WebViewActivity"  />
+
         <activity
             android:name=".app.activities.SplashActivity" >
             <intent-filter>
