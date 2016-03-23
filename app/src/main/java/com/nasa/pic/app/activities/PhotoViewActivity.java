@@ -3,6 +3,7 @@ package com.nasa.pic.app.activities;
 import java.io.IOException;
 import java.util.Date;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -24,6 +25,7 @@ import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.customtab.ActionBroadcastReceiver;
 import com.nasa.pic.customtab.CustomTabActivityHelper;
 import com.nasa.pic.customtab.CustomTabActivityHelper.ConnectionCallback;
 import com.nasa.pic.customtab.WebViewFallback;
@@ -102,11 +104,19 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			mBinding.playBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					PendingIntent pendingIntentFb = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this,
+							ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1, getIntent());
+					PendingIntent pendingIntentShare = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this,
+							ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2,  getIntent());
+
 					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(
 							ContextCompat.getColor(PhotoViewActivity.this, R.color.colorPrimary)).setShowTitle(true)
 							.setStartAnimations(PhotoViewActivity.this, android.R.anim.slide_in_left,
 									android.R.anim.slide_out_right).setExitAnimations(PhotoViewActivity.this,
-									android.R.anim.slide_in_left, android.R.anim.slide_out_right).build();
+									android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+							.addMenuItem( getString(R.string.action_share_fb), pendingIntentFb)
+							.addMenuItem( getString(R.string.action_share), pendingIntentShare)
+							.build();
 					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(),
 							getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback());
 					//					new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),

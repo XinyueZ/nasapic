@@ -90,4 +90,37 @@ public final class Utils {
 			});
 		}
 	}
+
+
+	public static void share(final Context cxt, final String title, final String description, final String url ) {
+		if (!TextUtils.isEmpty(url)) {
+			Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(url);
+			tinyUrlCall.enqueue(new Callback<Response>() {
+				@Override
+				public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
+					if (res.isSuccess()) {
+						Response response = res.body();
+						String text = App.Instance.getString(R.string.lbl_share_item_content, description,
+								TextUtils.isEmpty(response.getResult()) ? url : response.getResult(),
+								Prefs.getInstance().getAppDownloadInfo());
+
+						Intent intent = com.chopping.utils.Utils.getShareInformation(title, text);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						cxt.startActivity(intent);
+					} else {
+						onFailure(null, null);
+					}
+				}
+
+				@Override
+				public void onFailure(Call<Response> call, Throwable t) {
+					String text = App.Instance.getString(R.string.lbl_share_item_content, description, url,
+							Prefs.getInstance().getAppDownloadInfo());
+					Intent intent = com.chopping.utils.Utils.getShareInformation(title, text);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					cxt.startActivity(intent);
+				}
+			});
+		}
+	}
 }

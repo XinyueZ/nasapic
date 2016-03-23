@@ -44,7 +44,7 @@
     <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
 
 
-    <string name="action_share">Share</string>
+    <string name="action_share">More share</string>
     <string name="action_share_fb">Post on Facebook</string>
     <string name="action_about">About</string>
     <string name="action_more_photos">More photos</string>

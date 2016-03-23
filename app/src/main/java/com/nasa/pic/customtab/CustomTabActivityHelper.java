@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsClient;
@@ -149,5 +152,12 @@ public final class CustomTabActivityHelper implements ServiceConnectionCallback 
 	}
 
 
-
+	public static PendingIntent createPendingIntent(Context cxt, int actionSourceId, Intent more) {
+		Intent actionIntent = new Intent(
+				cxt, ActionBroadcastReceiver.class);
+		actionIntent.putExtra(ActionBroadcastReceiver.KEY_ACTION_SOURCE, actionSourceId);
+		actionIntent.putExtras(more);
+		return PendingIntent.getBroadcast(
+				cxt, actionSourceId, actionIntent, 0);
+	}
 }

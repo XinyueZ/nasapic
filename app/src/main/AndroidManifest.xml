@@ -87,6 +87,8 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
             </intent-filter>
         </service>
+
+        <receiver android:name=".customtab.ActionBroadcastReceiver" />
     </application>
 
 </manifest>

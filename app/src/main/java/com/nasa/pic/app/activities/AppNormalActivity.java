@@ -28,11 +28,11 @@ import static android.R.id.home;
 
 
 public abstract class AppNormalActivity extends BaseActivity {
-	protected static final String EXTRAS_TITLE = "com.nasa.pic.app.activities.PhotoViewActivity.title";
-	protected static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
-	protected static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
-	protected static final String EXTRAS_DATE = "com.nasa.pic.app.activities.PhotoViewActivity.datetime";
-	protected static final String EXTRAS_TYPE = "com.nasa.pic.app.activities.PhotoViewActivity.type";
+	public static final String EXTRAS_TITLE = "com.nasa.pic.app.activities.PhotoViewActivity.title";
+	public static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
+	public static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
+	public static final String EXTRAS_DATE = "com.nasa.pic.app.activities.PhotoViewActivity.datetime";
+	public static final String EXTRAS_TYPE = "com.nasa.pic.app.activities.PhotoViewActivity.type";
 
 
 	//[Begin for photo's info]
