@@ -77,13 +77,24 @@ public abstract class AppRestfulActivity extends RestfulActivity {
 	 */
 	public void onEvent(OpenPhotoEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
-		PhotoViewActivity.showInstance(this,
-				TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
-				photoDB.getDescription(),
-				TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
-						photoDB.getUrls().getHd(),
-				photoDB.getDate(),
-				photoDB.getType());
+		if (e.getThumbnail() != null) {
+			e.getThumbnail().setSource(photoDB.getUrls().getNormal());
+			PhotoViewActivity.showInstance(this,
+					TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
+					photoDB.getDescription(),
+					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :photoDB.getUrls().getHd(),
+					photoDB.getUrls().getNormal(),
+					photoDB.getDate(),
+					photoDB.getType(),
+					e.getThumbnail());
+		} else {
+			PhotoViewActivity.showInstance(this,
+					TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
+					photoDB.getDescription(),
+					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() : photoDB.getUrls().getHd(),
+					photoDB.getUrls().getNormal(),
+					photoDB.getDate(), photoDB.getType());
+		}
 	}
 
 	//------------------------------------------------

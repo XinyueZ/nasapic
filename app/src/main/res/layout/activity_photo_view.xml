@@ -50,6 +50,13 @@
                 android:background="@color/common_black">
 
                 <uk.co.senab.photoview.PhotoView
+                    android:id="@+id/thumbnail_img_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility='@{!TextUtils.equals(type, "image") ? View.GONE : View.VISIBLE }' />
+
+
+                <uk.co.senab.photoview.PhotoView
                     android:id="@+id/big_img_iv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

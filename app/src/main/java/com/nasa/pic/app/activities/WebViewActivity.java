@@ -56,6 +56,7 @@ public final class WebViewActivity extends AppNormalActivity {
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 
 		initPull2Load(mBinding.contentSrl);
+		mBinding.contentSrl.setRefreshing(true);
 		mBinding.contentSrl.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {

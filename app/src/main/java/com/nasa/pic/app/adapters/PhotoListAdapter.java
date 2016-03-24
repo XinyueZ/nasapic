@@ -15,12 +15,14 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.nasa.pic.BR;
 import com.nasa.pic.R;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
+import com.nasa.pic.transaction.Thumbnail;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
 import de.greenrobot.event.EventBus;
@@ -151,21 +153,35 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		}
 	}
 
-	public static final class ListItemHandlers  {
+	public static final class ListItemHandlers {
 		private ViewHolder mViewHolder;
-		private PhotoListAdapter   mAdapter;
+		private PhotoListAdapter mAdapter;
 
 		public ListItemHandlers(ViewHolder viewHolder, PhotoListAdapter adapter) {
 			mViewHolder = viewHolder;
 			mAdapter = adapter;
 		}
 
-		public void onOpenPhoto( View view ) {
+		public void onOpenPhoto(View view) {
 			int pos = mViewHolder.getAdapterPosition();
-			if( pos != RecyclerView.NO_POSITION ) {
-				EventBus.getDefault()
-						.post( new OpenPhotoEvent((RealmObject) mAdapter.getData().get( pos ))
-						 );
+			if (pos != RecyclerView.NO_POSITION) {
+
+				try {
+					ImageView imageView = (ImageView) view.findViewById(R.id.thumbnail_iv);
+					// Interesting data to pass across are the thumbnail size/location, the
+					// resourceId of the source bitmap, the picture description, and the
+					// orientation (to avoid returning back to an obsolete configuration if
+					// the device rotates again in the meantime)
+					int[] screenLocation = new int[2];
+					imageView.getLocationOnScreen(screenLocation);
+					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], imageView.getWidth(),
+							imageView.getHeight());
+					EventBus.getDefault().post(
+							new OpenPhotoEvent((RealmObject) mAdapter.getData().get(pos), thumbnail));
+				} catch (NullPointerException e) {
+					EventBus.getDefault().post(new OpenPhotoEvent((RealmObject) mAdapter.getData().get(pos), null));
+
+				}
 			}
 		}
 	}

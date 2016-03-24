@@ -31,6 +31,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 	public static final String EXTRAS_TITLE = "com.nasa.pic.app.activities.PhotoViewActivity.title";
 	public static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
 	public static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
+	public static final String EXTRAS_URL_TO_PHOTO_FALLBACK = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo.fallback";
 	public static final String EXTRAS_DATE = "com.nasa.pic.app.activities.PhotoViewActivity.datetime";
 	public static final String EXTRAS_TYPE = "com.nasa.pic.app.activities.PhotoViewActivity.type";
 
@@ -40,6 +41,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 	private String mTitle;
 	private Date mDatetime;
 	private String mUrl2Photo;
+	private String mUrl2PhotoFallback;
 	private String mDescription;
 	//[End]
 
@@ -56,6 +58,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 		outState.putSerializable(EXTRAS_TITLE, mTitle);
 		outState.putSerializable(EXTRAS_DATE, mDatetime);
 		outState.putString(EXTRAS_URL_TO_PHOTO, mUrl2Photo);
+		outState.putString(EXTRAS_URL_TO_PHOTO_FALLBACK, mUrl2PhotoFallback);
 		outState.putString(EXTRAS_DESCRIPTION, mDescription);
 	}
 
@@ -66,7 +69,6 @@ public abstract class AppNormalActivity extends BaseActivity {
 				R.color.c_refresh_4);
 		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
 		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
-		swipeRefreshLayout.setRefreshing(true);
 	}
 
 
@@ -124,6 +126,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 			setType(savedInstanceState.getString(EXTRAS_TYPE));
 			setPhotoTitle(savedInstanceState.getString(EXTRAS_TITLE));
 			setUrl2Photo(savedInstanceState.getString(EXTRAS_URL_TO_PHOTO));
+			setUrl2PhotoFallback(savedInstanceState.getString(EXTRAS_URL_TO_PHOTO_FALLBACK));
 			setDescription(savedInstanceState.getString(EXTRAS_DESCRIPTION));
 			setDatetime((Date) savedInstanceState.getSerializable(EXTRAS_DATE));
 		} else {
@@ -131,6 +134,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 			setType(intent.getStringExtra(EXTRAS_TYPE));
 			setPhotoTitle(intent.getStringExtra(EXTRAS_TITLE));
 			setUrl2Photo(intent.getStringExtra(EXTRAS_URL_TO_PHOTO));
+			setUrl2PhotoFallback(intent.getStringExtra(EXTRAS_URL_TO_PHOTO_FALLBACK));
 			setDescription(intent.getStringExtra(EXTRAS_DESCRIPTION));
 			setDatetime((Date) intent.getSerializableExtra(EXTRAS_DATE));
 		}
@@ -176,6 +180,14 @@ public abstract class AppNormalActivity extends BaseActivity {
 
 	private void setUrl2Photo(String url2Photo) {
 		mUrl2Photo = url2Photo;
+	}
+
+	public String getUrl2PhotoFallback() {
+		return mUrl2PhotoFallback;
+	}
+
+	public void setUrl2PhotoFallback(String url2PhotoFallback) {
+		mUrl2PhotoFallback = url2PhotoFallback;
 	}
 
 	protected String getDescription() {

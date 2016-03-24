@@ -48,6 +48,7 @@
                 android:background="@color/common_black">
 
                 <ImageView
+                    android:id="@+id/thumbnail_iv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
