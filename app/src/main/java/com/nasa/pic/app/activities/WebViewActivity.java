@@ -8,7 +8,6 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -65,11 +64,8 @@ public final class WebViewActivity extends AppNormalActivity {
 		});
 
 		//Actionbar and navi-drawer.
-		setSupportActionBar(mBinding.toolbar);
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDefaultDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(getIntent().getStringExtra(EXTRAS_TITLE));
+		mBinding.toolbar.setTitle(getIntent().getStringExtra(EXTRAS_TITLE));
+		initMenu(mBinding.toolbar);
 
 
 		WebSettings settings = mBinding.webView.getSettings();

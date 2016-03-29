@@ -1,46 +1,37 @@
 <resources>
 
-    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:windowBackground">@color/grey_500</item>
-        <!-- android:textColorPrimary is the  color of the title text in the Toolbar, in the Theme.AppCompat theme:  -->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/common_black_trans</item>
         <item name="android:textColorPrimary">@color/common_white</item>
-        <!-- android:textColorPrimaryInverse is the  color of the title    text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
         <item name="android:textColorPrimaryInverse">@color/common_white</item>
-        <item name="android:colorAccent">@color/common_white</item>
-        <item name="android:actionModeBackground">@color/colorPrimary</item>
-        <!-- android:textColorSecondary is the color of the menu overflow icon (three vertical dots) -->
         <item name="android:textColorSecondary">@color/common_white</item>
-        <item name="android:actionMenuTextColor">@color/colorPrimary</item>
-        <item name="android:dropDownListViewStyle">@style/OverflowDropDown</item>
-
-        <!--##########Support library compatibility##########-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/common_white</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
-        <!--
-            android:actionMenuTextColor is the color of the text of
-            action (menu) items in the Toolbar,
-            at least in the  Theme.AppCompat theme.
-            For some reason, they already get the textColorPrimary
-            when running on API 21, but not on older versions of
-            Android, so this is only necessary to support older
-            Android versions.
-        -->
         <item name="actionMenuTextColor">@color/colorPrimary</item>
         <item name="dropDownListViewStyle">@style/OverflowDropDown</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme" />
 
-    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme" parent="AppTheme.Base" />
 
-    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Transparent" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/common_transparent</item>
+        <item name="colorPrimaryDark">@color/common_transparent</item>
+    </style>
 
 
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:elevation">10dp</item>
+        <item name="elevation">10dp</item>
+    </style>
 
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:elevation">10dp</item>
+        <item name="elevation">10dp</item>
+    </style>
 
 
     <style name="OverflowDropDown" parent="@style/Widget.AppCompat.ListView.DropDown">
@@ -48,13 +39,12 @@
     </style>
 
 
-
     <style name="PhotoCardView">
-
+        <item name="cardBackgroundColor">@color/grey_500</item>
         <item name="contentPadding">0dp</item>
-        <item name="cardElevation">2dp</item>
-        <item name="cardMaxElevation">2dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardMaxElevation">0dp</item>
         <item name="cardUseCompatPadding">true</item>
-        <item name="cardCornerRadius">1dp</item>
+        <item name="cardCornerRadius">0dp</item>
     </style>
 </resources>

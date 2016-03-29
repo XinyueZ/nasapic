@@ -8,7 +8,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -71,14 +70,8 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 	protected void initDataBinding() {
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
-		setSupportActionBar(mBinding.toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(R.string.lbl_more_photos);
-
-
 		initPull2Load(mBinding.contentSrl);
 	}
-
 
 
 	@Override
@@ -92,7 +85,7 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 	protected void buildViews() {
 		if (isDataLoaded()) {
 			if (mBinding.getAdapter() == null) {
-				mBinding.setAdapter(new PhotoListAdapter());
+				mBinding.setAdapter(new PhotoListAdapter(getCellSize()));
 			}
 			if (mBinding.getAdapter().getData() == null) {
 				mBinding.getAdapter().setData(getData());
@@ -102,8 +95,6 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 
 		mBinding.contentSrl.setRefreshing(false);
 	}
-
-
 
 
 	@Override
@@ -126,19 +117,6 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		mBinding.fab.hide();
-		mBinding.fab.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PhotoDB photoMin = (PhotoDB) getData().get(getData().size() - 1);
-				App.Instance.getFireManager().selectFrom(new Photo().newFromDB(photoMin));
-				mBinding.contentSrl.setRefreshing(true);
-				if (mBinding.fab.isShown()) {
-					mBinding.fab.hide();
-				}
-			}
-		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -163,16 +141,41 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 		});
 	}
 
+
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// Respond to the action bar's Up/Home button
-		case android.R.id.home:
-			ActivityCompat.finishAfterTransition(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+	protected void initNavi() {
+		mBinding.toolbar.setNavigationIcon(R.drawable.ic_back_home);
+		mBinding.toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ActivityCompat.finishAfterTransition(MorePhotosActivity.this);
+			}
+		});
 	}
 
+	@Override
+	protected void initFab() {
+		mBinding.fab.hide();
+		mBinding.fab.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				PhotoDB photoMin = (PhotoDB) getData().get(getData().size() - 1);
+				App.Instance.getFireManager().selectFrom(new Photo().newFromDB(photoMin));
+				mBinding.contentSrl.setRefreshing(true);
+				if (mBinding.fab.isShown()) {
+					mBinding.fab.hide();
+				}
+			}
+		});
+	}
 
+	@Override
+	protected void initMenu() {
+		mBinding.toolbar.setTitle(R.string.lbl_more_photos);
+	}
+
+	@Override
+	protected int getMenuRes() {
+		return -1;
+	}
 }

@@ -2,6 +2,7 @@ package com.nasa.pic.app.adapters;
 
 import android.databinding.BindingAdapter;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.chopping.utils.Utils;
@@ -10,6 +11,16 @@ import com.nasa.pic.ds.PhotoUrlDB;
 import com.squareup.picasso.Picasso;
 
 public final class AdapterBinder {
+
+
+	@SuppressWarnings("unchecked")
+	@BindingAdapter("cardSize")
+	public static void setCellSize( View view, int size ) {
+		view.getLayoutParams().width = size;
+		view.getLayoutParams().height = size;
+	}
+
+
 
 
 	@SuppressWarnings("unchecked")

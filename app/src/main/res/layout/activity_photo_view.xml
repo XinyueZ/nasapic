@@ -19,10 +19,32 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@id/error_content"
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/common_black"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <uk.co.senab.photoview.PhotoView
+                android:id="@+id/big_img_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:visibility='@{!TextUtils.equals(type, "image") ? View.GONE : View.VISIBLE }' />
+
+            <ImageButton
+                android:id="@+id/play_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/common_transparent"
+                android:visibility='@{!TextUtils.equals(type, "image") ? View.VISIBLE: View.GONE}'
+                app:srcCompat="@drawable/ic_play" />
+        </FrameLayout>
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -34,44 +56,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/common_transparent"
                 app:popupTheme="@style/PopupOverlay" />
 
         </android.support.design.widget.AppBarLayout>
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/content_srl"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/common_black">
-
-                <uk.co.senab.photoview.PhotoView
-                    android:id="@+id/thumbnail_img_iv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility='@{!TextUtils.equals(type, "image") ? View.GONE : View.VISIBLE }' />
-
-
-                <uk.co.senab.photoview.PhotoView
-                    android:id="@+id/big_img_iv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility='@{!TextUtils.equals(type, "image") ? View.GONE : View.VISIBLE }' />
-
-                <ImageButton
-                    android:id="@+id/play_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/common_transparent"
-                    android:visibility='@{!TextUtils.equals(type, "image") ? View.VISIBLE: View.GONE}'
-                    app:srcCompat="@drawable/ic_play" />
-            </FrameLayout>
-        </android.support.v4.widget.SwipeRefreshLayout>
 
         <FrameLayout
             android:id="@+id/bottom_sheet"
@@ -128,4 +115,6 @@
         </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>
+
+
 </layout>

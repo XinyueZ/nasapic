@@ -10,65 +10,65 @@
 
     <application
         android:name=".app.App"
-        tools:replace="android:label"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        tools:replace="android:label">
 
-        <!-- This meta-data tag is required to use Google Play Services. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <!-- This meta-data tag is required to use Google Play Services. --><meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
 
 
         <activity
-            android:name=".app.activities.MainActivity" />
+            android:name=".app.activities.MainActivity"
+            android:theme="@style/AppTheme" />
 
 
         <activity
-            android:name=".app.activities.MorePhotosActivity" />
-
-
-
-        <activity
-            android:name=".app.activities.PhotoViewActivity"  />
+            android:name=".app.activities.MorePhotosActivity"
+            android:theme="@style/AppTheme" />
 
 
         <activity
-            android:name=".app.activities.WebViewActivity"  />
+            android:name=".app.activities.PhotoViewActivity"
+            android:theme="@style/Transparent" />
 
+
+        <activity
+            android:name=".app.activities.WebViewActivity"
+            android:theme="@style/AppTheme" />
 
 
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
+            android:excludeFromRecents="true"
             android:noHistory="true"
-            android:excludeFromRecents="true" />
-
+            android:theme="@style/AppTheme" />
 
 
         <activity
-            android:name=".app.activities.SplashActivity" >
+            android:name=".app.activities.SplashActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0bf5835ac1569fe382ff64839c0be3d3ed9396b9" />
-
 
 
         <!-- Event handler for changing system packages, for external links -->
         <receiver
             android:name="com.chopping.application.InstalledAppReceiver"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
@@ -80,7 +80,7 @@
 
         <receiver
             android:name=".app.noactivities.BootReceiver"
-            android:enabled="true" >
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -89,11 +89,11 @@
 
         <service
             android:name=".app.noactivities.AppGuardService"
+            android:enabled="true"
             android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:enabled="true"  >
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
 

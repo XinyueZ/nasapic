@@ -17,7 +17,7 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.os.AsyncTaskCompat;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -103,14 +103,11 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
 
-		setSupportActionBar(mBinding.toolbar);
-		getSupportActionBar().setTitle(getPhotoTitle());
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		mBinding.toolbar.setTitle(getPhotoTitle());
+		initMenu(mBinding.toolbar);
 
 		mBinding.bigImgIv.setOnPhotoTapListener(this);
 		mBinding.bigImgIv.setZoomable(true);
-		mBinding.thumbnailImgIv.setOnPhotoTapListener(this);
-		mBinding.thumbnailImgIv.setZoomable(true);
 
 		mBinding.descriptionTv.setText(getDescription());
 		mBinding.descriptionTv.setTextColor(Color.WHITE);
@@ -119,13 +116,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
 		mBinding.setType(getType());
 
-		initPull2Load(mBinding.contentSrl);
-		mBinding.contentSrl.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				loadImage();
-			}
-		});
 
 		loadImageWithTransaction(savedInstanceState);
 
@@ -147,8 +137,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 									getString(R.string.action_share), pendingIntentShare).build();
 					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(),
 							getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback());
-					//					new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
-					//														getDescription(), getUrl2Photo(), getDatetime(), getType());
+//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
+//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
 			});
 		}
@@ -177,12 +167,14 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 						mBinding.bigImgIv.getViewTreeObserver().removeOnPreDrawListener(this);
 						mTransaction = new Transaction.Builder().setThumbnail((Thumbnail) object).setTarget(
-								mBinding.thumbnailImgIv).build(PhotoViewActivity.this);
+								mBinding.bigImgIv).build(PhotoViewActivity.this);
 						mTransaction.enterAnimation(new AnimatorListenerAdapter() {
 							@Override
 							public void onAnimationEnd(Animator animation) {
 								super.onAnimationEnd(animation);
-								loadImage();
+								loadImage(getUrl2PhotoFallback());
+								//Important to set background from transparent to black.
+								mBinding.errorContent.setBackgroundResource(R.color.common_black);
 							}
 						});
 
@@ -190,10 +182,10 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 					}
 				});
 			} else {
-				loadImage();
+				loadImage(getUrl2PhotoFallback());
 			}
 		} else {
-			loadImage();
+			loadImage(getUrl2PhotoFallback());
 		}
 	}
 
@@ -201,47 +193,41 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	/**
 	 * Show remote image.
 	 */
-	private void loadImage() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Bitmap>() {
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				if (mTransaction == null) {
-					mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
+	private void loadImage(final String path) {
+		if(TextUtils.equals("image", getType())) {
+			//Only shows for image.
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Bitmap>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					if (mTransaction == null) {
+						mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
+					}
 				}
-			}
 
-			@Override
-			protected Bitmap doInBackground(Object... params) {
-				try {
-					return Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2Photo()).toASCIIString()).get();
-				} catch (OutOfMemoryError | IOException e) {
+				@Override
+				protected Bitmap doInBackground(Object... params) {
 					try {
-						return Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2PhotoFallback()).toASCIIString())
-								.get();
+						return Picasso.with(App.Instance).load(Utils.uriStr2URI(path).toASCIIString()).get();
 					} catch (IOException e1) {
 						return null;
 					}
 				}
-			}
 
-			@Override
-			protected void onPostExecute(Bitmap bitmap) {
-				super.onPostExecute(bitmap);
-				if (bitmap != null) {
-					mBinding.bigImgIv.setImageBitmap(bitmap);
-					mBinding.thumbnailImgIv.setVisibility(View.GONE);
+				@Override
+				protected void onPostExecute(Bitmap bitmap) {
+					super.onPostExecute(bitmap);
+					if (bitmap != null) {
+						mBinding.bigImgIv.setImageBitmap(bitmap);
+					}
 				}
-				mBinding.contentSrl.setRefreshing(false);
-			}
-		});
+			});
+		}
 	}
 
 	@Override
 	public void onBackPressed() {
 		if (mTransaction != null) {
-			mBinding.bigImgIv.setVisibility(View.GONE);
-			mBinding.thumbnailImgIv.setVisibility(View.VISIBLE);
 			mTransaction.exitAnimation(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
@@ -300,5 +286,14 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		mBinding.playBtn.setEnabled(false);
 	}
 
-
+	@Override
+	protected void initMenu(Toolbar toolbar) {
+		super.initMenu(toolbar);
+		mBinding.toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+	}
 }

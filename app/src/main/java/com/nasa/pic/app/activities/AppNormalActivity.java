@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
@@ -27,7 +31,7 @@ import retrofit2.Callback;
 import static android.R.id.home;
 
 
-public abstract class AppNormalActivity extends BaseActivity {
+public abstract class AppNormalActivity extends BaseActivity implements OnMenuItemClickListener  {
 	public static final String EXTRAS_TITLE = "com.nasa.pic.app.activities.PhotoViewActivity.title";
 	public static final String EXTRAS_DESCRIPTION = "com.nasa.pic.app.activities.PhotoViewActivity.description";
 	public static final String EXTRAS_URL_TO_PHOTO = "com.nasa.pic.app.activities.PhotoViewActivity.url2photo";
@@ -72,8 +76,40 @@ public abstract class AppNormalActivity extends BaseActivity {
 	}
 
 
+	protected void initMenu(final Toolbar toolbar) {
+		toolbar.inflateMenu(getMenuRes());
+		Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(mUrl2Photo);
+		tinyUrlCall.enqueue(new Callback<Response>() {
+			@Override
+			public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
+				if (res.isSuccess()) {
+					Response response = res.body();
+					mSharedUrl = !TextUtils.isEmpty(response.getResult()) ? response.getResult() : mUrl2Photo;
+					buildNormalShareMenu(toolbar.getMenu());
+				} else {
+					onFailure(null, null);
+				}
+			}
+
+			@Override
+			public void onFailure(Call<Response> call, Throwable t) {
+				mSharedUrl = mUrl2Photo;
+				buildNormalShareMenu(toolbar.getMenu());
+			}
+		});
+		toolbar.setOnMenuItemClickListener(this);
+		toolbar.setNavigationIcon(R.drawable.ic_back_home);
+		toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ActivityCompat.finishAfterTransition(AppNormalActivity.this);
+			}
+		});
+	}
+
+
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onMenuItemClick(MenuItem item) {
 		switch (item.getItemId()) {
 		case home:
 			ActivityCompat.finishAfterTransition(this);
@@ -82,7 +118,7 @@ public abstract class AppNormalActivity extends BaseActivity {
 			com.nasa.pic.utils.Utils.facebookShare(this, mTitle, mDescription, mUrl2Photo);
 			break;
 		}
-		return super.onOptionsItemSelected(item);
+		return true;
 	}
 
 
@@ -92,30 +128,6 @@ public abstract class AppNormalActivity extends BaseActivity {
 	}
 
 
-	@Override
-	public boolean onCreateOptionsMenu(final Menu menu) {
-		getMenuInflater().inflate(getMenuRes(), menu);
-		Call<Response> tinyUrlCall = Api.Retrofit.create(TinyUrl.class).getTinyUrl(mUrl2Photo);
-		tinyUrlCall.enqueue(new Callback<Response>() {
-			@Override
-			public void onResponse(Call<Response> call, retrofit2.Response<Response> res) {
-				if (res.isSuccess()) {
-					Response response = res.body();
-					mSharedUrl = !TextUtils.isEmpty(response.getResult()) ? response.getResult() : mUrl2Photo;
-					buildFbShareMenu(menu);
-				} else {
-					onFailure(null, null);
-				}
-			}
-
-			@Override
-			public void onFailure(Call<Response> call, Throwable t) {
-				mSharedUrl = mUrl2Photo;
-				buildFbShareMenu(menu);
-			}
-		});
-		return true;
-	}
 
 	protected abstract int getMenuRes();
 
@@ -140,7 +152,8 @@ public abstract class AppNormalActivity extends BaseActivity {
 		}
 	}
 
-	private void buildFbShareMenu(Menu menu) {
+
+	private void buildNormalShareMenu(Menu menu) {
 		MenuItem menuShare = menu.findItem(R.id.action_share_photo);
 		menuShare.setVisible(true);
 		android.support.v7.widget.ShareActionProvider provider =
@@ -197,4 +210,6 @@ public abstract class AppNormalActivity extends BaseActivity {
 	private void setDescription(String description) {
 		mDescription = description;
 	}
+
+
 }

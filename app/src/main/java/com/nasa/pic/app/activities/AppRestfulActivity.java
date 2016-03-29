@@ -3,6 +3,7 @@ package com.nasa.pic.app.activities;
 import java.math.BigDecimal;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.text.TextUtils;
+import android.view.MenuItem;
 
 import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
@@ -21,6 +24,7 @@ import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareEvent;
@@ -31,8 +35,8 @@ import com.nasa.pic.utils.Prefs;
 import io.realm.RealmObject;
 
 
-public abstract class AppRestfulActivity extends RestfulActivity {
-
+public abstract class AppRestfulActivity extends RestfulActivity implements OnMenuItemClickListener {
+	private int mCellSize;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -79,25 +83,42 @@ public abstract class AppRestfulActivity extends RestfulActivity {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
 		if (e.getThumbnail() != null) {
 			e.getThumbnail().setSource(photoDB.getUrls().getNormal());
-			PhotoViewActivity.showInstance(this,
-					TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
+			PhotoViewActivity.showInstance(this, TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
 					photoDB.getDescription(),
-					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :photoDB.getUrls().getHd(),
-					photoDB.getUrls().getNormal(),
-					photoDB.getDate(),
-					photoDB.getType(),
-					e.getThumbnail());
+					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
+							photoDB.getUrls().getHd(), photoDB.getUrls().getNormal(), photoDB.getDate(),
+					photoDB.getType(), e.getThumbnail());
 		} else {
-			PhotoViewActivity.showInstance(this,
-					TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
+			PhotoViewActivity.showInstance(this, TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
 					photoDB.getDescription(),
-					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() : photoDB.getUrls().getHd(),
-					photoDB.getUrls().getNormal(),
-					photoDB.getDate(), photoDB.getType());
+					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
+							photoDB.getUrls().getHd(), photoDB.getUrls().getNormal(), photoDB.getDate(),
+					photoDB.getType());
 		}
 	}
 
 	//------------------------------------------------
+
+	protected abstract int getMenuRes();
+
+
+	protected abstract void initNavi();
+
+	protected abstract void initFab();
+
+	protected abstract void initMenu();
+
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			ActivityCompat.finishAfterTransition(this);
+		case R.id.action_about:
+			showDialogFragment(AboutDialogFragment.newInstance(this), null);
+			break;
+		}
+		return true;
+	}
 
 
 	protected void buildListView(Context cxt, RecyclerView recyclerView) {
@@ -110,6 +131,8 @@ public abstract class AppRestfulActivity extends RestfulActivity {
 		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
 		LL.d("CardCount: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
+		mCellSize = (int) (screenSize.Width / div);
+		LL.d("CardSize: " + mCellSize);
 	}
 
 	@Override
@@ -169,4 +192,17 @@ public abstract class AppRestfulActivity extends RestfulActivity {
 		return Prefs.getInstance();
 	}
 
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		initMenu();
+		initFab();
+		initNavi();
+	}
+
+
+	protected int getCellSize() {
+		return mCellSize;
+	}
 }

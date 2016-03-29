@@ -9,22 +9,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
-import android.view.Menu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,7 +33,6 @@ import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
-import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
@@ -48,7 +47,8 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class MainActivity extends AppRestfulActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+public class MainActivity extends AppRestfulActivity implements OnNavigationItemSelectedListener {
 	/**
 	 * The menu to this view.
 	 */
@@ -113,53 +113,13 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(MENU, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		switch (id) {
-		case R.id.action_about:
-			showDialogFragment(AboutDialogFragment.newInstance(this), null);
-			break;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem menuShare = menu.findItem(R.id.action_share);
-		android.support.v7.widget.ShareActionProvider provider =
-				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
-
-		String subject = getString(R.string.lbl_share_app_title);
-		String text = getString(R.string.lbl_share_app_content, getString(R.string.application_name),
-				Prefs.getInstance().getAppDownloadInfo());
-
-		provider.setShareIntent(com.chopping.utils.Utils.getDefaultShareIntent(provider, subject, text));
-
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	@SuppressWarnings("StatementWithEmptyBody")
-	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
 
 		switch (id) {
 		case R.id.action_more_photos:
-			MorePhotosActivity.showInstance(this);
+			MorePhotosActivity.showInstance(MainActivity.this);
 			break;
 		case R.id.action_app_list:
 			BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
@@ -237,7 +197,7 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 	protected void buildViews() {
 		if (isDataLoaded()) {
 			if (mBinding.getAdapter() == null) {
-				mBinding.setAdapter(new PhotoListAdapter());
+				mBinding.setAdapter(new PhotoListAdapter(getCellSize()));
 			}
 			if (mBinding.getAdapter().getData() == null) {
 				mBinding.getAdapter().setData(getData());
@@ -257,6 +217,12 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 		mBinding.contentSrl.setRefreshing(false);
 	}
 
+
+	@Override
+	protected void onRestApiFail() {
+		mBinding.contentSrl.setRefreshing(false);
+	}
+
 	private void loadPhotoList(int year, int month, String timeZone) {
 		RequestPhotoList requestPhotoList = new RequestPhotoList();
 		requestPhotoList.setReqId(UUID.randomUUID().toString());
@@ -272,36 +238,52 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 	protected void initDataBinding() {
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
-		setSupportActionBar(mBinding.toolbar);
 
 		//Pull-2-load indicator
 		initPull2Load(mBinding.contentSrl);
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 
-		//FAB
+
+	protected void initNavi() {
+		mBinding.toolbar.setTitle(R.string.application_name);
+		mBinding.toolbar.setNavigationIcon(R.drawable.ic_hamburg);
+		mBinding.toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mBinding.drawerLayout.openDrawer(Gravity.LEFT);
+			}
+		});
+		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+		navigationView.setNavigationItemSelectedListener(this);
+	}
+
+	protected void initFab() {
 		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
+		fab.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null)
 						.show();
 			}
 		});
-
-		//Navi-drawer
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, mBinding.toolbar,
-				R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-		drawer.addDrawerListener(toggle);
-		toggle.syncState();
-		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-		navigationView.setNavigationItemSelectedListener(this);
 	}
 
+	protected void initMenu( ) {
+		mBinding.toolbar.inflateMenu(getMenuRes());
+		mBinding.toolbar.setOnMenuItemClickListener(this);
+
+		MenuItem menuShare = mBinding.toolbar.getMenu().findItem(R.id.action_share);
+		android.support.v7.widget.ShareActionProvider provider =
+				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+
+		String subject = getString(R.string.lbl_share_app_title);
+		String text = getString(R.string.lbl_share_app_content, getString(R.string.application_name),
+				Prefs.getInstance().getAppDownloadInfo());
+
+		provider.setShareIntent(com.chopping.utils.Utils.getDefaultShareIntent(provider, subject, text));
+
+	}
 
 
 	/**
@@ -339,7 +321,6 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 	}
 
 
-
 	@Override
 	protected void onAppConfigLoaded() {
 		super.onAppConfigLoaded();
@@ -349,5 +330,10 @@ public class MainActivity extends AppRestfulActivity implements NavigationView.O
 	private void onConfigFinished() {
 		checkPlayService();
 		showAppList();
+	}
+
+	@Override
+	protected int getMenuRes() {
+		return MENU;
 	}
 }

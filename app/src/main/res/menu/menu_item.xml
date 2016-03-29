@@ -6,11 +6,11 @@
         android:id="@+id/action_fb_share_item"
         android:title="@string/action_share_fb"
         android:icon="@drawable/ic_share_fb_item"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_share_item"
         android:title="@string/action_share"
         android:icon="@drawable/ic_share_item"
-        app:showAsAction="always"
+        app:showAsAction="never"
         app:actionProviderClass="com.nasa.pic.utils.DynamicShareActionProvider" />
 </menu>

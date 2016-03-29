@@ -45,6 +45,12 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	 */
 	private List<T> mVisibleData;
 
+	private int mCellSize;
+
+	public PhotoListAdapter(int cellSize) {
+		mCellSize = cellSize;
+	}
+
 	/**
 	 * Get current used data-source.
 	 *
@@ -114,6 +120,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		holder.mBinding.setVariable(BR.photoDB, entry);
 		holder.mBinding.setVariable(BR.handler, new ListItemHandlers(holder, this));
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
+		holder.mBinding.setVariable(BR.cardSize, mCellSize);
 
 		MenuItem fbShareMi = holder.mToolbar.getMenu().findItem(R.id.action_fb_share_item);
 		fbShareMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
