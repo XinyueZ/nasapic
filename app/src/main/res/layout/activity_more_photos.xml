@@ -15,8 +15,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
 
@@ -35,9 +34,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/responses_rv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
+                style="@style/RecyclerViewStyle"
                 app:listAdapter="@{adapter}" />
         </android.support.v4.widget.SwipeRefreshLayout>
 

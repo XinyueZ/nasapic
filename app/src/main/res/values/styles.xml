@@ -24,13 +24,13 @@
 
 
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:elevation">10dp</item>
-        <item name="elevation">10dp</item>
+        <item name="android:elevation">@dimen/ab_elevation</item>
+        <item name="elevation">@dimen/ab_elevation</item>
     </style>
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:elevation">10dp</item>
-        <item name="elevation">10dp</item>
+        <item name="android:elevation">@dimen/ab_elevation</item>
+        <item name="elevation">@dimen/ab_elevation</item>
     </style>
 
 
@@ -52,16 +52,23 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:theme">@style/AppBarOverlay</item>
-        <item name="android:background">@color/common_transparent</item>
+        <item name="android:background">@color/common_black_trans</item>
     </style>
 
     <style name="ActionBarStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/common_black_trans</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="popupTheme">@style/PopupOverlay</item>
         <item name="elevation">@dimen/ab_elevation</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="RecyclerViewStyle">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 </resources>
