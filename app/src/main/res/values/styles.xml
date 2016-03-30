@@ -45,7 +45,7 @@
         <item name="cardElevation">0dp</item>
         <item name="cardMaxElevation">0dp</item>
         <item name="cardUseCompatPadding">true</item>
-        <item name="cardCornerRadius">0dp</item>
+        <item name="cardCornerRadius">1dp</item>
     </style>
 
     <style name="AppBarStyle">
@@ -61,7 +61,7 @@
         <item name="android:background">@color/common_black_trans</item>
         <item name="popupTheme">@style/PopupOverlay</item>
         <item name="elevation">@dimen/ab_elevation</item>
-        <item name="layout_scrollFlags">scroll|enterAlways</item>
+        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
