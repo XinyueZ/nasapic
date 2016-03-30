@@ -58,7 +58,6 @@
     <style name="ActionBarStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/common_black_trans</item>
         <item name="popupTheme">@style/PopupOverlay</item>
         <item name="elevation">@dimen/ab_elevation</item>
         <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
