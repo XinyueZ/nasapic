@@ -174,8 +174,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 							public void onAnimationEnd(Animator animation) {
 								super.onAnimationEnd(animation);
 								loadImage(getUrl2PhotoFallback());
-								//Important to set background from transparent to black.
-								mBinding.errorContent.setBackgroundResource(R.color.common_black);
 							}
 						});
 
@@ -221,6 +219,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 					if (bitmap != null) {
 						mBinding.bigImgIv.setImageBitmap(bitmap);
 					}
+
+					//Important to set background from transparent to black.
+					mBinding.errorContent.setBackgroundResource(R.color.common_black);
 				}
 			});
 		}

@@ -20,7 +20,16 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@id/error_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/ActionBarStyle" />
+
+        </android.support.design.widget.AppBarLayout>
 
 
         <FrameLayout
@@ -44,13 +53,7 @@
                 app:srcCompat="@drawable/ic_play" />
         </FrameLayout>
 
-        <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                style="@style/ActionBarStyle" />
-
-        </android.support.design.widget.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/bottom_sheet"
