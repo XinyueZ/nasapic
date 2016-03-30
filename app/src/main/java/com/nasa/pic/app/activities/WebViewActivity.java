@@ -98,7 +98,6 @@ public final class WebViewActivity extends AppNormalActivity {
 	}
 
 
-
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
@@ -121,7 +120,7 @@ public final class WebViewActivity extends AppNormalActivity {
 
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onMenuItemClick(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_forward:
 			if (mBinding.webView.canGoForward()) {
@@ -134,7 +133,7 @@ public final class WebViewActivity extends AppNormalActivity {
 			}
 			break;
 		}
-		return super.onOptionsItemSelected(item);
+		return super.onMenuItemClick(item);
 	}
 
 	@Override

@@ -129,7 +129,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 							PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2, getIntent());
 
 					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(
-							ContextCompat.getColor(PhotoViewActivity.this, R.color.colorPrimary)).setShowTitle(true)
+							ContextCompat.getColor(PhotoViewActivity.this, R.color.common_black)).setShowTitle(true)
 							.setStartAnimations(PhotoViewActivity.this, android.R.anim.slide_in_left,
 									android.R.anim.slide_out_right).setExitAnimations(PhotoViewActivity.this,
 									android.R.anim.slide_in_left, android.R.anim.slide_out_right).addMenuItem(
@@ -141,6 +141,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 //																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
 			});
+			mBinding.errorContent.setBackgroundResource(R.color.common_black);
 		}
 	}
 

@@ -6,8 +6,8 @@
         <item name="android:textColorPrimaryInverse">@color/common_white</item>
         <item name="android:textColorSecondary">@color/common_white</item>
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/common_white</item>
+        <item name="colorPrimaryDark">@color/common_black</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
         <item name="actionMenuTextColor">@color/colorPrimary</item>
         <item name="dropDownListViewStyle">@style/OverflowDropDown</item>
@@ -46,5 +46,22 @@
         <item name="cardMaxElevation">0dp</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="cardCornerRadius">0dp</item>
+    </style>
+
+    <style name="AppBarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:theme">@style/AppBarOverlay</item>
+        <item name="android:background">@color/common_transparent</item>
+    </style>
+
+    <style name="ActionBarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@color/common_transparent</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="popupTheme">@style/PopupOverlay</item>
+        <item name="elevation">@dimen/ab_elevation</item>
+        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
     </style>
 </resources>
