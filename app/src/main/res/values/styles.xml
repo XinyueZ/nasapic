@@ -61,7 +61,7 @@
         <item name="android:background">@color/common_black_trans</item>
         <item name="popupTheme">@style/PopupOverlay</item>
         <item name="elevation">@dimen/ab_elevation</item>
-        <item name="layout_scrollFlags">scroll|enterAlways|snap</item>
+        <item name="layout_scrollFlags">scroll|enterAlways</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
