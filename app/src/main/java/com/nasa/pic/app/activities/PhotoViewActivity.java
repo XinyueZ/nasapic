@@ -14,15 +14,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
@@ -81,8 +85,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	}
 
 
-	public static void showInstance(Context cxt, String title, String description, String urlToPhoto,String urlToPhotoFallback,  Date datetime,
-			String type) {
+	public static void showInstance(Context cxt, String title, String description, String urlToPhoto,
+			String urlToPhotoFallback, Date datetime, String type) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
 		intent.putExtra(EXTRAS_TYPE, type);
 		intent.putExtra(EXTRAS_TITLE, title);
@@ -137,8 +141,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 									getString(R.string.action_share), pendingIntentShare).build();
 					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(),
 							getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback());
-//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
-//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
+					//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
+					//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
 			});
 			mBinding.errorContent.setBackgroundResource(R.color.common_black);
@@ -193,7 +197,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 * Show remote image.
 	 */
 	private void loadImage(final String path) {
-		if(TextUtils.equals("image", getType())) {
+		if (TextUtils.equals("image", getType())) {
 			//Only shows for image.
 			AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Bitmap>() {
 				@Override
@@ -241,8 +245,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			super.onBackPressed();
 		}
 	}
-
-
 
 
 	@Override
@@ -297,5 +299,23 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				onBackPressed();
 			}
 		});
+		SwitchCompat quSwitch = (SwitchCompat) findViewById(R.id.qu_switch);
+		quSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				switchQu(isChecked);
+			}
+		});
 	}
+
+	private void switchQu(boolean isChecked) {
+		if (isChecked) {
+			Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2Photo()).toASCIIString());
+			Snackbar.make(mBinding.errorContent, R.string.action_switch_hd, Snackbar.LENGTH_SHORT).show();
+		} else {
+			Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2PhotoFallback()).toASCIIString());
+			Snackbar.make(mBinding.errorContent, R.string.action_switch_normal, Snackbar.LENGTH_SHORT).show();
+		}
+	}
+
 }

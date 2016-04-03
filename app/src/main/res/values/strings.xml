@@ -43,7 +43,8 @@
     <string name="play_service_url">market://details?id=com.google.android.gms</string>
     <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
 
-
+    <string name="action_switch_normal">To normal</string>
+    <string name="action_switch_hd">To HD</string>
     <string name="action_share">More share</string>
     <string name="action_share_fb">Post on Facebook</string>
     <string name="action_about">About</string>
