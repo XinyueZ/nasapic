@@ -172,10 +172,15 @@ public class MainActivity extends AppRestfulActivity implements OnNavigationItem
 	protected void loadList() {
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH) + 1;
+		int currentMonth = calendar.get(Calendar.MONTH);
+		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+		int shownMonth = currentMonth + 1;
 		String timeZone = calendar.getTimeZone().getID();
 
-		loadPhotoList(year, month, timeZone);
+		loadPhotoList(year, shownMonth, timeZone);
+		if (currentDay < 15) {
+			loadPhotoList(year, currentMonth, timeZone);
+		}
 	}
 
 
@@ -244,7 +249,6 @@ public class MainActivity extends AppRestfulActivity implements OnNavigationItem
 	}
 
 
-
 	protected void initNavi() {
 		mBinding.toolbar.setTitle(R.string.application_name);
 		mBinding.toolbar.setNavigationIcon(R.drawable.ic_hamburg);
@@ -269,7 +273,7 @@ public class MainActivity extends AppRestfulActivity implements OnNavigationItem
 		});
 	}
 
-	protected void initMenu( ) {
+	protected void initMenu() {
 		mBinding.toolbar.inflateMenu(getMenuRes());
 		mBinding.toolbar.setOnMenuItemClickListener(this);
 
