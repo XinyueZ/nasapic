@@ -308,6 +308,10 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		});
 	}
 
+	/**
+	 * Change quality of photo when check switch on top-bar.
+	 * @param isChecked Is cheched or not.
+	 */
 	private void switchQu(boolean isChecked) {
 		if (isChecked) {
 			Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2Photo()).toASCIIString());
