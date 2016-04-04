@@ -64,6 +64,7 @@ public final class SplashActivity extends BaseActivity {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
 			@NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		// delegate the permission handling to generated method
 		SplashActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
 	}
@@ -124,8 +125,8 @@ public final class SplashActivity extends BaseActivity {
 
 	public static void startAppGuardService(Context cxt) {
 		AppGuardService.buildRetrofit();
-		long scheduleSec = 60 * 2;
-		//		long scheduleSec = 10800L;
+//		long scheduleSec = 60 * 2;
+		long scheduleSec = 10800L;
 		long flexSecs = 60L;
 		String tag = System.currentTimeMillis() + "";
 		PeriodicTask scheduleTask = new PeriodicTask.Builder().setService(AppGuardService.class).setPeriod(scheduleSec)
