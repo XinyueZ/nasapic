@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".app.activities.MainActivity">
+    tools:context=".app.activities.AbstractMainActivity">
 
     <data>
 
@@ -23,13 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    style="@style/ActionBarStyle" />
-
-            </android.support.design.widget.AppBarLayout>
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/content_srl"
@@ -43,6 +36,16 @@
                     style="@style/RecyclerViewStyle"
                     app:listAdapter="@{adapter}" />
             </android.support.v4.widget.SwipeRefreshLayout>
+
+
+            <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    style="@style/ActionBarStyle" />
+
+            </android.support.design.widget.AppBarLayout>
+
 
             <FrameLayout
                 android:id="@id/error_content"
