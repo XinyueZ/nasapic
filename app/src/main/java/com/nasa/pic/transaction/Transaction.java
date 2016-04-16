@@ -9,18 +9,21 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.squareup.picasso.Picasso;
 
 public final class Transaction {
 	/**
 	 * There is different between android pre 3.0 and 3.x, 4.x on this wording.
 	 */
-	public static final String ALPHA =
-			(android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) ? "alpha" : "Alpha";
-	private static final int ANIM_DURATION = 600;
+	public static final  String ALPHA         =
+			(android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1)
+			? "alpha"
+			: "Alpha";
+	private static final int    ANIM_DURATION = 600;
 
 
 	private ColorDrawable mColorDrawable;
@@ -28,8 +31,8 @@ public final class Transaction {
 	private Thumbnail mThumbnail;
 	private ImageView mTarget;
 
-	private int mLeftDelta;
-	private int mTopDelta;
+	private int   mLeftDelta;
+	private int   mTopDelta;
 	private float mWidthScale;
 	private float mHeightScale;
 
@@ -54,7 +57,10 @@ public final class Transaction {
 
 
 		public Transaction build(Context cxt) {
-			Picasso.with(cxt).load(mTransaction.mThumbnail.getSource()).into(mTransaction.mTarget);
+			Glide.with(cxt)
+			     .load(mTransaction.mThumbnail.getSource())
+			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .into(mTransaction.mTarget);
 
 			// Figure out where the thumbnail and full size versions are, relative
 			// to the screen and each other
@@ -78,8 +84,7 @@ public final class Transaction {
 	/**
 	 * The enter animation scales the picture in from its previous thumbnail size/location.
 	 *
-	 * @param listener
-	 * 		For end of animation.
+	 * @param listener For end of animation.
 	 */
 	public void enterAnimation(Animator.AnimatorListener listener) {
 
@@ -95,11 +100,20 @@ public final class Transaction {
 
 		// Animate scale and translation to go from thumbnail to full size
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mTarget);
-		animator.setDuration(ANIM_DURATION).scaleX(1).scaleY(1).
-				translationX(0).translationY(0).setInterpolator(new DecelerateInterpolator()).setListener(listener);
+		animator.setDuration(ANIM_DURATION)
+		        .scaleX(1)
+		        .scaleY(1)
+		        .
+				        translationX(0)
+		        .translationY(0)
+		        .setInterpolator(new DecelerateInterpolator())
+		        .setListener(listener);
 
 		// Fade in the black background
-		ObjectAnimator bgAnim = ObjectAnimator.ofInt(mColorDrawable, ALPHA, 0, 255);
+		ObjectAnimator bgAnim = ObjectAnimator.ofInt(mColorDrawable,
+		                                             ALPHA,
+		                                             0,
+		                                             255);
 		bgAnim.setDuration(ANIM_DURATION);
 		bgAnim.start();
 
@@ -112,12 +126,19 @@ public final class Transaction {
 	 */
 	public void exitAnimation(Animator.AnimatorListener listener) {
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mTarget);
-		animator.setDuration(ANIM_DURATION).scaleX(mWidthScale).scaleY(mHeightScale).
-				translationX(mLeftDelta).translationY(mTopDelta).setInterpolator(new AccelerateInterpolator())
-				.setListener(listener);
+		animator.setDuration(ANIM_DURATION)
+		        .scaleX(mWidthScale)
+		        .scaleY(mHeightScale)
+		        .
+				        translationX(mLeftDelta)
+		        .translationY(mTopDelta)
+		        .setInterpolator(new AccelerateInterpolator())
+		        .setListener(listener);
 
 		// Fade out background
-		ObjectAnimator bgAnim = ObjectAnimator.ofInt(mColorDrawable, ALPHA, 0);
+		ObjectAnimator bgAnim = ObjectAnimator.ofInt(mColorDrawable,
+		                                             ALPHA,
+		                                             0);
 		bgAnim.setDuration(ANIM_DURATION);
 		bgAnim.start();
 	}

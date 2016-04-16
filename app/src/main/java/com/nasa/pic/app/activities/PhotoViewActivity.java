@@ -1,23 +1,16 @@
 package com.nasa.pic.app.activities;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Date;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -28,6 +21,11 @@ import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
@@ -42,7 +40,9 @@ import com.nasa.pic.transaction.Thumbnail;
 import com.nasa.pic.transaction.Transaction;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
-import com.squareup.picasso.Picasso;
+
+import java.io.Serializable;
+import java.util.Date;
 
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
@@ -52,7 +52,10 @@ import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
  *
  * @author Xinyue Zhao
  */
-public final class PhotoViewActivity extends AppNormalActivity implements OnPhotoTapListener, ConnectionCallback {
+public final class PhotoViewActivity
+		extends AppNormalActivity
+		implements OnPhotoTapListener,
+		           ConnectionCallback {
 	private static final String EXTRAS_THUMBNAIL = PhotoViewActivity.class.getName() + ".EXTRAS.thumbnail";
 	/**
 	 * Data-binding.
@@ -70,30 +73,56 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	private Transaction mTransaction;
 
-	public static void showInstance(Context cxt, String title, String description, String urlToPhoto,
-			String urlToPhotoFallback, Date datetime, String type, Thumbnail thumbnail) {
-		Intent intent = new Intent(cxt, PhotoViewActivity.class);
-		intent.putExtra(EXTRAS_TYPE, type);
-		intent.putExtra(EXTRAS_TITLE, title);
-		intent.putExtra(EXTRAS_DATE, datetime);
-		intent.putExtra(EXTRAS_DESCRIPTION, description);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK, urlToPhotoFallback);
-		intent.putExtra(EXTRAS_THUMBNAIL, (Serializable) thumbnail);
+	public static void showInstance(Context cxt,
+	                                String title,
+	                                String description,
+	                                String urlToPhoto,
+	                                String urlToPhotoFallback,
+	                                Date datetime,
+	                                String type,
+	                                Thumbnail thumbnail) {
+		Intent intent = new Intent(cxt,
+		                           PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TYPE,
+		                type);
+		intent.putExtra(EXTRAS_TITLE,
+		                title);
+		intent.putExtra(EXTRAS_DATE,
+		                datetime);
+		intent.putExtra(EXTRAS_DESCRIPTION,
+		                description);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO,
+		                urlToPhoto);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK,
+		                urlToPhotoFallback);
+		intent.putExtra(EXTRAS_THUMBNAIL,
+		                (Serializable) thumbnail);
 		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		cxt.startActivity(intent);
 	}
 
 
-	public static void showInstance(Context cxt, String title, String description, String urlToPhoto,
-			String urlToPhotoFallback, Date datetime, String type) {
-		Intent intent = new Intent(cxt, PhotoViewActivity.class);
-		intent.putExtra(EXTRAS_TYPE, type);
-		intent.putExtra(EXTRAS_TITLE, title);
-		intent.putExtra(EXTRAS_DATE, datetime);
-		intent.putExtra(EXTRAS_DESCRIPTION, description);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK, urlToPhotoFallback);
+	public static void showInstance(Context cxt,
+	                                String title,
+	                                String description,
+	                                String urlToPhoto,
+	                                String urlToPhotoFallback,
+	                                Date datetime,
+	                                String type) {
+		Intent intent = new Intent(cxt,
+		                           PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TYPE,
+		                type);
+		intent.putExtra(EXTRAS_TITLE,
+		                title);
+		intent.putExtra(EXTRAS_DATE,
+		                datetime);
+		intent.putExtra(EXTRAS_DESCRIPTION,
+		                description);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO,
+		                urlToPhoto);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK,
+		                urlToPhotoFallback);
 		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		cxt.startActivity(intent);
 	}
@@ -103,7 +132,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
+		mBinding = DataBindingUtil.setContentView(this,
+		                                          LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
 
@@ -115,32 +145,54 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 		mBinding.descriptionTv.setText(getDescription());
 		mBinding.descriptionTv.setTextColor(Color.WHITE);
-		String datetime = DateTimeUtils.timeConvert2(App.Instance, getDatetime().getTime());
-		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
+		String datetime = DateTimeUtils.timeConvert2(App.Instance,
+		                                             getDatetime().getTime());
+		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix),
+		                                          datetime));
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
 		mBinding.setType(getType());
 
 
 		loadImageWithTransaction(savedInstanceState);
 
-		if (!TextUtils.equals(getType(), "image")) {
+		if (!TextUtils.equals(getType(),
+		                      "image")) {
 			mBinding.playBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					PendingIntent pendingIntentFb = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this,
-							ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1, getIntent());
+					                                                                            ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1,
+					                                                                            getIntent());
 					PendingIntent pendingIntentShare = CustomTabActivityHelper.createPendingIntent(
-							PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2, getIntent());
+							PhotoViewActivity.this,
+							ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2,
+							getIntent());
 
 					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(
-							ContextCompat.getColor(PhotoViewActivity.this, R.color.common_black)).setShowTitle(true)
-							.setStartAnimations(PhotoViewActivity.this, android.R.anim.slide_in_left,
-									android.R.anim.slide_out_right).setExitAnimations(PhotoViewActivity.this,
-									android.R.anim.slide_in_left, android.R.anim.slide_out_right).addMenuItem(
-									getString(R.string.action_share_fb), pendingIntentFb).addMenuItem(
-									getString(R.string.action_share), pendingIntentShare).build();
-					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(),
-							getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback());
+							ContextCompat.getColor(PhotoViewActivity.this,
+							                       R.color.common_black))
+					                                                                  .setShowTitle(true)
+					                                                                  .setStartAnimations(PhotoViewActivity.this,
+					                                                                                      android.R.anim.slide_in_left,
+					                                                                                      android.R.anim.slide_out_right)
+					                                                                  .setExitAnimations(PhotoViewActivity.this,
+					                                                                                     android.R.anim.slide_in_left,
+					                                                                                     android.R.anim.slide_out_right)
+					                                                                  .addMenuItem(
+							                                                                  getString(R.string.action_share_fb),
+							                                                                  pendingIntentFb)
+					                                                                  .addMenuItem(
+							                                                                  getString(R.string.action_share),
+							                                                                  pendingIntentShare)
+					                                                                  .build();
+					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this,
+					                                       customTabsIntent,
+					                                       getPhotoTitle(),
+					                                       getDescription(),
+					                                       getUrl2Photo(),
+					                                       getDatetime(),
+					                                       getType(),
+					                                       new WebViewFallback());
 					//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
 					//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
@@ -152,9 +204,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	/**
 	 * Load image and play animation transaction for init-create of the {@link PhotoViewActivity}.
 	 *
-	 * @param savedInstanceState
-	 * 		If {@code null} that means init-create the animation will be played. However it must be down only when the
-	 * 		{@link Thumbnail} is available. See the usage of {@link OpenPhotoEvent}.
+	 * @param savedInstanceState If {@code null} that means init-create the animation will be played. However it must be down only when the
+	 *                           {@link Thumbnail} is available. See the usage of {@link OpenPhotoEvent}.
 	 */
 	private void loadImageWithTransaction(Bundle savedInstanceState) {
 		Intent intent = getIntent();
@@ -170,9 +221,12 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 						Intent intent = getIntent();
 						Object object = intent.getSerializableExtra(EXTRAS_THUMBNAIL);
 
-						mBinding.bigImgIv.getViewTreeObserver().removeOnPreDrawListener(this);
-						mTransaction = new Transaction.Builder().setThumbnail((Thumbnail) object).setTarget(
-								mBinding.bigImgIv).build(PhotoViewActivity.this);
+						mBinding.bigImgIv.getViewTreeObserver()
+						                 .removeOnPreDrawListener(this);
+						mTransaction = new Transaction.Builder().setThumbnail((Thumbnail) object)
+						                                        .setTarget(
+								                                        mBinding.bigImgIv)
+						                                        .build(PhotoViewActivity.this);
 						mTransaction.enterAnimation(new AnimatorListenerAdapter() {
 							@Override
 							public void onAnimationEnd(Animator animation) {
@@ -197,37 +251,36 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 * Show remote image.
 	 */
 	private void loadImage(final String path) {
-		if (TextUtils.equals("image", getType())) {
-			//Only shows for image.
-			AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Bitmap>() {
-				@Override
-				protected void onPreExecute() {
-					super.onPreExecute();
-					if (mTransaction == null) {
-						mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
-					}
-				}
+		if (TextUtils.equals("image",
+		                     getType())) {
+			if (mTransaction == null) {
+				mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
+			}
+			Glide.with(App.Instance)
+			     .load(Utils.uriStr2URI(path)
+			                .toASCIIString())
+			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .listener(new RequestListener<String, GlideDrawable>() {
+				     @Override
+				     public boolean onException(Exception e,
+				                                String model,
+				                                Target<GlideDrawable> target,
+				                                boolean isFirstResource) {
+					     return false;
+				     }
 
-				@Override
-				protected Bitmap doInBackground(Object... params) {
-					try {
-						return Picasso.with(App.Instance).load(Utils.uriStr2URI(path).toASCIIString()).get();
-					} catch (IOException e1) {
-						return null;
-					}
-				}
-
-				@Override
-				protected void onPostExecute(Bitmap bitmap) {
-					super.onPostExecute(bitmap);
-					if (bitmap != null) {
-						mBinding.bigImgIv.setImageBitmap(bitmap);
-					}
-
-					//Important to set background from transparent to black.
-					mBinding.errorContent.setBackgroundResource(R.color.common_black);
-				}
-			});
+				     @Override
+				     public boolean onResourceReady(GlideDrawable resource,
+				                                    String model,
+				                                    Target<GlideDrawable> target,
+				                                    boolean isFromMemoryCache,
+				                                    boolean isFirstResource) {
+					     //Important to set background from transparent to black.
+					     mBinding.errorContent.setBackgroundResource(R.color.common_black);
+					     return false;
+				     }
+			     })
+			     .into(mBinding.bigImgIv);
 		}
 	}
 
@@ -248,7 +301,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 
 	@Override
-	public void onPhotoTap(View view, float v, float v1) {
+	public void onPhotoTap(View view,
+	                       float v,
+	                       float v1) {
 	}
 
 	@Override
@@ -276,7 +331,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	private void initChromeCustomTabActivityHelper() {
 		mCustomTabActivityHelper = new CustomTabActivityHelper();
 		mCustomTabActivityHelper.setConnectionCallback(this);
-		mCustomTabActivityHelper.mayLaunchUrl(Uri.parse(getUrl2Photo()), null, null);
+		mCustomTabActivityHelper.mayLaunchUrl(Uri.parse(getUrl2Photo()),
+		                                      null,
+		                                      null);
 		mBinding.playBtn.setEnabled(false);
 	}
 
@@ -302,7 +359,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		SwitchCompat quSwitch = (SwitchCompat) findViewById(R.id.qu_switch);
 		quSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView,
+			                             boolean isChecked) {
 				switchQu(isChecked);
 			}
 		});
@@ -310,15 +368,30 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	/**
 	 * Change quality of photo when check switch on top-bar.
+	 *
 	 * @param isChecked Is cheched or not.
 	 */
 	private void switchQu(boolean isChecked) {
 		if (isChecked) {
-			Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2Photo()).toASCIIString());
-			Snackbar.make(mBinding.errorContent, R.string.action_switch_hd, Snackbar.LENGTH_SHORT).show();
+			Glide.with(App.Instance)
+			     .load(Utils.uriStr2URI(getUrl2Photo())
+			                .toASCIIString())
+			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .into(mBinding.bigImgIv);
+			Snackbar.make(mBinding.errorContent,
+			              R.string.action_switch_hd,
+			              Snackbar.LENGTH_SHORT)
+			        .show();
 		} else {
-			Picasso.with(App.Instance).load(Utils.uriStr2URI(getUrl2PhotoFallback()).toASCIIString());
-			Snackbar.make(mBinding.errorContent, R.string.action_switch_normal, Snackbar.LENGTH_SHORT).show();
+			Glide.with(App.Instance)
+			     .load(Utils.uriStr2URI(getUrl2PhotoFallback())
+			                .toASCIIString())
+			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .into(mBinding.bigImgIv);
+			Snackbar.make(mBinding.errorContent,
+			              R.string.action_switch_normal,
+			              Snackbar.LENGTH_SHORT)
+			        .show();
 		}
 	}
 
