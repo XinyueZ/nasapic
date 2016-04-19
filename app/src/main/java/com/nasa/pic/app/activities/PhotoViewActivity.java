@@ -81,22 +81,14 @@ public final class PhotoViewActivity
 	                                Date datetime,
 	                                String type,
 	                                Thumbnail thumbnail) {
-		Intent intent = new Intent(cxt,
-		                           PhotoViewActivity.class);
-		intent.putExtra(EXTRAS_TYPE,
-		                type);
-		intent.putExtra(EXTRAS_TITLE,
-		                title);
-		intent.putExtra(EXTRAS_DATE,
-		                datetime);
-		intent.putExtra(EXTRAS_DESCRIPTION,
-		                description);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO,
-		                urlToPhoto);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK,
-		                urlToPhotoFallback);
-		intent.putExtra(EXTRAS_THUMBNAIL,
-		                (Serializable) thumbnail);
+		Intent intent = new Intent(cxt, PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TYPE, type);
+		intent.putExtra(EXTRAS_TITLE, title);
+		intent.putExtra(EXTRAS_DATE, datetime);
+		intent.putExtra(EXTRAS_DESCRIPTION, description);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK, urlToPhotoFallback);
+		intent.putExtra(EXTRAS_THUMBNAIL, (Serializable) thumbnail);
 		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		cxt.startActivity(intent);
 	}
@@ -109,20 +101,13 @@ public final class PhotoViewActivity
 	                                String urlToPhotoFallback,
 	                                Date datetime,
 	                                String type) {
-		Intent intent = new Intent(cxt,
-		                           PhotoViewActivity.class);
-		intent.putExtra(EXTRAS_TYPE,
-		                type);
-		intent.putExtra(EXTRAS_TITLE,
-		                title);
-		intent.putExtra(EXTRAS_DATE,
-		                datetime);
-		intent.putExtra(EXTRAS_DESCRIPTION,
-		                description);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO,
-		                urlToPhoto);
-		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK,
-		                urlToPhotoFallback);
+		Intent intent = new Intent(cxt, PhotoViewActivity.class);
+		intent.putExtra(EXTRAS_TYPE, type);
+		intent.putExtra(EXTRAS_TITLE, title);
+		intent.putExtra(EXTRAS_DATE, datetime);
+		intent.putExtra(EXTRAS_DESCRIPTION, description);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
+		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK, urlToPhotoFallback);
 		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		cxt.startActivity(intent);
 	}
@@ -132,8 +117,7 @@ public final class PhotoViewActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mBinding = DataBindingUtil.setContentView(this,
-		                                          LAYOUT);
+		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
 
@@ -145,45 +129,27 @@ public final class PhotoViewActivity
 
 		mBinding.descriptionTv.setText(getDescription());
 		mBinding.descriptionTv.setTextColor(Color.WHITE);
-		String datetime = DateTimeUtils.timeConvert2(App.Instance,
-		                                             getDatetime().getTime());
-		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix),
-		                                          datetime));
+		String datetime = DateTimeUtils.timeConvert2(App.Instance, getDatetime().getTime());
+		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
 		mBinding.datetimeTv.setTextColor(Color.WHITE);
 		mBinding.setType(getType());
 
 
 		loadImageWithTransaction(savedInstanceState);
 
-		if (!TextUtils.equals(getType(),
-		                      "image")) {
+		if (!TextUtils.equals(getType(), "image")) {
 			mBinding.playBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					PendingIntent pendingIntentFb = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this,
-					                                                                            ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1,
-					                                                                            getIntent());
-					PendingIntent pendingIntentShare = CustomTabActivityHelper.createPendingIntent(
-							PhotoViewActivity.this,
-							ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2,
-							getIntent());
+					PendingIntent pendingIntentFb    = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1, getIntent());
+					PendingIntent pendingIntentShare = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2, getIntent());
 
-					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(
-							ContextCompat.getColor(PhotoViewActivity.this,
-							                       R.color.common_black))
+					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(ContextCompat.getColor(PhotoViewActivity.this, R.color.common_black))
 					                                                                  .setShowTitle(true)
-					                                                                  .setStartAnimations(PhotoViewActivity.this,
-					                                                                                      android.R.anim.slide_in_left,
-					                                                                                      android.R.anim.slide_out_right)
-					                                                                  .setExitAnimations(PhotoViewActivity.this,
-					                                                                                     android.R.anim.slide_in_left,
-					                                                                                     android.R.anim.slide_out_right)
-					                                                                  .addMenuItem(
-							                                                                  getString(R.string.action_share_fb),
-							                                                                  pendingIntentFb)
-					                                                                  .addMenuItem(
-							                                                                  getString(R.string.action_share),
-							                                                                  pendingIntentShare)
+					                                                                  .setStartAnimations(PhotoViewActivity.this, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+					                                                                  .setExitAnimations(PhotoViewActivity.this, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+					                                                                  .addMenuItem(getString(R.string.action_share_fb), pendingIntentFb)
+					                                                                  .addMenuItem(getString(R.string.action_share), pendingIntentShare)
 					                                                                  .build();
 					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this,
 					                                       customTabsIntent,
@@ -224,8 +190,7 @@ public final class PhotoViewActivity
 						mBinding.bigImgIv.getViewTreeObserver()
 						                 .removeOnPreDrawListener(this);
 						mTransaction = new Transaction.Builder().setThumbnail((Thumbnail) object)
-						                                        .setTarget(
-								                                        mBinding.bigImgIv)
+						                                        .setTarget(mBinding.bigImgIv)
 						                                        .build(PhotoViewActivity.this);
 						mTransaction.enterAnimation(new AnimatorListenerAdapter() {
 							@Override
@@ -251,8 +216,7 @@ public final class PhotoViewActivity
 	 * Show remote image.
 	 */
 	private void loadImage(final String path) {
-		if (TextUtils.equals("image",
-		                     getType())) {
+		if (TextUtils.equals("image", getType())) {
 			if (mTransaction == null) {
 				mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
 			}
@@ -331,9 +295,7 @@ public final class PhotoViewActivity
 	private void initChromeCustomTabActivityHelper() {
 		mCustomTabActivityHelper = new CustomTabActivityHelper();
 		mCustomTabActivityHelper.setConnectionCallback(this);
-		mCustomTabActivityHelper.mayLaunchUrl(Uri.parse(getUrl2Photo()),
-		                                      null,
-		                                      null);
+		mCustomTabActivityHelper.mayLaunchUrl(Uri.parse(getUrl2Photo()), null, null);
 		mBinding.playBtn.setEnabled(false);
 	}
 
@@ -361,36 +323,60 @@ public final class PhotoViewActivity
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 			                             boolean isChecked) {
-				switchQu(isChecked);
+				switchHd(isChecked);
 			}
 		});
 	}
+
+	private RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
+		@Override
+		public boolean onException(Exception e,
+		                           String model,
+		                           Target<GlideDrawable> target,
+		                           boolean isFirstResource) {
+			switchHd(false);
+			Snackbar.make(mBinding.errorContent, R.string.error_switch_hd, Snackbar.LENGTH_SHORT)
+			        .show();
+			return false;
+		}
+
+		@Override
+		public boolean onResourceReady(GlideDrawable resource,
+		                               String model,
+		                               Target<GlideDrawable> target,
+		                               boolean isFromMemoryCache,
+		                               boolean isFirstResource) {
+			mBinding.bigImgPb.setVisibility(View.GONE);
+			return false;
+		}
+	};
 
 	/**
 	 * Change quality of photo when check switch on top-bar.
 	 *
 	 * @param isChecked Is cheched or not.
 	 */
-	private void switchQu(boolean isChecked) {
+	private void switchHd(boolean isChecked) {
+		mBinding.bigImgPb.setVisibility(View.VISIBLE);
 		if (isChecked) {
 			Glide.with(App.Instance)
 			     .load(Utils.uriStr2URI(getUrl2Photo())
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
-			Snackbar.make(mBinding.errorContent,
-			              R.string.action_switch_hd,
-			              Snackbar.LENGTH_SHORT)
+
+			Snackbar.make(mBinding.errorContent, R.string.action_switch_hd, Snackbar.LENGTH_SHORT)
 			        .show();
 		} else {
 			Glide.with(App.Instance)
 			     .load(Utils.uriStr2URI(getUrl2PhotoFallback())
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
-			Snackbar.make(mBinding.errorContent,
-			              R.string.action_switch_normal,
-			              Snackbar.LENGTH_SHORT)
+
+			Snackbar.make(mBinding.errorContent, R.string.action_switch_normal, Snackbar.LENGTH_SHORT)
 			        .show();
 		}
 	}

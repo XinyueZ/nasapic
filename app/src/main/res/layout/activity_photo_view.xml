@@ -43,6 +43,14 @@
                 android:background="@color/common_transparent"
                 android:visibility='@{!TextUtils.equals(type, "image") ? View.VISIBLE: View.GONE}'
                 app:srcCompat="@drawable/ic_play"/>
+
+            <ProgressBar
+                android:id="@+id/big_img_pb"
+                style="?android:attr/android:progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
