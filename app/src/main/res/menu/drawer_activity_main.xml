@@ -7,10 +7,7 @@
             android:id="@+id/action_newest_photos"
             android:icon="@drawable/ic_newest_photos"
             android:title="@string/action_newest_photos" />
-        <item
-            android:id="@+id/action_one_day_photo"
-            android:icon="@drawable/ic_one_day_photo"
-            android:title="@string/action_one_day_photo" />
+
         <item
             android:id="@+id/action_month_photos"
             android:icon="@drawable/ic_month_photos"

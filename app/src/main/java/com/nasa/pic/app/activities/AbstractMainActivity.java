@@ -1,8 +1,5 @@
 package com.nasa.pic.app.activities;
 
-import java.util.Calendar;
-import java.util.UUID;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
@@ -40,6 +37,9 @@ import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.utils.Prefs;
+
+import java.util.Calendar;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
@@ -112,9 +112,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		switch (id) {
 		case R.id.action_newest_photos:
 			MainActivity.showInstance(this);
-			break;
-		case R.id.action_one_day_photo:
-			SubMainActivity.showInstance(this);
 			break;
 		case R.id.action_month_photos:
 			SubMainActivity.showInstance(this);

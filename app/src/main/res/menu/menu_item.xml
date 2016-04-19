@@ -1,6 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <item
+        android:id="@+id/action_open"
+        android:title="@string/action_open"
+        android:icon="@drawable/ic_fullscreen"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_fb_share_item"

@@ -46,6 +46,7 @@
     <string name="action_switch_normal">To normal</string>
     <string name="action_switch_hd">To HD</string>
     <string name="action_share">More share</string>
+    <string name="action_open">Open</string>
     <string name="action_share_fb">Post on Facebook</string>
     <string name="action_about">About</string>
     <string name="action_more_photos">More photos</string>
@@ -54,7 +55,6 @@
     <string name="action_forward">Forward</string>
     <string name="action_settings">Settings</string>
     <string name="action_newest_photos">Newest photos</string>
-    <string name="action_one_day_photo">Photo one day</string>
     <string name="action_month_photos">Month photos</string>
 
     <string name="applicationId">813465918763218</string>

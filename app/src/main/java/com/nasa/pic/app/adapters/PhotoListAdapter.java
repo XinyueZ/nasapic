@@ -1,8 +1,5 @@
 package com.nasa.pic.app.adapters;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -24,6 +21,9 @@ import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.transaction.Thumbnail;
 import com.nasa.pic.utils.DynamicShareActionProvider;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.realm.RealmObject;
@@ -116,11 +116,21 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
-		final T entry = mVisibleData.get(position);
+		final T                entry    = mVisibleData.get(position);
+		final ListItemHandlers handlers = new ListItemHandlers(holder, this);
 		holder.mBinding.setVariable(BR.photoDB, entry);
-		holder.mBinding.setVariable(BR.handler, new ListItemHandlers(holder, this));
+		holder.mBinding.setVariable(BR.handler, handlers);
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
 		holder.mBinding.setVariable(BR.cardSize, mCellSize);
+
+		MenuItem openMi = holder.mToolbar.getMenu().findItem(R.id.action_open);
+		openMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				handlers.onOpenPhoto(holder.itemView);
+				return true;
+			}
+		});
 
 		MenuItem fbShareMi = holder.mToolbar.getMenu().findItem(R.id.action_fb_share_item);
 		fbShareMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
