@@ -70,14 +70,14 @@ public final class SplashActivity extends BaseActivity {
 	}
 
 
-	@NeedsPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE })
+	@NeedsPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE  })
 	void getPermissions() {
 		MainActivity.showInstance(this);
 		finish();
 	}
 
 
-	@DeniedPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE })
+	@DeniedPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE })
 	void noPermissions() {
 		Snackbar.make(findViewById(R.id.error_content), R.string.msg_permission_prompt, Snackbar.LENGTH_INDEFINITE)
 				.setAction(R.string.btn_app_close, new OnClickListener() {

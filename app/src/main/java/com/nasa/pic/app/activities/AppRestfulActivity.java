@@ -1,7 +1,5 @@
 package com.nasa.pic.app.activities;
 
-import java.math.BigDecimal;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -32,10 +30,14 @@ import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.utils.Prefs;
 
+import java.math.BigDecimal;
+
 import io.realm.RealmObject;
 
 
-public abstract class AppRestfulActivity extends RestfulActivity implements OnMenuItemClickListener {
+public abstract class AppRestfulActivity
+		extends RestfulActivity
+		implements OnMenuItemClickListener {
 	private int mCellSize;
 	//------------------------------------------------
 	//Subscribes, event-handlers
@@ -44,56 +46,79 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 	/**
 	 * Handler for {@link com.nasa.pic.events.FBShareEvent}.
 	 *
-	 * @param e
-	 * 		Event {@link com.nasa.pic.events.FBShareEvent}.
+	 * @param e Event {@link com.nasa.pic.events.FBShareEvent}.
 	 */
 	public void onEvent(FBShareEvent e) {
-		com.nasa.pic.utils.Utils.facebookShare(this, (PhotoDB) e.getObject());
+		com.nasa.pic.utils.Utils.facebookShare(this,
+		                                       (PhotoDB) e.getObject());
 	}
 
 	/**
 	 * Handler for {@link com.nasa.pic.events.ShareEvent}.
 	 *
-	 * @param e
-	 * 		Event {@link com.nasa.pic.events.ShareEvent}.
+	 * @param e Event {@link com.nasa.pic.events.ShareEvent}.
 	 */
 	public void onEvent(ShareEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
-		com.nasa.pic.utils.Utils.share(photoDB, e.getIntent());
+		com.nasa.pic.utils.Utils.share(photoDB,
+		                               e.getIntent());
 	}
 
 
 	/**
 	 * Handler for {@link com.nasa.pic.events.CompleteShareEvent}.
 	 *
-	 * @param e
-	 * 		Event {@link com.nasa.pic.events.CompleteShareEvent}.
+	 * @param e Event {@link com.nasa.pic.events.CompleteShareEvent}.
 	 */
 	public void onEvent(CompleteShareEvent e) {
-		ActivityCompat.startActivity(this, e.getIntent(), null);
+		ActivityCompat.startActivity(this,
+		                             e.getIntent(),
+		                             null);
 	}
 
 	/**
 	 * Handler for {@link com.nasa.pic.events.OpenPhotoEvent}.
 	 *
-	 * @param e
-	 * 		Event {@link com.nasa.pic.events.OpenPhotoEvent}.
+	 * @param e Event {@link com.nasa.pic.events.OpenPhotoEvent}.
 	 */
 	public void onEvent(OpenPhotoEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
 		if (e.getThumbnail() != null) {
-			e.getThumbnail().setSource(photoDB.getUrls().getNormal());
-			PhotoViewActivity.showInstance(this, TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
-					photoDB.getDescription(),
-					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
-							photoDB.getUrls().getHd(), photoDB.getUrls().getNormal(), photoDB.getDate(),
-					photoDB.getType(), e.getThumbnail());
+			e.getThumbnail()
+			 .setSource(photoDB.getUrls()
+			                   .getNormal());
+			PhotoViewActivity.showInstance(this,
+			                               TextUtils.isEmpty(photoDB.getTitle()) ?
+			                               "" :
+			                               photoDB.getTitle(),
+			                               photoDB.getDescription(),
+			                               TextUtils.isEmpty(photoDB.getUrls()
+			                                                        .getHd()) ?
+			                               photoDB.getUrls()
+			                                      .getNormal() :
+			                               photoDB.getUrls()
+			                                      .getHd(),
+			                               photoDB.getUrls()
+			                                      .getNormal(),
+			                               photoDB.getDate(),
+			                               photoDB.getType(),
+			                               e.getThumbnail());
 		} else {
-			PhotoViewActivity.showInstance(this, TextUtils.isEmpty(photoDB.getTitle()) ? "" : photoDB.getTitle(),
-					photoDB.getDescription(),
-					TextUtils.isEmpty(photoDB.getUrls().getHd()) ? photoDB.getUrls().getNormal() :
-							photoDB.getUrls().getHd(), photoDB.getUrls().getNormal(), photoDB.getDate(),
-					photoDB.getType());
+			PhotoViewActivity.showInstance(this,
+			                               TextUtils.isEmpty(photoDB.getTitle()) ?
+			                               "" :
+			                               photoDB.getTitle(),
+			                               photoDB.getDescription(),
+			                               TextUtils.isEmpty(photoDB.getUrls()
+			                                                        .getHd()) ?
+			                               photoDB.getUrls()
+			                                      .getNormal() :
+			                               photoDB.getUrls()
+			                                      .getHd(),
+			                               photoDB.getUrls()
+			                                      .getNormal(),
+			                               photoDB.getDate(),
+			                               photoDB.getType());
 		}
 	}
 
@@ -111,26 +136,31 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			ActivityCompat.finishAfterTransition(this);
-		case R.id.action_about:
-			showDialogFragment(AboutDialogFragment.newInstance(this), null);
-			break;
+			case android.R.id.home:
+				ActivityCompat.finishAfterTransition(this);
+			case R.id.action_about:
+				showDialogFragment(AboutDialogFragment.newInstance(this),
+				                   null);
+				break;
 		}
 		return true;
 	}
 
 
-	protected void buildListView(Context cxt, RecyclerView recyclerView) {
+	protected void buildListView(Context cxt,
+	                             RecyclerView recyclerView) {
 		ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
 		LL.d("Screen width: " + screenSize.Width);
-		float basic = cxt.getResources().getDimension(R.dimen.basic_card_width);
+		float basic = cxt.getResources()
+		                 .getDimension(R.dimen.basic_card_width);
 		LL.d("Basic: " + basic);
 		float div = screenSize.Width / basic;
 		LL.d("Div: " + div);
-		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
+		BigDecimal cardCount = new BigDecimal(div).setScale(0,
+		                                                    BigDecimal.ROUND_HALF_UP);
 		LL.d("CardCount: " + cardCount);
-		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
+		recyclerView.setLayoutManager(new GridLayoutManager(cxt,
+		                                                    cardCount.intValue()));
 		mCellSize = (int) (screenSize.Width / div);
 		LL.d("CardSize: " + mCellSize);
 	}
@@ -148,27 +178,31 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 				loadList();
 			}
 		});
-		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3,
-				R.color.c_refresh_4);
-		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
-		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
+		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1,
+		                                           R.color.c_refresh_2,
+		                                           R.color.c_refresh_3,
+		                                           R.color.c_refresh_4);
+		swipeRefreshLayout.setProgressViewEndTarget(true,
+		                                            actionbarHeight * 2);
+		swipeRefreshLayout.setProgressViewOffset(false,
+		                                         0,
+		                                         actionbarHeight * 2);
 		swipeRefreshLayout.setRefreshing(true);
 	}
 
 	/**
 	 * Show  {@link android.support.v4.app.DialogFragment}.
 	 *
-	 * @param _dlgFrg
-	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
-	 * @param _tagName
-	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
-	 * 		android.support.v4.app.DialogFragment} can been seen.
+	 * @param _dlgFrg  An instance of {@link android.support.v4.app.DialogFragment}.
+	 * @param _tagName Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
+	 *                 android.support.v4.app.DialogFragment} can been seen.
 	 */
-	protected void showDialogFragment(DialogFragment _dlgFrg, String _tagName) {
+	protected void showDialogFragment(DialogFragment _dlgFrg,
+	                                  String _tagName) {
 		try {
 			if (_dlgFrg != null) {
-				DialogFragment dialogFragment = _dlgFrg;
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				DialogFragment      dialogFragment = _dlgFrg;
+				FragmentTransaction ft             = getSupportFragmentManager().beginTransaction();
 				// Ensure that there's only one dialog to the user.
 				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
 				if (prev != null) {
@@ -176,9 +210,11 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 				}
 				try {
 					if (TextUtils.isEmpty(_tagName)) {
-						dialogFragment.show(ft, "dlg");
+						dialogFragment.show(ft,
+						                    "dlg");
 					} else {
-						dialogFragment.show(ft, _tagName);
+						dialogFragment.show(ft,
+						                    _tagName);
 					}
 				} catch (Exception _e) {
 				}
@@ -195,6 +231,7 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		com.nasa.pic.utils.Utils.hideStatusBar(this);
 		super.onCreate(savedInstanceState);
 		initMenu();
 		initFab();
