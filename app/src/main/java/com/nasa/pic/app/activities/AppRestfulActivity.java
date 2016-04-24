@@ -136,6 +136,9 @@ public abstract class AppRestfulActivity
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.action_tv_mode:
+				TvModeActivity.showInstance(this);
+				break;
 			case android.R.id.home:
 				ActivityCompat.finishAfterTransition(this);
 			case R.id.action_about:

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.nasa.pic"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.nasa.pic">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 
     <application
@@ -14,57 +14,61 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
-        android:supportsRtl="true"
+        android:largeHeap="true"
         tools:replace="android:label">
 
         <!-- This meta-data tag is required to use Google Play Services. --><meta-data
         android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version" />
+        android:value="@integer/google_play_services_version"/>
 
 
         <activity
             android:name=".app.activities.MainActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.SubMainActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.MorePhotosActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
 
 
         <activity
             android:name=".app.activities.PhotoViewActivity"
-            android:theme="@style/Transparent" />
+            android:theme="@style/Transparent"/>
 
 
         <activity
             android:name=".app.activities.WebViewActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
 
+        <activity
+            android:name=".app.activities.TvModeActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.TvMode.LeanbackVerticalGrid"/>
 
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
 
 
         <activity
             android:name=".app.activities.SplashActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="0bf5835ac1569fe382ff64839c0be3d3ed9396b9" />
+            android:value="0bf5835ac1569fe382ff64839c0be3d3ed9396b9"/>
 
 
         <!-- Event handler for changing system packages, for external links -->
@@ -73,10 +77,10 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
 
-                <data android:scheme="package" />
+                <data android:scheme="package"/>
             </intent-filter>
         </receiver>
 
@@ -85,7 +89,7 @@
             android:name=".app.noactivities.BootReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
@@ -96,11 +100,11 @@
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
             </intent-filter>
         </service>
 
-        <receiver android:name=".customtab.ActionBroadcastReceiver" />
+        <receiver android:name=".customtab.ActionBroadcastReceiver"/>
     </application>
 
 </manifest>

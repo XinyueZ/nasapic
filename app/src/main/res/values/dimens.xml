@@ -13,4 +13,7 @@
     <dimen name="bottom_sheet_description">80dp</dimen>
     <dimen name="bottom_sheet_app_list">0dp</dimen>
     <dimen name="ab_elevation">10dp</dimen>
+
+    <dimen name="tv_mode_grid_card_width">80dp</dimen>
+    <dimen name="tv_mode_grid_card_height">80dp</dimen>
 </resources>

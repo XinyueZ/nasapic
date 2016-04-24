@@ -16,6 +16,10 @@
 
     <style name="AppTheme" parent="AppTheme.Base" />
 
+    <style name="Theme.TvMode.LeanbackVerticalGrid" parent="Theme.Leanback.VerticalGrid">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
     <style name="Transparent" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/common_transparent</item>
@@ -69,5 +73,21 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:clipToPadding">false</item>
+    </style>
+
+
+
+    <style name="DefaultCardStyle" parent="Widget.Leanback.ImageCardViewStyle">
+        <item name="cardBackground">@null</item>
+        <item name="android:layout_width">@dimen/tv_mode_grid_card_width</item>
+        <item name="android:layout_height">@dimen/tv_mode_grid_card_height</item>
+        <!--<item name="lbImageCardViewImageStyle">@style/DefaultCardImageStyle</item>-->
+    </style>
+
+    <style name="GridCardStyle" parent="Widget.Leanback.ImageCardViewStyle">
+        <item name="android:layout_width">@dimen/tv_mode_grid_card_width</item>
+        <item name="android:layout_height">@dimen/tv_mode_grid_card_height</item>
+        <!--<item name="lbImageCardViewImageStyle">@style/GridCardImageStyle</item>-->
+        <item name="cardBackground">@null</item>
     </style>
 </resources>
