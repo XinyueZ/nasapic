@@ -1,7 +1,7 @@
-
 package com.nasa.pic.app.tvmode;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.text.TextUtils;
@@ -21,16 +21,22 @@ public class TvModeGridCardPresenter
 		extends Presenter {
 	private final int     mCardStyleResId;
 	private final Context mContext;
+	private final int     mWidth;
+	private final int     mHeight;
 
 	public TvModeGridCardPresenter(Context context,
 	                               int cardStyleResId) {
 		mContext = context;
 		mCardStyleResId = cardStyleResId;
+		Resources resources = context.getResources();
+		mWidth = resources.getDimensionPixelSize(R.dimen.tv_mode_grid_card_width);
+		mHeight = resources.getDimensionPixelSize(R.dimen.tv_mode_grid_card_height);
+
 	}
 
 	public TvModeGridCardPresenter(Context context) {
-		mContext = context;
-		mCardStyleResId = R.style.DefaultCardStyle;
+		this(context,
+		     R.style.DefaultCardStyle);
 	}
 
 	@Override
@@ -46,6 +52,8 @@ public class TvModeGridCardPresenter
 		PhotoDB photo = (PhotoDB) item;
 
 		ImageCardView imageCardView = (ImageCardView) viewHolder.view;
+		imageCardView.getMainImageView().getLayoutParams().width = mWidth;
+		imageCardView.getMainImageView().getLayoutParams().height = mHeight;
 		imageCardView.setTag(photo);
 		imageCardView.setTitleText(photo.getTitle());
 		imageCardView.setContentText(photo.getDescription());

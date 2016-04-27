@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-
     <application
         android:name=".app.App"
         android:allowBackup="true"
@@ -17,45 +16,38 @@
         android:largeHeap="true"
         tools:replace="android:label">
 
-        <!-- This meta-data tag is required to use Google Play Services. --><meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version"/>
-
+        <!-- This meta-data tag is required to use Google Play Services. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
 
         <activity
             android:name=".app.activities.MainActivity"
             android:theme="@style/AppTheme"/>
-
         <activity
             android:name=".app.activities.SubMainActivity"
             android:theme="@style/AppTheme"/>
-
         <activity
             android:name=".app.activities.MorePhotosActivity"
             android:theme="@style/AppTheme"/>
-
-
         <activity
             android:name=".app.activities.PhotoViewActivity"
             android:theme="@style/Transparent"/>
-
-
         <activity
             android:name=".app.activities.WebViewActivity"
             android:theme="@style/AppTheme"/>
-
         <activity
             android:name=".app.activities.TvModeActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.TvMode.LeanbackVerticalGrid"/>
-
+        <activity
+            android:name=".app.activities.TvModeDetailActivity"
+            android:theme="@style/Theme.Example.LeanbackDetails"/>
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@style/AppTheme"/>
-
-
         <activity
             android:name=".app.activities.SplashActivity"
             android:theme="@style/AppTheme">
@@ -70,7 +62,6 @@
             android:name="io.fabric.ApiKey"
             android:value="0bf5835ac1569fe382ff64839c0be3d3ed9396b9"/>
 
-
         <!-- Event handler for changing system packages, for external links -->
         <receiver
             android:name="com.chopping.application.InstalledAppReceiver"
@@ -83,8 +74,6 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-
-
         <receiver
             android:name=".app.noactivities.BootReceiver"
             android:enabled="true">
@@ -92,7 +81,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-
 
         <service
             android:name=".app.noactivities.AppGuardService"
@@ -105,6 +93,11 @@
         </service>
 
         <receiver android:name=".customtab.ActionBroadcastReceiver"/>
+
+        <service
+            android:name=".app.noactivities.LoadImageManuallyService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

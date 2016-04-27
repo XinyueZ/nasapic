@@ -57,6 +57,7 @@
     <string name="action_newest_photos">Newest photos</string>
     <string name="action_month_photos">Month photos</string>
     <string name="action_tv_mode">Tv Mode</string>
+    <string name="action_cast">Cast</string>
 
     <string name="applicationId">813465918763218</string>
 

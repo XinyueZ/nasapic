@@ -29,6 +29,7 @@ public class TvModeActivity
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		com.nasa.pic.utils.Utils.hideStatusBar(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tv_mode);
 	}

@@ -19,10 +19,9 @@ public final class Transaction {
 	/**
 	 * There is different between android pre 3.0 and 3.x, 4.x on this wording.
 	 */
-	public static final  String ALPHA         =
-			(android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1)
-			? "alpha"
-			: "Alpha";
+	public static final  String ALPHA         = (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) ?
+	                                            "alpha" :
+	                                            "Alpha";
 	private static final int    ANIM_DURATION = 600;
 
 
@@ -103,8 +102,7 @@ public final class Transaction {
 		animator.setDuration(ANIM_DURATION)
 		        .scaleX(1)
 		        .scaleY(1)
-		        .
-				        translationX(0)
+		        .translationX(0)
 		        .translationY(0)
 		        .setInterpolator(new DecelerateInterpolator())
 		        .setListener(listener);
@@ -129,8 +127,7 @@ public final class Transaction {
 		animator.setDuration(ANIM_DURATION)
 		        .scaleX(mWidthScale)
 		        .scaleY(mHeightScale)
-		        .
-				        translationX(mLeftDelta)
+		        .translationX(mLeftDelta)
 		        .translationY(mTopDelta)
 		        .setInterpolator(new AccelerateInterpolator())
 		        .setListener(listener);

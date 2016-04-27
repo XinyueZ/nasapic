@@ -10,13 +10,13 @@ import com.nasa.pic.ds.PhotoDB;
 /**
  * This PresenterSelector will decide what Presenter to use depending on a given card's type.
  */
-public class TvModeCardPresenterSelector
+public class TvModeGridPresenterSelector
 		extends PresenterSelector {
 
 	private final Context   mContext;
 	private       Presenter mPresenter;
 
-	public TvModeCardPresenterSelector(Context context) {
+	public TvModeGridPresenterSelector(Context context) {
 		mContext = context;
 	}
 
