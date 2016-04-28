@@ -16,4 +16,6 @@
 
     <dimen name="tv_mode_grid_card_width">200dp</dimen>
     <dimen name="tv_mode_grid_card_height">200dp</dimen>
+    <dimen name="tv_mode_detail_photo_width">300dp</dimen>
+    <dimen name="tv_mode_detail_photo_height">300dp</dimen>
 </resources>

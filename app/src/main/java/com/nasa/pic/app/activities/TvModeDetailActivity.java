@@ -24,11 +24,12 @@ import com.nasa.pic.R;
  * Contains a {@link DetailsFragment} in order to display more details for a given card.
  */
 public class TvModeDetailActivity
-        extends Activity {
+		extends Activity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tv_mode_detail);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		com.nasa.pic.utils.Utils.hideStatusBar(this);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_tv_mode_detail);
+	}
 }

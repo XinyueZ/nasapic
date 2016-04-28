@@ -2,6 +2,7 @@
 
 package com.nasa.pic.app.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,18 +86,21 @@ public class TvModeFragment
 					return;
 				}
 
-				ImageView imageView = ((ImageCardView) itemViewHolder.view).getMainImageView();
-				Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-				                                                                   imageView,
-				                                                                   TvModeDetailFragment.TRANSITION_NAME)
-				                                     .toBundle();
-				Intent intent = new Intent(getActivity().getBaseContext(),
-				                           TvModeDetailActivity.class);
-				PhotoDB photo = (PhotoDB) item;
-				intent.putExtra(TvModeDetailFragment.EXTRAS_PHOTO,
-				                photo.getReqId());
-				startActivity(intent,
-				              bundle);
+				Activity activity = getActivity();
+				if (activity != null) {
+					ImageView imageView = ((ImageCardView) itemViewHolder.view).getMainImageView();
+					Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
+					                                                                   imageView,
+					                                                                   TvModeDetailFragment.TRANSITION_NAME)
+					                                     .toBundle();
+					Intent intent = new Intent(activity.getBaseContext(),
+					                           TvModeDetailActivity.class);
+					PhotoDB photo = (PhotoDB) item;
+					intent.putExtra(TvModeDetailFragment.EXTRAS_PHOTO,
+					                photo.getReqId());
+					startActivity(intent,
+					              bundle);
+				}
 
 			}
 		});

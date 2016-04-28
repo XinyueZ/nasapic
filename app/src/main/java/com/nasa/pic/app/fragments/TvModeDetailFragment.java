@@ -14,6 +14,8 @@
 
 package com.nasa.pic.app.fragments;
 
+import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +27,8 @@ import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.DetailsOverviewRow;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
 import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.Presenter;
@@ -34,18 +38,24 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.os.ResultReceiver;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.noactivities.LoadImageManuallyService;
 import com.nasa.pic.app.tvmode.TvModeDetailPresenter;
+import com.nasa.pic.app.tvmode.TvModeGridPresenterSelector;
 import com.nasa.pic.ds.PhotoDB;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 
@@ -54,8 +64,7 @@ import io.realm.RealmResults;
  */
 public class TvModeDetailFragment
 		extends DetailsFragment
-		implements OnItemViewClickedListener,
-		           RealmChangeListener {
+		implements OnItemViewClickedListener {
 
 	public static final String EXTRAS_IMAGE    = "com.nasa.pic.app.fragments.extra.BITMAP";
 	public static final String TRANSITION_NAME = "t_for_transition";
@@ -100,76 +109,75 @@ public class TvModeDetailFragment
 		                   .equalTo("reqId",
 		                            photoReqId)
 		                   .findAllAsync();
-		mRealmData.addChangeListener(this);
+		mRealmData.addChangeListener(new RealmChangeListener() {
+			@Override
+			public void onChange() {
+				mRealmData.removeChangeListener(this);
+				PhotoDB photo = (PhotoDB) mRealmData.get(0);
+				//Show details, photo-snapshot, description etc.
+				setRowActionsAndDetail(photo);
+				//Async task to get photo-list in the month of "this photo".
+				fetchRecommendedItems(photo.getDate());
+				mRealmData.addChangeListener(new RealmChangeListener() {
+					@Override
+					public void onChange() {
+						mRealmData.removeChangeListener(this);
+						setRowRecommended();
+					}
+				});
+			}
+		});
 	}
 
 	private void setupUi() {
-		FullWidthDetailsOverviewRowPresenter rowPresenter = new FullWidthDetailsOverviewRowPresenter(new TvModeDetailPresenter(getActivity())) {
+		Activity activity = getActivity();
+		if (activity != null) {
+			FullWidthDetailsOverviewRowPresenter rowPresenter = new FullWidthDetailsOverviewRowPresenter(new TvModeDetailPresenter(activity)) {
+				@Override
+				protected RowPresenter.ViewHolder createRowViewHolder(ViewGroup parent) {
+					// Customize Actionbar and Content by using custom colors.
+					RowPresenter.ViewHolder viewHolder = super.createRowViewHolder(parent);
 
-			@Override
-			protected RowPresenter.ViewHolder createRowViewHolder(ViewGroup parent) {
-				// Customize Actionbar and Content by using custom colors.
-				RowPresenter.ViewHolder viewHolder = super.createRowViewHolder(parent);
+					View actionsView = viewHolder.view.findViewById(R.id.details_overview_actions_background);
+					actionsView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
+					                                                        R.color.colorAccent,
+					                                                        null));
 
-				View actionsView = viewHolder.view.findViewById(R.id.details_overview_actions_background);
-				actionsView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
-				                                                        R.color.colorPrimary,
-				                                                        null));
+					View detailsView = viewHolder.view.findViewById(R.id.details_frame);
+					detailsView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
+					                                                        R.color.colorPrimary,
+					                                                        null));
+					return viewHolder;
+				}
+			};
 
-				View detailsView = viewHolder.view.findViewById(R.id.details_frame);
-				detailsView.setBackgroundColor(ResourcesCompat.getColor(getResources(),
-				                                                        R.color.common_black,
-				                                                        null));
-				return viewHolder;
-			}
-		};
+			FullWidthDetailsOverviewSharedElementHelper mHelper = new FullWidthDetailsOverviewSharedElementHelper();
+			mHelper.setSharedElementEnterTransition(activity,
+			                                        TRANSITION_NAME);
+			rowPresenter.setListener(mHelper);
+			rowPresenter.setParticipatingEntranceTransition(false);
+			prepareEntranceTransition();
 
-		FullWidthDetailsOverviewSharedElementHelper mHelper = new FullWidthDetailsOverviewSharedElementHelper();
-		mHelper.setSharedElementEnterTransition(getActivity(),
-		                                        TRANSITION_NAME);
-		rowPresenter.setListener(mHelper);
-		rowPresenter.setParticipatingEntranceTransition(false);
-		prepareEntranceTransition();
+			ListRowPresenter shadowDisabledRowPresenter = new ListRowPresenter();
+			shadowDisabledRowPresenter.setShadowEnabled(false);
 
-		ListRowPresenter shadowDisabledRowPresenter = new ListRowPresenter();
-		shadowDisabledRowPresenter.setShadowEnabled(false);
+			// Setup PresenterSelector to distinguish between the different rows.
+			ClassPresenterSelector rowPresenterSelector = new ClassPresenterSelector();
+			rowPresenterSelector.addClassPresenter(DetailsOverviewRow.class,
+			                                       rowPresenter);
+			rowPresenterSelector.addClassPresenter(ListRow.class,
+			                                       new ListRowPresenter());
+			mRowsAdapter = new ArrayObjectAdapter(rowPresenterSelector);
 
-		// Setup PresenterSelector to distinguish between the different rows.
-		ClassPresenterSelector rowPresenterSelector = new ClassPresenterSelector();
-		rowPresenterSelector.addClassPresenter(DetailsOverviewRow.class,
-		                                       rowPresenter);
-		mRowsAdapter = new ArrayObjectAdapter(rowPresenterSelector);
-
-		// Setup action and detail row.
-//		mDetailsOverview = new DetailsOverviewRow(photo);
-//		ArrayObjectAdapter actionAdapter = new ArrayObjectAdapter();
-//		actionAdapter.add(new Action(ACTION_ID_CAST,
-//		                             getString(R.string.action_cast)));
-//		mDetailsOverview.setActionsAdapter(actionAdapter);
-//		mRowsAdapter.add(mDetailsOverview);
-
-		// Setup related row.
-//		ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(
-//				new CardPresenterSelector(getActivity()));
-//		for (Card characterCard : data.getCharacters()) listRowAdapter.add(characterCard);
-//		HeaderItem header = new HeaderItem(0, getString(R.string.header_related));
-//		mRowsAdapter.add(new CardListRow(header, listRowAdapter, null));
-
-
-		// Setup recommended row.
-//        listRowAdapter = new ArrayObjectAdapter(new CardPresenterSelector(getActivity()));
-//        for (Card card : data.getRecommended()) listRowAdapter.add(card);
-//        header = new HeaderItem(1, getString(R.string.header_recommended));
-//        mRowsAdapter.add(new ListRow(header, listRowAdapter));
-//
-		setAdapter(mRowsAdapter);
-		new Handler().postDelayed(new Runnable() {
-			                          @Override
-			                          public void run() {
-				                          startEntranceTransition();
-			                          }
-		                          },
-		                          500);
+			setAdapter(mRowsAdapter);
+			new Handler().postDelayed(new Runnable() {
+				                          @Override
+				                          public void run() {
+					                          startEntranceTransition();
+				                          }
+			                          },
+			                          500);
+		}
 	}
 
 	private void setupEventListeners() {
@@ -194,12 +202,6 @@ public class TvModeDetailFragment
 	}
 
 
-	@Override
-	public void onChange() {
-		PhotoDB photo = (PhotoDB) mRealmData.get(0);
-		setRowActionsAndDetail(photo);
-	}
-
 	private void setRowActionsAndDetail(PhotoDB photo) {
 		ResultReceiver resultReceiver = new ResultReceiver(new Handler(Looper.getMainLooper())) {
 			@Override
@@ -207,8 +209,13 @@ public class TvModeDetailFragment
 			                               Bundle resultData) {
 				super.onReceiveResult(resultCode,
 				                      resultData);
-				mDetailsOverview.setImageBitmap(getActivity(),
-				                                (Bitmap) resultData.getParcelable(EXTRAS_IMAGE));
+				Activity activity = getActivity();
+				if (activity != null) {
+					Bitmap bitmap = resultData.getParcelable(EXTRAS_IMAGE);
+					mDetailsOverview.setImageBitmap(activity,
+					                                bitmap);
+					updateBackground(bitmap);
+				}
 			}
 		};
 		LoadImageManuallyService.startService(App.Instance,
@@ -223,7 +230,54 @@ public class TvModeDetailFragment
 		mRowsAdapter.add(mDetailsOverview);
 	}
 
-	private void setRowRecommended(RealmList<PhotoDB> photoList){
-		//TODO Add recommended photos which are shot in the same month.
+	private void setRowRecommended() {
+		Activity activity = getActivity();
+		if (activity != null) {
+			ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new TvModeGridPresenterSelector(activity));
+			listRowAdapter.addAll(0,
+			                      mRealmData);
+			HeaderItem header = new HeaderItem(1,
+			                                   getString(R.string.lbl_more_photos));
+			mRowsAdapter.add(new ListRow(header,
+			                             listRowAdapter));
+		}
+	}
+
+	private void fetchRecommendedItems(Date date) {
+		RealmQuery<PhotoDB> q        = mRealm.where(PhotoDB.class);
+		Calendar            calendar = Calendar.getInstance();
+		calendar.set(Calendar.MINUTE,
+		             0);
+		calendar.set(Calendar.SECOND,
+		             0);
+		calendar.set(Calendar.MILLISECOND,
+		             0);
+		calendar.setTime(date);
+		int lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		calendar.set(Calendar.DAY_OF_MONTH,
+		             lastDay);
+		Date timeMax = calendar.getTime();
+		q.lessThanOrEqualTo("date",
+		                    timeMax);
+		calendar.set(Calendar.DAY_OF_MONTH,
+		             0);
+		Date timeMin = calendar.getTime();
+		q.greaterThanOrEqualTo("date",
+		                       timeMin);
+		mRealmData = q.findAllAsync();
+	}
+
+	private void updateBackground(Bitmap bmp) {
+		Activity activity = getActivity();
+		if (activity != null) {
+			Window window = activity.getWindow();
+			if (window != null) {
+				Resources resources = getResources();
+				if (resources != null) {
+					window.setBackgroundDrawable(new GlideBitmapDrawable(resources,
+					                                                     bmp));
+				}
+			}
+		}
 	}
 }

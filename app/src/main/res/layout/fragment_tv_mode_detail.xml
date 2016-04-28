@@ -27,13 +27,13 @@
         android:layout_marginBottom="3dp"
         android:layout_marginTop="15dp"
         android:fontFamily="sans-serif-light"
-        android:text="Title Text"/>
+        />
 
     <TextView
         android:id="@+id/extra_text"
         style="@style/Widget.Leanback.DetailsDescriptionBodyStyle"
         android:layout_width="match_parent"
-        android:fontFamily="sans-serif-regular"
         android:layout_height="wrap_content"
-        android:text="Filmmaker Guillermo del Toro teas up with Legendary Pictures to bring audiences a unique take on the monster film with this sci/fi production."/>
+        android:fontFamily="sans-serif-regular"
+        />
 </LinearLayout>

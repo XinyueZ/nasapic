@@ -42,6 +42,7 @@
             android:theme="@style/Theme.TvMode.LeanbackVerticalGrid"/>
         <activity
             android:name=".app.activities.TvModeDetailActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.Example.LeanbackDetails"/>
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"

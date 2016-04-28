@@ -56,8 +56,8 @@ public class LoadImageManuallyService
 				              .load(url)
 				              .asBitmap()
 				              .diskCacheStrategy(DiskCacheStrategy.ALL)
-				              .into(resources.getDimensionPixelSize(R.dimen.tv_mode_grid_card_width),
-				                    resources.getDimensionPixelSize(R.dimen.tv_mode_grid_card_height))
+				              .into(resources.getDimensionPixelSize(R.dimen.tv_mode_detail_photo_width),
+				                    resources.getDimensionPixelSize(R.dimen.tv_mode_detail_photo_height))
 				              .get();
 			} catch (InterruptedException | ExecutionException e) {
 				bitmap = null;
