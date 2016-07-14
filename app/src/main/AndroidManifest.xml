@@ -37,14 +37,6 @@
             android:name=".app.activities.WebViewActivity"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".app.activities.TvModeActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.TvMode.LeanbackVerticalGrid"/>
-        <activity
-            android:name=".app.activities.TvModeDetailActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.Example.LeanbackDetails"/>
-        <activity
             android:name=".app.activities.FacebookShareHelperActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
@@ -95,10 +87,6 @@
 
         <receiver android:name=".customtab.ActionBroadcastReceiver"/>
 
-        <service
-            android:name=".app.noactivities.LoadImageManuallyService"
-            android:exported="false">
-        </service>
     </application>
 
 </manifest>

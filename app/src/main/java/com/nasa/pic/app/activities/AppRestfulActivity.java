@@ -129,16 +129,12 @@ public abstract class AppRestfulActivity
 
 	protected abstract void initNavi();
 
-	protected abstract void initFab();
 
 	protected abstract void initMenu();
 
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.action_tv_mode:
-				TvModeActivity.showInstance(this);
-				break;
 			case android.R.id.home:
 				ActivityCompat.finishAfterTransition(this);
 			case R.id.action_about:
@@ -234,10 +230,9 @@ public abstract class AppRestfulActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		com.nasa.pic.utils.Utils.hideStatusBar(this);
+		com.nasa.pic.utils.Utils.fullScreen(this);
 		super.onCreate(savedInstanceState);
 		initMenu();
-		initFab();
 		initNavi();
 	}
 

@@ -154,7 +154,7 @@ public abstract class AppNormalActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		com.nasa.pic.utils.Utils.hideStatusBar(this);
+		com.nasa.pic.utils.Utils.fullScreen(this);
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
 			setType(savedInstanceState.getString(EXTRAS_TYPE));

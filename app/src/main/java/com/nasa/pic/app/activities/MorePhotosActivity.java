@@ -3,11 +3,7 @@ package com.nasa.pic.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -17,7 +13,6 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.databinding.ActivityMorePhotosBinding;
 import com.nasa.pic.ds.Photo;
-import com.nasa.pic.ds.PhotoDB;
 
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
@@ -34,12 +29,6 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 	 */
 	private static final int LAYOUT = R.layout.activity_more_photos;
 
-
-	//[Begin for detecting scrolling onto bottom]
-	private int mVisibleItemCount;
-	private int mPastVisibleItems;
-	private int mTotalItemCount;
-	//[End]
 
 	/**
 	 * Show single instance of {@link MorePhotosActivity}
@@ -114,32 +103,6 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 		return results;
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				//Calc whether the list has been scrolled on bottom,
-				//this lets app to getting next page.
-				LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-				mVisibleItemCount = linearLayoutManager.getChildCount();
-				mTotalItemCount = linearLayoutManager.getItemCount();
-				mPastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition();
-				if (ViewCompat.getY(recyclerView) < dy) {
-					if ((mVisibleItemCount + mPastVisibleItems) == mTotalItemCount) {
-						if (!mBinding.fab.isShown()) {
-							mBinding.fab.show();
-						}
-					}
-				} else {
-					if (mBinding.fab.isShown()) {
-						mBinding.fab.hide();
-					}
-				}
-			}
-		});
-	}
 
 
 	@Override
@@ -153,21 +116,7 @@ public final class MorePhotosActivity extends AppRestfulActivity {
 		});
 	}
 
-	@Override
-	protected void initFab() {
-		mBinding.fab.hide();
-		mBinding.fab.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				PhotoDB photoMin = (PhotoDB) getData().get(getData().size() - 1);
-				App.Instance.getFireManager().selectFrom(new Photo().newFromDB(photoMin));
-				mBinding.contentSrl.setRefreshing(true);
-				if (mBinding.fab.isShown()) {
-					mBinding.fab.hide();
-				}
-			}
-		});
-	}
+
 
 	@Override
 	protected void initMenu() {

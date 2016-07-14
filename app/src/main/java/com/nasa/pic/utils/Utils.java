@@ -4,7 +4,6 @@ package com.nasa.pic.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Window;
@@ -28,17 +27,12 @@ import retrofit2.Callback;
 
 public final class Utils {
 
-	public static void hideStatusBar(Activity activity) {
+	public static void fullScreen(Activity activity) {
 		Window window = activity.getWindow();
 		window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 		                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}
 
-	public static void featureContentTransitions(Activity activity) {
-		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			activity.requestWindowFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-		}
-	}
 
 	public static void facebookShare(Context cxt,
 	                                 PhotoDB photoDB) {

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.ActivityCompat;
 
-public class MainActivity extends  AbstractMainActivity {
+public final class MainActivity extends  AbstractMainActivity {
 	/**
 	 * Show single instance of {@link MainActivity}
 	 *

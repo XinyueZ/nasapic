@@ -9,10 +9,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -260,16 +258,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		navigationView.setNavigationItemSelectedListener(this);
 	}
 
-	protected void initFab() {
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null)
-						.show();
-			}
-		});
-	}
+
 
 	protected void initMenu() {
 		mBinding.toolbar.inflateMenu(getMenuRes());
