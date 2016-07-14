@@ -36,7 +36,6 @@ import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
 import com.chopping.rest.RestApiManager;
-import com.chopping.rest.RestFireManager;
 import com.chopping.utils.RestUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
@@ -67,30 +66,20 @@ public final class App extends MultiDexApplication {
 	}
 
 	private RestApiManager mApiManager;
-	private RestFireManager mFireManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		String[] fireInfo = RestUtils.initRest(
+		RestUtils.initRest(
 				this,
-				true
+				false
 		);
-		if( fireInfo != null ) {
-			mFireManager = new RestFireManager(
-					fireInfo[ 0 ],
-					fireInfo[ 1 ],
-					Integer.valueOf( fireInfo[ 2 ] ),
-					"reqTime"
-			);
-		}
-		mFireManager.onCreate( this );
 		mApiManager = new RestApiManager();
 		mApiManager.onCreate();
 
 		Fabric.with(this, new Crashlytics());
 		TaskHelper.init(getApplicationContext());
-		Prefs prefs = Prefs.createInstance(this);
+		Prefs.createInstance(this);
 		Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
 				.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 
@@ -102,7 +91,7 @@ public final class App extends MultiDexApplication {
 			tinyUrlCall.enqueue(new Callback<Response>() {
 				@Override
 				public void onResponse(Call<Response> call,retrofit2.Response<Response> response) {
-					if (response.isSuccess()) {
+					if (response.isSuccessful()) {
 						Prefs.getInstance().setAppDownloadInfo(
 								getString(R.string.lbl_share_download_app, getString(R.string.application_name),
 										response.body().getResult()));
@@ -124,10 +113,5 @@ public final class App extends MultiDexApplication {
 
 	public RestApiManager getApiManager() {
 		return mApiManager;
-	}
-
-
-	public RestFireManager getFireManager() {
-		return mFireManager;
 	}
 }

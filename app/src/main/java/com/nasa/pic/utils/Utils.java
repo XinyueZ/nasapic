@@ -114,7 +114,7 @@ public final class Utils {
 				@Override
 				public void onResponse(Call<Response> call,
 				                       retrofit2.Response<Response> res) {
-					if (res.isSuccess()) {
+					if (res.isSuccessful()) {
 						Response response = res.body();
 						String text = App.Instance.getString(R.string.lbl_share_item_content,
 						                                     description,
@@ -166,7 +166,7 @@ public final class Utils {
 				@Override
 				public void onResponse(Call<Response> call,
 				                       retrofit2.Response<Response> res) {
-					if (res.isSuccess()) {
+					if (res.isSuccessful()) {
 						Response response = res.body();
 						String text = App.Instance.getString(R.string.lbl_share_item_content,
 						                                     description,

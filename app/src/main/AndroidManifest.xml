@@ -28,9 +28,6 @@
             android:name=".app.activities.SubMainActivity"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".app.activities.MorePhotosActivity"
-            android:theme="@style/AppTheme"/>
-        <activity
             android:name=".app.activities.PhotoViewActivity"
             android:theme="@style/Transparent"/>
         <activity

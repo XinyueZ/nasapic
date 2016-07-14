@@ -114,9 +114,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		case R.id.action_month_photos:
 			SubMainActivity.showInstance(this);
 			break;
-		case R.id.action_more_photos:
-			MorePhotosActivity.showInstance(AbstractMainActivity.this);
-			break;
 		case R.id.action_app_list:
 			BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
 			behavior.setState(BottomSheetBehavior.STATE_EXPANDED);

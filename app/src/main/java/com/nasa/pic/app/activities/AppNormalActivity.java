@@ -97,7 +97,7 @@ public abstract class AppNormalActivity
 			@Override
 			public void onResponse(Call<Response> call,
 			                       retrofit2.Response<Response> res) {
-				if (res.isSuccess()) {
+				if (res.isSuccessful()) {
 					Response response = res.body();
 					mSharedUrl = !TextUtils.isEmpty(response.getResult()) ?
 					             response.getResult() :
