@@ -35,9 +35,7 @@ import java.math.BigDecimal;
 import io.realm.RealmObject;
 
 
-public abstract class AppRestfulActivity
-		extends RestfulActivity
-		implements OnMenuItemClickListener {
+public abstract class AppRestfulActivity extends RestfulActivity implements OnMenuItemClickListener {
 	private int mCellSize;
 	//------------------------------------------------
 	//Subscribes, event-handlers
@@ -49,8 +47,7 @@ public abstract class AppRestfulActivity
 	 * @param e Event {@link com.nasa.pic.events.FBShareEvent}.
 	 */
 	public void onEvent(FBShareEvent e) {
-		com.nasa.pic.utils.Utils.facebookShare(this,
-		                                       (PhotoDB) e.getObject());
+		com.nasa.pic.utils.Utils.facebookShare(this, (PhotoDB) e.getObject());
 	}
 
 	/**
@@ -60,8 +57,7 @@ public abstract class AppRestfulActivity
 	 */
 	public void onEvent(ShareEvent e) {
 		PhotoDB photoDB = (PhotoDB) e.getObject();
-		com.nasa.pic.utils.Utils.share(photoDB,
-		                               e.getIntent());
+		com.nasa.pic.utils.Utils.share(photoDB, e.getIntent());
 	}
 
 
@@ -71,9 +67,7 @@ public abstract class AppRestfulActivity
 	 * @param e Event {@link com.nasa.pic.events.CompleteShareEvent}.
 	 */
 	public void onEvent(CompleteShareEvent e) {
-		ActivityCompat.startActivity(this,
-		                             e.getIntent(),
-		                             null);
+		ActivityCompat.startActivity(this, e.getIntent(), null);
 	}
 
 	/**
@@ -127,9 +121,6 @@ public abstract class AppRestfulActivity
 	protected abstract int getMenuRes();
 
 
-	protected abstract void initNavi();
-
-
 	protected abstract void initMenu();
 
 	@Override
@@ -138,16 +129,14 @@ public abstract class AppRestfulActivity
 			case android.R.id.home:
 				ActivityCompat.finishAfterTransition(this);
 			case R.id.action_about:
-				showDialogFragment(AboutDialogFragment.newInstance(this),
-				                   null);
+				showDialogFragment(AboutDialogFragment.newInstance(this), null);
 				break;
 		}
 		return true;
 	}
 
 
-	protected void buildListView(Context cxt,
-	                             RecyclerView recyclerView) {
+	protected void buildListView(Context cxt, RecyclerView recyclerView) {
 		ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
 		LL.d("Screen width: " + screenSize.Width);
 		float basic = cxt.getResources()
@@ -155,11 +144,9 @@ public abstract class AppRestfulActivity
 		LL.d("Basic: " + basic);
 		float div = screenSize.Width / basic;
 		LL.d("Div: " + div);
-		BigDecimal cardCount = new BigDecimal(div).setScale(0,
-		                                                    BigDecimal.ROUND_HALF_UP);
+		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
 		LL.d("CardCount: " + cardCount);
-		recyclerView.setLayoutManager(new GridLayoutManager(cxt,
-		                                                    cardCount.intValue()));
+		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
 		mCellSize = (int) (screenSize.Width / div);
 		LL.d("CardSize: " + mCellSize);
 	}
@@ -177,15 +164,9 @@ public abstract class AppRestfulActivity
 				loadList();
 			}
 		});
-		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1,
-		                                           R.color.c_refresh_2,
-		                                           R.color.c_refresh_3,
-		                                           R.color.c_refresh_4);
-		swipeRefreshLayout.setProgressViewEndTarget(true,
-		                                            actionbarHeight * 2);
-		swipeRefreshLayout.setProgressViewOffset(false,
-		                                         0,
-		                                         actionbarHeight * 2);
+		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3, R.color.c_refresh_4);
+		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
+		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
 		swipeRefreshLayout.setRefreshing(true);
 	}
 
@@ -196,12 +177,11 @@ public abstract class AppRestfulActivity
 	 * @param _tagName Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
 	 *                 android.support.v4.app.DialogFragment} can been seen.
 	 */
-	protected void showDialogFragment(DialogFragment _dlgFrg,
-	                                  String _tagName) {
+	protected void showDialogFragment(DialogFragment _dlgFrg, String _tagName) {
 		try {
 			if (_dlgFrg != null) {
-				DialogFragment      dialogFragment = _dlgFrg;
-				FragmentTransaction ft             = getSupportFragmentManager().beginTransaction();
+				DialogFragment dialogFragment = _dlgFrg;
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 				// Ensure that there's only one dialog to the user.
 				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
 				if (prev != null) {
@@ -209,11 +189,9 @@ public abstract class AppRestfulActivity
 				}
 				try {
 					if (TextUtils.isEmpty(_tagName)) {
-						dialogFragment.show(ft,
-						                    "dlg");
+						dialogFragment.show(ft, "dlg");
 					} else {
-						dialogFragment.show(ft,
-						                    _tagName);
+						dialogFragment.show(ft, _tagName);
 					}
 				} catch (Exception _e) {
 				}
@@ -233,7 +211,6 @@ public abstract class AppRestfulActivity
 		com.nasa.pic.utils.Utils.fullScreen(this);
 		super.onCreate(savedInstanceState);
 		initMenu();
-		initNavi();
 	}
 
 

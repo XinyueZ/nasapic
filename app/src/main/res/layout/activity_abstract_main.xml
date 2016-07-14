@@ -1,99 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".app.activities.AbstractMainActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".app.activities.AbstractMainActivity">
 
     <data>
 
         <variable
             name="adapter"
-            type="com.nasa.pic.app.adapters.PhotoListAdapter" />
+            type="com.nasa.pic.app.adapters.PhotoListAdapter"/>
     </data>
 
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="match_parent">
 
-        <android.support.design.widget.CoordinatorLayout
-            android:id="@+id/coordinator_layout"
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/content_srl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+            <!--Don't use this behavior because it makes list under toolbar.-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/responses_rv"
+                style="@style/RecyclerViewStyle"
+                app:listAdapter="@{adapter}"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/content_srl"
+        <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/ActionBarStyle"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <FrameLayout
+            android:id="@id/error_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+        <LinearLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/common_white"
+            android:orientation="vertical"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="@dimen/bottom_sheet_app_list"
+            app:layout_behavior="@string/bottom_sheet_behavior">
+
+            <ImageView
+                android:id="@+id/bottom_sheet_head_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/common_transparent"
+                app:srcCompat="@drawable/ic_more_apps"/>
+
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <!--Don't use this behavior because it makes list under toolbar.-->
-                <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/responses_rv"
-                    style="@style/RecyclerViewStyle"
-                    app:listAdapter="@{adapter}" />
-            </android.support.v4.widget.SwipeRefreshLayout>
 
 
-            <android.support.design.widget.AppBarLayout style="@style/AppBarStyle">
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    style="@style/ActionBarStyle" />
-
-            </android.support.design.widget.AppBarLayout>
-
-
-            <FrameLayout
-                android:id="@id/error_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-
-
-            <LinearLayout
-                android:id="@+id/bottom_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/common_white"
-                android:orientation="vertical"
-                app:behavior_hideable="true"
-                app:behavior_peekHeight="@dimen/bottom_sheet_app_list"
-                app:layout_behavior="@string/bottom_sheet_behavior">
-
-                <ImageView
-                    android:id="@+id/bottom_sheet_head_iv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/common_transparent"
-                    app:srcCompat="@drawable/ic_more_apps" />
-
-                <android.support.v4.widget.NestedScrollView
+                <FrameLayout
+                    android:id="@+id/app_list_fl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"/>
 
+            </android.support.v4.widget.NestedScrollView>
+        </LinearLayout>
 
-                    <FrameLayout
-                        android:id="@+id/app_list_fl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </android.support.v4.widget.NestedScrollView>
-            </LinearLayout>
-        </android.support.design.widget.CoordinatorLayout>
-
-        <android.support.design.widget.NavigationView
-            android:id="@+id/nav_view"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@color/common_black"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/drawer_activity_main" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/show_month_fab"
+                style="@style/FAB"
+                app:backgroundTint="@color/colorPrimary"
+                app:rippleColor="@color/colorPrimaryDark"
+                app:srcCompat="@drawable/ic_month"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/show_day_fab"
+                style="@style/FAB"
+                app:backgroundTint="@color/colorBrown"
+                app:rippleColor="@color/colorBrownDark"
+                app:srcCompat="@drawable/ic_day"
+                />
 
 
-    </android.support.v4.widget.DrawerLayout>
+        </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+
 </layout>

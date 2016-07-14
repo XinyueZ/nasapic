@@ -70,10 +70,34 @@
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:clipToPadding">false</item>
+        <item name="android:clipToPadding">true</item>
     </style>
 
 
+    <style name="ICON" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="android:clickable">false</item>
+        <item name="backgroundTint">@color/common_white</item>
+        <item name="fabSize">mini</item>
+        <item name="rippleColor">@color/common_white</item>
+    </style>
 
+
+    <style name="FAB" parent="@style/ICON">
+        <item name="android:layout_marginLeft">@dimen/fab_margin</item>
+        <item name="android:layout_marginRight">@dimen/fab_margin</item>
+        <item name="android:layout_marginStart">@dimen/fab_margin</item>
+        <item name="android:layout_marginEnd">@dimen/fab_margin</item>
+        <item name="android:layout_marginBottom">@dimen/fab_margin</item>
+        <item name="elevation">5dp</item>
+        <item name="android:clickable">true</item>
+    </style>
 
 </resources>

@@ -15,4 +15,14 @@
     <color name="c_refresh_2">#3F51B5</color>
     <color name="c_refresh_3">#F44336</color>
     <color name="c_refresh_4">#009688</color>
+
+
+
+    <color name="colorOrange">#FF9800</color>
+    <color name="colorOrangeDark">#FF6D00</color>
+
+
+
+    <color name="colorBrown">#795548</color>
+    <color name="colorBrownDark">#3E2723</color>
 </resources>
