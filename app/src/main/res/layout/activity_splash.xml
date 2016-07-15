@@ -7,7 +7,7 @@
         android:id="@id/error_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="@color/common_transparent"
         android:orientation="vertical">
 
         <com.nasa.pic.utils.RevealLayout

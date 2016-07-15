@@ -5,12 +5,16 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.Snackbar;
+import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog.Builder;
@@ -29,15 +33,20 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
+import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.ds.PhotoDB;
+import com.nasa.pic.ds.RequestPhotoDayList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.utils.Prefs;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -45,12 +54,17 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
+import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_DAY_OF_MONTH;
+import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_MONTH;
+import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_YEAR;
+import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
+
 /**
  * An abstract {@link android.app.Activity} that contains {@link android.support.v4.widget.DrawerLayout}.
  *
  * @author Xinyue Zhao
  */
-public abstract class AbstractMainActivity extends AppRestfulActivity   {
+public abstract class AbstractMainActivity extends AppRestfulActivity {
 
 	/**
 	 * The menu to this view.
@@ -96,7 +110,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 
 	}
 	//------------------------------------------------
-
 
 
 	/**
@@ -151,9 +164,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 		                          .getID();
 
 
-		loadPhotoList(year, shownMonth, -1, timeZone);
+		loadPhotoList(year, shownMonth, timeZone);
 		if (currentDay < 15) {
-			loadPhotoList(year, currentMonth, -1, timeZone);
+			loadPhotoList(year, currentMonth, timeZone);
 		}
 	}
 
@@ -163,7 +176,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 		int shownMonth = currentMonth + 1;
 		String timeZone = calendar.getTimeZone()
 		                          .getID();
-		loadPhotoList(year, shownMonth, -1, timeZone);
+		loadPhotoList(year, shownMonth, timeZone);
 	}
 
 	@Override
@@ -205,15 +218,18 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 	@Override
 	protected void onRestApiSuccess() {
 		mBinding.contentSrl.setRefreshing(false);
+		stopLoadingMoreIndicator();
 	}
 
 
 	@Override
 	protected void onRestApiFail() {
 		mBinding.contentSrl.setRefreshing(false);
+		stopLoadingMoreIndicator();
 	}
 
-	protected void loadPhotoList(int year, int month, int day, String timeZone) {
+
+	protected void loadPhotoList(int year, int month, String timeZone) {
 		RequestPhotoList requestPhotoList = new RequestPhotoList();
 		requestPhotoList.setReqId(UUID.randomUUID()
 		                              .toString());
@@ -329,16 +345,54 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getBinding().toolbar.setTitle(R.string.application_name);
+		mBinding.loadingFab.hide();
 		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				PhotoDB photoDB = (PhotoDB) getData().last();
-				Log.d("last searched", "searched date: " + photoDB.getDate().toString());
+				Log.d("last searched",
+				      "searched date: " + photoDB.getDate()
+				                                 .toString());
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(photoDB.getDate());
-				calendar.add(Calendar.MONTH , -1);
+				calendar.add(Calendar.MONTH, -1);
 				loadList(calendar);
-				Snackbar.make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG).show();
+				Snackbar.make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG)
+				        .show();
+				startLoadingMoreIndicator();
+			}
+		});
+		mBinding.showDayFab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				showDialogFragment(DatePickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
+					@Override
+					protected void onReceiveResult(int resultCode, Bundle resultData) {
+						super.onReceiveResult(resultCode, resultData);
+						switch (resultCode) {
+							case RESULT_CODE:
+								int year = resultData.getInt(EXTRAS_YEAR);
+								int month = resultData.getInt(EXTRAS_MONTH);
+								int dayOfMonth = resultData.getInt(EXTRAS_DAY_OF_MONTH);
+								Calendar calendar = Calendar.getInstance();
+								String timeZone = calendar.getTimeZone()
+								                          .getID();
+								String keyword = String.format(Locale.getDefault(), "%d-%d-%d", year, month, dayOfMonth);
+								List<String> keywords = new ArrayList<>(1);
+								keywords.add(keyword);
+								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
+								dayListRequest.setReqId(UUID.randomUUID()
+								                            .toString());
+								dayListRequest.setDateTimes(keywords);
+								dayListRequest.setTimeZone(timeZone);
+								App.Instance.getApiManager()
+								            .execAsync(AppGuardService.Retrofit.create(Api.class)
+								                                               .getPhotoList(dayListRequest), dayListRequest);
+								mBinding.contentSrl.setRefreshing(true);
+								break;
+						}
+					}
+				}), "DatePickerDialogFragment");
 			}
 		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -380,6 +434,23 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 						mBinding.loadMoreFab.hide();
 					}
 				}
-			}});
+			}
+		});
+	}
+
+	private void startLoadingMoreIndicator() {
+		Drawable drawable = mBinding.loadingFab.getDrawable();
+		if (drawable instanceof Animatable) {
+			((Animatable) drawable).start();
+			mBinding.loadingFab.show();
+		}
+	}
+
+	private void stopLoadingMoreIndicator() {
+		Drawable drawable = mBinding.loadingFab.getDrawable();
+		if (drawable instanceof Animatable) {
+			((Animatable) drawable).stop();
+			mBinding.loadingFab.hide();
+		}
 	}
 }
