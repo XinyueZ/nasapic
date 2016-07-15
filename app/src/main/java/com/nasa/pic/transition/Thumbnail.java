@@ -1,4 +1,4 @@
-package com.nasa.pic.transaction;
+package com.nasa.pic.transition;
 
 import java.io.Serializable;
 

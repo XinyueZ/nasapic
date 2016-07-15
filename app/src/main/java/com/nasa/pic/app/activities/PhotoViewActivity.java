@@ -9,8 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -18,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Interpolator;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -36,10 +41,9 @@ import com.nasa.pic.customtab.CustomTabActivityHelper.ConnectionCallback;
 import com.nasa.pic.customtab.WebViewFallback;
 import com.nasa.pic.databinding.ActivityPhotoViewBinding;
 import com.nasa.pic.events.OpenPhotoEvent;
-import com.nasa.pic.transaction.Thumbnail;
-import com.nasa.pic.transaction.Transaction;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.nasa.pic.transition.BakedBezierInterpolator;
+import com.nasa.pic.transition.Thumbnail;
+import com.nasa.pic.transition.TransitCompat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -71,7 +75,7 @@ public final class PhotoViewActivity
 	 */
 	private static final int MENU = R.menu.menu_photo_view;
 
-	private Transaction mTransaction;
+	private TransitCompat mTransit;
 
 	public static void showInstance(Context cxt,
 	                                String title,
@@ -189,13 +193,51 @@ public final class PhotoViewActivity
 
 						mBinding.bigImgIv.getViewTreeObserver()
 						                 .removeOnPreDrawListener(this);
-						mTransaction = new Transaction.Builder().setThumbnail((Thumbnail) object)
-						                                        .setTarget(mBinding.bigImgIv)
-						                                        .build(PhotoViewActivity.this);
-						mTransaction.enterAnimation(new AnimatorListenerAdapter() {
+
+						ValueAnimatorCompat enterTogether = AnimatorCompatHelper.emptyValueAnimator();
+						enterTogether.setDuration(TransitCompat.ANIM_DURATION * 2);
+						enterTogether.addUpdateListener(new AnimatorUpdateListenerCompat() {
+							private float old = 0;
+							private float end = 255;
+							private Interpolator interpolator2 = new BakedBezierInterpolator();
+
 							@Override
-							public void onAnimationEnd(Animator animation) {
-								super.onAnimationEnd(animation);
+							public void onAnimationUpdate(ValueAnimatorCompat animation) {
+								float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+								//Set background alpha
+								float alpha =  old + (fraction * (end - old));
+								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+							}
+						});
+
+						ValueAnimatorCompat exitTogether = AnimatorCompatHelper.emptyValueAnimator();
+						exitTogether.setDuration(TransitCompat.ANIM_DURATION * 4);
+						exitTogether.addUpdateListener(new AnimatorUpdateListenerCompat() {
+							private float old = 255;
+							private float end = 0;
+							private Interpolator interpolator2 = new BakedBezierInterpolator();
+
+							@Override
+							public void onAnimationUpdate(ValueAnimatorCompat animation) {
+								float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+								//Set background alpha
+								float alpha =  old + (fraction * (end - old));
+								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+							}
+						});
+
+
+						mTransit = new TransitCompat.Builder().setThumbnail((Thumbnail) object)
+						                                      .setTarget(mBinding.bigImgIv)
+						                                      .setPlayTogetherAfterEnterTransition(enterTogether)
+						                                      .setPlayTogetherBeforeExitTransition(exitTogether)
+						                                      .build();
+						mTransit.enter(new ViewPropertyAnimatorListenerAdapter() {
+							@Override
+							public void onAnimationStart(View view) {
+								super.onAnimationStart(view);
 								loadImage(getUrl2PhotoFallback());
 							}
 						});
@@ -217,7 +259,7 @@ public final class PhotoViewActivity
 	 */
 	private void loadImage(final String path) {
 		if (TextUtils.equals("image", getType())) {
-			if (mTransaction == null) {
+			if (mTransit == null) {
 				mBinding.bigImgIv.setImageResource(R.drawable.placeholder);
 			}
 			Glide.with(App.Instance)
@@ -250,11 +292,11 @@ public final class PhotoViewActivity
 
 	@Override
 	public void onBackPressed() {
-		if (mTransaction != null) {
-			mTransaction.exitAnimation(new AnimatorListenerAdapter() {
+		if (mTransit != null) {
+			mTransit.exit(new ViewPropertyAnimatorListenerAdapter() {
 				@Override
-				public void onAnimationEnd(Animator animation) {
-					super.onAnimationEnd(animation);
+				public void onAnimationEnd(View view) {
+					super.onAnimationEnd(view);
 					ActivityCompat.finishAfterTransition(PhotoViewActivity.this);
 				}
 			});

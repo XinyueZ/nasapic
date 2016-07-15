@@ -6,6 +6,7 @@
     <color name="colorAccent">#fa3c23</color>
     <color name="common_black">#000000</color>
     <color name="common_black_trans">#33000000</color>
+    <color name="common_black_trans_100">#00000000</color>
     <color name="common_white">#FFFFFF</color>
     <color name="common_transparent">@android:color/transparent</color>
     <color name="grey_500">#9E9E9E</color>

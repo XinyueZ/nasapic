@@ -10,8 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
@@ -21,9 +19,10 @@ import com.nasa.pic.R;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivitySplashBinding;
 import com.nasa.pic.utils.Prefs;
+import com.nasa.pic.utils.Utils;
 
-import permissions.dispatcher.DeniedPermissions;
-import permissions.dispatcher.NeedsPermissions;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.RuntimePermissions;
 
 /**
@@ -70,14 +69,14 @@ public final class SplashActivity extends BaseActivity {
 	}
 
 
-	@NeedsPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE  })
+	@NeedsPermission({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE  })
 	void getPermissions() {
 		MainActivity.showInstance(this);
 		finish();
 	}
 
 
-	@DeniedPermissions({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE })
+	@OnPermissionDenied({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE })
 	void noPermissions() {
 		Snackbar.make(findViewById(R.id.error_content), R.string.msg_permission_prompt, Snackbar.LENGTH_INDEFINITE)
 				.setAction(R.string.btn_app_close, new OnClickListener() {
@@ -92,8 +91,7 @@ public final class SplashActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		Utils.fullScreen(this);
 		super.onCreate(savedInstanceState);
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
@@ -125,8 +123,8 @@ public final class SplashActivity extends BaseActivity {
 
 	public static void startAppGuardService(Context cxt) {
 		AppGuardService.buildRetrofit();
-//		long scheduleSec = 60 * 2;
-		long scheduleSec = 10800L;
+		long scheduleSec = 60 * 2;
+//		long scheduleSec = 10800L;
 		long flexSecs = 60L;
 		String tag = System.currentTimeMillis() + "";
 		PeriodicTask scheduleTask = new PeriodicTask.Builder().setService(AppGuardService.class).setPeriod(scheduleSec)

@@ -1,7 +1,7 @@
 package com.nasa.pic.events;
 
 
-import com.nasa.pic.transaction.Thumbnail;
+import com.nasa.pic.transition.Thumbnail;
 
 import io.realm.RealmObject;
 

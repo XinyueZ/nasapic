@@ -124,7 +124,7 @@ public final class Prefs extends BasicPrefs {
 	}
 
 	public int getCurrentApiPosition() {
-		return getInt(KEY_CURRENT_API_POSITION, 2);
+		return getInt(KEY_CURRENT_API_POSITION, 0);
 	}
 
 	public int getApiCount() {

@@ -42,7 +42,6 @@ android {
     }
 
     dexOptions {
-        incremental true
         javaMaxHeapSize "2g"
     }
 
@@ -111,8 +110,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-v7'
     }
     compile 'com.facebook.stetho:stetho-okhttp:1.0.0'
-    compile 'com.github.hotchemi:permissionsdispatcher:1.2.1@aar'
-    apt 'com.github.hotchemi:permissionsdispatcher-processor:1.2.1'
+    compile "com.github.hotchemi:permissionsdispatcher:2.1.1"
+    apt "com.github.hotchemi:permissionsdispatcher-processor:2.1.1"
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile project(':volley_cz')
     compile project(':ChoppingBootstrap')

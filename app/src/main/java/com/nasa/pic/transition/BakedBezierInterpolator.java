@@ -1,14 +1,7 @@
-package com.nasa.pic.utils;
+package com.nasa.pic.transition;
 
 import android.view.animation.Interpolator;
 
-/**
- * Created by yugy on 14/11/21.
- * <p/>
- * Support material-design feeling.
- * <p/>
- * <a href="https://github.com/kyze8439690/RevealLayout">RevealLayout</a>
- */
 public final class BakedBezierInterpolator implements Interpolator {
 
 	/**

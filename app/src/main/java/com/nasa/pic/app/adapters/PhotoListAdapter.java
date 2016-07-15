@@ -19,7 +19,7 @@ import com.nasa.pic.R;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
-import com.nasa.pic.transaction.Thumbnail;
+import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
 import java.text.SimpleDateFormat;

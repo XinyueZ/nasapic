@@ -1,11 +1,11 @@
 package com.nasa.pic.ds;
 
 
-import java.util.List;
-
 import com.chopping.rest.RestObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
