@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
@@ -49,6 +50,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
+
+import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 
 
 /**
@@ -292,6 +295,12 @@ public final class PhotoViewActivity
 
 	@Override
 	public void onBackPressed() {
+		BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
+		if(behavior.getState() != STATE_COLLAPSED) {
+			behavior.setState(STATE_COLLAPSED);
+			return;
+		}
+
 		if (mTransit != null) {
 			mTransit.exit(new ViewPropertyAnimatorListenerAdapter() {
 				@Override

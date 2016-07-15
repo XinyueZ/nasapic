@@ -15,6 +15,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
+import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
@@ -68,7 +70,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 	private int mPastVisibleItems;
 	private int mTotalItemCount;
 	//[End]
-	private Calendar mCalendar = Calendar.getInstance();
 
 	//------------------------------------------------
 	//Subscribes, event-handlers
@@ -140,23 +141,28 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 
 	@Override
 	protected void loadList() {
-		if(mCalendar == null) {
-			return;
-		}
-
-		int year = mCalendar.get(Calendar.YEAR);
-		int currentMonth = mCalendar.get(Calendar.MONTH);
-		int currentDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int currentMonth = calendar.get(Calendar.MONTH);
+		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 		int shownMonth = currentMonth + 1;
-		String timeZone = mCalendar.getTimeZone()
+		String timeZone = calendar.getTimeZone()
 		                          .getID();
 
 
 		loadPhotoList(year, shownMonth, -1, timeZone);
 		if (currentDay < 15) {
 			loadPhotoList(year, currentMonth, -1, timeZone);
-			mCalendar.add(Calendar.MONTH, -1);
 		}
+	}
+
+	private void loadList(Calendar calendar) {
+		int year = calendar.get(Calendar.YEAR);
+		int currentMonth = calendar.get(Calendar.MONTH);
+		int shownMonth = currentMonth + 1;
+		String timeZone = calendar.getTimeZone()
+		                          .getID();
+		loadPhotoList(year, shownMonth, -1, timeZone);
 	}
 
 	@Override
@@ -325,8 +331,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				mCalendar.add(Calendar.MONTH, -1);
-				loadList();
+				PhotoDB photoDB = (PhotoDB) getData().last();
+				Log.d("last searched", "searched date: " + photoDB.getDate().toString());
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(photoDB.getDate());
+				calendar.add(Calendar.MONTH , -1);
+				loadList(calendar);
 			}
 		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
