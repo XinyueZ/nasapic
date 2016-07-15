@@ -13,6 +13,7 @@ import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog.Builder;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,6 +62,14 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 	 * Data-binding.
 	 */
 	private ActivityAbstractMainBinding mBinding;
+
+	//[Begin for detecting scrolling onto bottom]
+	private int mVisibleItemCount;
+	private int mPastVisibleItems;
+	private int mTotalItemCount;
+	//[End]
+	private Calendar mCalendar = Calendar.getInstance();
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -131,18 +140,22 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 
 	@Override
 	protected void loadList() {
-		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int currentMonth = calendar.get(Calendar.MONTH);
-		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+		if(mCalendar == null) {
+			return;
+		}
+
+		int year = mCalendar.get(Calendar.YEAR);
+		int currentMonth = mCalendar.get(Calendar.MONTH);
+		int currentDay = mCalendar.get(Calendar.DAY_OF_MONTH);
 		int shownMonth = currentMonth + 1;
-		String timeZone = calendar.getTimeZone()
+		String timeZone = mCalendar.getTimeZone()
 		                          .getID();
 
 
 		loadPhotoList(year, shownMonth, -1, timeZone);
 		if (currentDay < 15) {
 			loadPhotoList(year, currentMonth, -1, timeZone);
+			mCalendar.add(Calendar.MONTH, -1);
 		}
 	}
 
@@ -330,6 +343,19 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 					}
 				}
 
+				//Calc whether the list has been scrolled on bottom,
+				//this lets app to getting next page.
+				LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+				mVisibleItemCount = linearLayoutManager.getChildCount();
+				mTotalItemCount = linearLayoutManager.getItemCount();
+				mPastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition();
+				if (ViewCompat.getY(recyclerView) < dy) {
+					if ((mVisibleItemCount + mPastVisibleItems) == mTotalItemCount) {
+						//Load more
+						mCalendar.add(Calendar.MONTH, -1);
+						loadList();
+					}
+				}
 			}});
 	}
 }
