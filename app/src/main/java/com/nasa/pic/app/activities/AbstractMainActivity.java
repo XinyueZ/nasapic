@@ -322,6 +322,13 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getBinding().toolbar.setTitle(R.string.application_name);
+		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mCalendar.add(Calendar.MONTH, -1);
+				loadList();
+			}
+		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -352,8 +359,13 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 				if (ViewCompat.getY(recyclerView) < dy) {
 					if ((mVisibleItemCount + mPastVisibleItems) == mTotalItemCount) {
 						//Load more
-						mCalendar.add(Calendar.MONTH, -1);
-						loadList();
+						if (!mBinding.loadMoreFab.isShown()) {
+							mBinding.loadMoreFab.show();
+						}
+					}
+				} else {
+					if (mBinding.loadMoreFab.isShown()) {
+						mBinding.loadMoreFab.hide();
 					}
 				}
 			}});

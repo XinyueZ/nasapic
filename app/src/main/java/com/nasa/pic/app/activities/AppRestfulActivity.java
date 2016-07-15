@@ -179,16 +179,17 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 
 	protected void buildListView(Context cxt, RecyclerView recyclerView) {
 		ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
-		LL.d("Screen width: " + screenSize.Width);
+		int width = screenSize.Width - getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin) * 2;
+		LL.d("Screen width: " + width);
 		float basic = cxt.getResources()
 		                 .getDimension(R.dimen.basic_card_width);
 		LL.d("Basic: " + basic);
-		float div = screenSize.Width / basic;
+		float div = width / basic;
 		LL.d("Div: " + div);
 		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
 		LL.d("CardCount: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
-		mCellSize = (int) (screenSize.Width / div);
+		mCellSize = (int) (width / div);
 		LL.d("CardSize: " + mCellSize);
 	}
 

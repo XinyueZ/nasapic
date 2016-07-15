@@ -83,24 +83,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/show_month_fab"
+                android:id="@+id/load_more_fab"
                 style="@style/FAB"
+                android:layout_gravity="end"
                 app:backgroundTint="@color/colorPrimary"
                 app:rippleColor="@color/colorPrimaryDark"
-                app:srcCompat="@drawable/ic_month"/>
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/show_day_fab"
-                style="@style/FAB"
-                app:backgroundTint="@color/colorBrown"
-                app:rippleColor="@color/colorBrownDark"
-                app:srcCompat="@drawable/ic_day"
-                />
+                app:srcCompat="@drawable/ic_call_more"/>
 
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/show_month_fab"
+                    style="@style/FAB"
+                    app:backgroundTint="@color/colorOrange"
+                    app:rippleColor="@color/colorOrangeDark"
+                    app:srcCompat="@drawable/ic_month"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/show_day_fab"
+                    style="@style/FAB"
+                    app:backgroundTint="@color/colorBrown"
+                    app:rippleColor="@color/colorBrownDark"
+                    app:srcCompat="@drawable/ic_day"
+                    />
+
+            </LinearLayout>
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 
