@@ -3,7 +3,6 @@ package com.nasa.pic.app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
@@ -17,10 +16,11 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
 
 import com.nasa.pic.BR;
 import com.nasa.pic.R;
+import com.nasa.pic.app.App;
+import com.nasa.pic.databinding.ItemBinding;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
@@ -29,7 +29,6 @@ import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		Context cxt = parent.getContext();
 		LayoutInflater inflater = LayoutInflater.from(cxt);
-		ViewDataBinding binding = DataBindingUtil.inflate(inflater, ITEM_LAYOUT, parent, false);
+		ItemBinding binding = DataBindingUtil.inflate(inflater, ITEM_LAYOUT, parent, false);
 		return new PhotoListAdapter.ViewHolder(binding);
 	}
 
@@ -167,10 +166,10 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	 * ViewHolder for the list.
 	 */
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private ViewDataBinding mBinding;
+		private ItemBinding mBinding;
 		private Toolbar mToolbar;
 
-		ViewHolder(ViewDataBinding binding) {
+		ViewHolder(ItemBinding binding) {
 			super(binding.getRoot());
 			mBinding = binding;
 			mToolbar = (Toolbar) binding.getRoot()
@@ -193,36 +192,39 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 			if (pos != RecyclerView.NO_POSITION) {
 
 				try {
-					ImageView imageView = (ImageView) view.findViewById(R.id.thumbnail_iv);
-					final WeakReference<ImageView> ivRef = new WeakReference<>(imageView);
 					ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
 					animator.setDuration(TransitCompat.ANIM_DURATION * 3);
-					animator.setTarget(imageView);
+					animator.setTarget(mViewHolder.mBinding.thumbnailIv);
 					animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
-						private float old = 1;
-						private float end = 0;
+						private float oldAlpha = 1;
+						private float endAlpha = 0;
+						private float oldEle = App.Instance.getResources()
+						                                   .getDimension(R.dimen.cardElevationNormal);
+						private float endEle = App.Instance.getResources()
+						                                   .getDimension(R.dimen.cardElevationSelected);
 						private Interpolator interpolator2 = new BakedBezierInterpolator();
 
 						@Override
 						public void onAnimationUpdate(ValueAnimatorCompat animation) {
-							if (ivRef.get() == null) {
-								return;
-							}
 							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
 
 							//Set background alpha
-							float alpha = old + (fraction * (end - old));
-							ViewCompat.setAlpha(ivRef.get(), alpha);
+							float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
+							ViewCompat.setAlpha(mViewHolder.mBinding.thumbnailIv, alpha);
+							//Set frame on cardview.
+							float ele = oldEle + (fraction * (endEle - oldEle));
+							mViewHolder.mBinding.photoCv.setCardElevation(ele);
+							mViewHolder.mBinding.photoCv.setMaxCardElevation(ele);
 						}
 					});
 					animator.start();
 
 					int[] screenLocation = new int[2];
-					imageView.getLocationOnScreen(screenLocation);
-					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], imageView.getWidth(), imageView.getHeight());
+					mViewHolder.mBinding.thumbnailIv.getLocationOnScreen(screenLocation);
+					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], mViewHolder.mBinding.thumbnailIv.getWidth(), mViewHolder.mBinding.thumbnailIv.getHeight());
 					EventBus.getDefault()
 					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()
-					                                                       .get(pos), thumbnail, imageView));
+					                                                       .get(pos), thumbnail, mViewHolder.mBinding));
 				} catch (NullPointerException e) {
 					EventBus.getDefault()
 					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()

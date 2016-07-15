@@ -1,23 +1,20 @@
 package com.nasa.pic.events;
 
 
-import android.widget.ImageView;
-
+import com.nasa.pic.databinding.ItemBinding;
 import com.nasa.pic.transition.Thumbnail;
-
-import java.lang.ref.WeakReference;
 
 import io.realm.RealmObject;
 
 public final class OpenPhotoEvent {
 	private RealmObject mObject;
 	private Thumbnail mThumbnail;
-	private WeakReference<ImageView> mSenderIv;
+	private ItemBinding mItemBinding;
 
-	public OpenPhotoEvent(RealmObject object, Thumbnail thumbnail, ImageView imageView) {
+	public OpenPhotoEvent(RealmObject object, Thumbnail thumbnail, ItemBinding binding) {
 		mObject = object;
 		mThumbnail = thumbnail;
-		mSenderIv = new WeakReference<>(imageView);
+		mItemBinding = binding;
 	}
 
 
@@ -30,8 +27,7 @@ public final class OpenPhotoEvent {
 		return mThumbnail;
 	}
 
-
-	public WeakReference<ImageView> getSenderIv() {
-		return mSenderIv;
+	public ItemBinding getItemBinding() {
+		return mItemBinding;
 	}
 }

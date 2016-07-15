@@ -13,4 +13,7 @@
     <dimen name="bottom_sheet_description">80dp</dimen>
     <dimen name="bottom_sheet_app_list">0dp</dimen>
     <dimen name="ab_elevation">10dp</dimen>
+
+    <dimen name="cardElevationNormal">0dp</dimen>
+    <dimen name="cardElevationSelected">15dp</dimen>
 </resources>
