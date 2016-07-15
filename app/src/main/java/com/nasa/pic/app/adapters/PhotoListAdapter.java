@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -12,6 +16,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 
 import com.nasa.pic.BR;
@@ -19,9 +24,12 @@ import com.nasa.pic.R;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
+import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
+import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -63,9 +71,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	/**
 	 * Set data-source for list-view.
 	 *
-	 * @param data
-	 * 		Data-source.
-	 *
+	 * @param data Data-source.
 	 * @return This object.
 	 */
 	public PhotoListAdapter<T> setData(List<T> data) {
@@ -77,9 +83,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	/**
 	 * Add data-source for list-view.
 	 *
-	 * @param data
-	 * 		Data-source.
-	 *
+	 * @param data Data-source.
 	 * @return This object.
 	 */
 	public PhotoListAdapter<T> addData(T data) {
@@ -91,9 +95,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	/**
 	 * Add data-source for list-view.
 	 *
-	 * @param data
-	 * 		Data-source.
-	 *
+	 * @param data Data-source.
 	 * @return This object.
 	 */
 	public PhotoListAdapter<T> addData(List<T> data) {
@@ -103,7 +105,9 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 
 	@Override
 	public int getItemCount() {
-		return mVisibleData == null ? 0 : mVisibleData.size();
+		return mVisibleData == null ?
+		       0 :
+		       mVisibleData.size();
 	}
 
 	@Override
@@ -116,14 +120,15 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
-		final T                entry    = mVisibleData.get(position);
+		final T entry = mVisibleData.get(position);
 		final ListItemHandlers handlers = new ListItemHandlers(holder, this);
 		holder.mBinding.setVariable(BR.photoDB, entry);
 		holder.mBinding.setVariable(BR.handler, handlers);
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
 		holder.mBinding.setVariable(BR.cardSize, mCellSize);
 
-		MenuItem openMi = holder.mToolbar.getMenu().findItem(R.id.action_open);
+		MenuItem openMi = holder.mToolbar.getMenu()
+		                                 .findItem(R.id.action_open);
 		openMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem menuItem) {
@@ -132,24 +137,27 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 			}
 		});
 
-		MenuItem fbShareMi = holder.mToolbar.getMenu().findItem(R.id.action_fb_share_item);
+		MenuItem fbShareMi = holder.mToolbar.getMenu()
+		                                    .findItem(R.id.action_fb_share_item);
 		fbShareMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				EventBus.getDefault().post(new FBShareEvent(entry));
+				EventBus.getDefault()
+				        .post(new FBShareEvent(entry));
 				return true;
 			}
 		});
 
 
-		MenuItem shareMi = holder.mToolbar.getMenu().findItem(R.id.action_share_item);
-		DynamicShareActionProvider shareLaterProvider = (DynamicShareActionProvider) MenuItemCompat.getActionProvider(
-				shareMi);
+		MenuItem shareMi = holder.mToolbar.getMenu()
+		                                  .findItem(R.id.action_share_item);
+		DynamicShareActionProvider shareLaterProvider = (DynamicShareActionProvider) MenuItemCompat.getActionProvider(shareMi);
 		shareLaterProvider.setShareDataType("text/plain");
 		shareLaterProvider.setOnShareLaterListener(new DynamicShareActionProvider.OnShareLaterListener() {
 			@Override
 			public void onShareClick(Intent shareIntent) {
-				EventBus.getDefault().post(new ShareEvent(shareIntent, entry));
+				EventBus.getDefault()
+				        .post(new ShareEvent(shareIntent, entry));
 			}
 		});
 		holder.mBinding.executePendingBindings();
@@ -165,7 +173,8 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		ViewHolder(ViewDataBinding binding) {
 			super(binding.getRoot());
 			mBinding = binding;
-			mToolbar = (Toolbar) binding.getRoot().findViewById(R.id.toolbar);
+			mToolbar = (Toolbar) binding.getRoot()
+			                            .findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(MENU_LIST_ITEM);
 		}
 	}
@@ -185,18 +194,39 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 
 				try {
 					ImageView imageView = (ImageView) view.findViewById(R.id.thumbnail_iv);
-					// Interesting data to pass across are the thumbnail size/location, the
-					// resourceId of the source bitmap, the picture description, and the
-					// orientation (to avoid returning back to an obsolete configuration if
-					// the device rotates again in the meantime)
+					final WeakReference<ImageView> ivRef = new WeakReference<>(imageView);
+					ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+					animator.setDuration(TransitCompat.ANIM_DURATION * 3);
+					animator.setTarget(imageView);
+					animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+						private float old = 1;
+						private float end = 0;
+						private Interpolator interpolator2 = new BakedBezierInterpolator();
+
+						@Override
+						public void onAnimationUpdate(ValueAnimatorCompat animation) {
+							if (ivRef.get() == null) {
+								return;
+							}
+							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+							//Set background alpha
+							float alpha = old + (fraction * (end - old));
+							ViewCompat.setAlpha(ivRef.get(), alpha);
+						}
+					});
+					animator.start();
+
 					int[] screenLocation = new int[2];
 					imageView.getLocationOnScreen(screenLocation);
-					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], imageView.getWidth(),
-							imageView.getHeight());
-					EventBus.getDefault().post(
-							new OpenPhotoEvent((RealmObject) mAdapter.getData().get(pos), thumbnail));
+					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], imageView.getWidth(), imageView.getHeight());
+					EventBus.getDefault()
+					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()
+					                                                       .get(pos), thumbnail, imageView));
 				} catch (NullPointerException e) {
-					EventBus.getDefault().post(new OpenPhotoEvent((RealmObject) mAdapter.getData().get(pos), null));
+					EventBus.getDefault()
+					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()
+					                                                       .get(pos), null, null));
 
 				}
 			}

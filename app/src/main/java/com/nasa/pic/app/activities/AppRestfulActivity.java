@@ -2,10 +2,14 @@ package com.nasa.pic.app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.animation.Interpolator;
+import android.widget.ImageView;
 
 import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
@@ -28,8 +34,11 @@ import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
+import com.nasa.pic.transition.BakedBezierInterpolator;
+import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 
 import io.realm.RealmObject;
@@ -37,6 +46,8 @@ import io.realm.RealmObject;
 
 public abstract class AppRestfulActivity extends RestfulActivity implements OnMenuItemClickListener {
 	private int mCellSize;
+	private WeakReference<ImageView> mSenderIv;
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -97,6 +108,7 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 			                               photoDB.getDate(),
 			                               photoDB.getType(),
 			                               e.getThumbnail());
+			mSenderIv = e.getSenderIv();
 		} else {
 			PhotoViewActivity.showInstance(this,
 			                               TextUtils.isEmpty(photoDB.getTitle()) ?
@@ -122,6 +134,35 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 
 
 	protected abstract void initMenu();
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if(mSenderIv != null && mSenderIv.get() !=null) {
+			ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+			animator.setDuration(TransitCompat.ANIM_DURATION * 4);
+			animator.setTarget(mSenderIv.get());
+			animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+				private float old = 0;
+				private float end = 1;
+				private Interpolator interpolator2 = new BakedBezierInterpolator();
+
+				@Override
+				public void onAnimationUpdate(ValueAnimatorCompat animation) {
+					if (mSenderIv.get() == null) {
+						return;
+					}
+					float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+					//Set background alpha
+					float alpha = old + (fraction * (end - old));
+					ViewCompat.setAlpha(mSenderIv.get(), alpha);
+				}
+			});
+			animator.start();
+		}
+	}
 
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {

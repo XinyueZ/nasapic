@@ -63,8 +63,9 @@ public final class PhotoList extends RestObject {
 
 	@Override
 	protected RealmObject[] newInstances( Realm db, int status ) {
-		RealmList<PhotoDB> photoDBList = new RealmList<>();
 		List<Photo>        photoList  = getResult();
+		if(photoList == null) return null;
+		RealmList<PhotoDB> photoDBList = new RealmList<>();
 		for( Photo photo : photoList ) {
 			RealmObject[] objects = photo.newInstances(
 					db,
