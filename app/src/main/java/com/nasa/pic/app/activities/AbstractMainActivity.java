@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog.Builder;
@@ -337,6 +338,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity   {
 				calendar.setTime(photoDB.getDate());
 				calendar.add(Calendar.MONTH , -1);
 				loadList(calendar);
+				Snackbar.make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG).show();
 			}
 		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {

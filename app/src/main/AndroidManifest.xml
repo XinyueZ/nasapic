@@ -23,21 +23,26 @@
 
         <activity
             android:name=".app.activities.MainActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.PhotoViewActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/Transparent"/>
         <activity
             android:name=".app.activities.WebViewActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.SplashActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
