@@ -339,7 +339,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getBinding().toolbar.setTitle(R.string.application_name);
+		mBinding.toolbar.setTitle(R.string.application_name);
 		mBinding.loadingFab.hide();
 		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -368,22 +368,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 							case RESULT_CODE:
 								int year = resultData.getInt(MonthPickerDialogFragment.EXTRAS_YEAR);
 								int month = resultData.getInt(MonthPickerDialogFragment.EXTRAS_MONTH);
-								Calendar calendar = Calendar.getInstance();
-								String timeZone = calendar.getTimeZone()
-								                          .getID();
 								String keyword = String.format(Locale.getDefault(), "%d-%d", year, month);
 								Log.d("keyword", "keyword: " + keyword);
-//								List<String> keywords = new ArrayList<>(1);
-//								keywords.add(keyword);
-//								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
-//								dayListRequest.setReqId(UUID.randomUUID()
-//								                            .toString());
-//								dayListRequest.setDateTimes(keywords);
-//								dayListRequest.setTimeZone(timeZone);
-//								App.Instance.getApiManager()
-//								            .execAsync(AppGuardService.Retrofit.create(Api.class)
-//								                                               .getPhotoList(dayListRequest), dayListRequest);
-//								mBinding.contentSrl.setRefreshing(true);
+								SearchResultActivity.showInstance(AbstractMainActivity.this, keyword);
 								break;
 						}
 					}
@@ -427,7 +414,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				//Scrolling up and down can hiden and show the FAB.
+				//Scrolling up and down can hidden and show the FAB.
 				float y = ViewCompat.getY(recyclerView);
 				if (y < dy) {
 					if (mBinding.showDayFab.isShown()) {

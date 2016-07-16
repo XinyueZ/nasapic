@@ -23,22 +23,22 @@
 
         <activity
             android:name=".app.activities.MainActivity"
+            android:theme="@style/AppTheme"/>
 
+        <activity
+            android:name=".app.activities.SearchResultActivity"
             android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.PhotoViewActivity"
-
             android:theme="@style/Transparent"/>
         <activity
             android:name=".app.activities.WebViewActivity"
-
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
             android:excludeFromRecents="true"
             android:noHistory="true"
-
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.SplashActivity"
@@ -46,7 +46,6 @@
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -63,7 +62,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
