@@ -82,7 +82,7 @@
         <item name="android:layout_marginStart">0dp</item>
         <item name="android:layout_marginEnd">0dp</item>
         <item name="android:layout_marginBottom">0dp</item>
-        <item name="elevation">0dp</item>
+        <item name="elevation">5dp</item>
         <item name="android:clickable">false</item>
         <item name="backgroundTint">@color/common_white</item>
         <item name="fabSize">mini</item>
@@ -96,7 +96,7 @@
         <item name="android:layout_marginStart">@dimen/fab_margin</item>
         <item name="android:layout_marginEnd">@dimen/fab_margin</item>
         <item name="android:layout_marginBottom">@dimen/fab_margin</item>
-        <item name="elevation">5dp</item>
+        <item name="elevation">8dp</item>
         <item name="android:clickable">true</item>
     </style>
 

@@ -34,18 +34,16 @@ import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
+import com.nasa.pic.app.fragments.MonthPickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.ds.PhotoDB;
-import com.nasa.pic.ds.RequestPhotoDayList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.utils.Prefs;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -54,9 +52,6 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_DAY_OF_MONTH;
-import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_MONTH;
-import static com.nasa.pic.app.fragments.DatePickerDialogFragment.EXTRAS_YEAR;
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
 
 /**
@@ -362,6 +357,39 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				startLoadingMoreIndicator();
 			}
 		});
+		mBinding.showMonthFab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				showDialogFragment(MonthPickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
+					@Override
+					protected void onReceiveResult(int resultCode, Bundle resultData) {
+						super.onReceiveResult(resultCode, resultData);
+						switch (resultCode) {
+							case RESULT_CODE:
+								int year = resultData.getInt(MonthPickerDialogFragment.EXTRAS_YEAR);
+								int month = resultData.getInt(MonthPickerDialogFragment.EXTRAS_MONTH);
+								Calendar calendar = Calendar.getInstance();
+								String timeZone = calendar.getTimeZone()
+								                          .getID();
+								String keyword = String.format(Locale.getDefault(), "%d-%d", year, month);
+								Log.d("keyword", "keyword: " + keyword);
+//								List<String> keywords = new ArrayList<>(1);
+//								keywords.add(keyword);
+//								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
+//								dayListRequest.setReqId(UUID.randomUUID()
+//								                            .toString());
+//								dayListRequest.setDateTimes(keywords);
+//								dayListRequest.setTimeZone(timeZone);
+//								App.Instance.getApiManager()
+//								            .execAsync(AppGuardService.Retrofit.create(Api.class)
+//								                                               .getPhotoList(dayListRequest), dayListRequest);
+//								mBinding.contentSrl.setRefreshing(true);
+								break;
+						}
+					}
+				}), "picker");
+			}
+		});
 		mBinding.showDayFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -371,28 +399,29 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						super.onReceiveResult(resultCode, resultData);
 						switch (resultCode) {
 							case RESULT_CODE:
-								int year = resultData.getInt(EXTRAS_YEAR);
-								int month = resultData.getInt(EXTRAS_MONTH);
-								int dayOfMonth = resultData.getInt(EXTRAS_DAY_OF_MONTH);
+								int year = resultData.getInt(DatePickerDialogFragment.EXTRAS_YEAR);
+								int month = resultData.getInt(DatePickerDialogFragment.EXTRAS_MONTH);
+								int dayOfMonth = resultData.getInt(DatePickerDialogFragment.EXTRAS_DAY_OF_MONTH);
 								Calendar calendar = Calendar.getInstance();
 								String timeZone = calendar.getTimeZone()
 								                          .getID();
 								String keyword = String.format(Locale.getDefault(), "%d-%d-%d", year, month, dayOfMonth);
-								List<String> keywords = new ArrayList<>(1);
-								keywords.add(keyword);
-								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
-								dayListRequest.setReqId(UUID.randomUUID()
-								                            .toString());
-								dayListRequest.setDateTimes(keywords);
-								dayListRequest.setTimeZone(timeZone);
-								App.Instance.getApiManager()
-								            .execAsync(AppGuardService.Retrofit.create(Api.class)
-								                                               .getPhotoList(dayListRequest), dayListRequest);
-								mBinding.contentSrl.setRefreshing(true);
+								Log.d("keyword", "keyword: " + keyword);
+//								List<String> keywords = new ArrayList<>(1);
+//								keywords.add(keyword);
+//								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
+//								dayListRequest.setReqId(UUID.randomUUID()
+//								                            .toString());
+//								dayListRequest.setDateTimes(keywords);
+//								dayListRequest.setTimeZone(timeZone);
+//								App.Instance.getApiManager()
+//								            .execAsync(AppGuardService.Retrofit.create(Api.class)
+//								                                               .getPhotoList(dayListRequest), dayListRequest);
+//								mBinding.contentSrl.setRefreshing(true);
 								break;
 						}
 					}
-				}), "DatePickerDialogFragment");
+				}), "picker");
 			}
 		});
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
