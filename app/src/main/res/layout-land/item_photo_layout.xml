@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="ItemBinding">
+
+        <import type="android.view.View"/>
+
+        <import type="android.text.TextUtils"/>
+
+        <import type="com.nasa.pic.ds.PhotoDB"/>
+
+        <import type="java.text.SimpleDateFormat"/>
+
+        <import type="com.nasa.pic.app.adapters.PhotoListAdapter"/>
+
+        <import type="com.nasa.pic.app.adapters.PhotoListAdapter.ListItemHandlers"/>
+
+        <variable
+            name="photoDB"
+            type="PhotoDB"/>
+
+        <variable
+            name="formatter"
+            type="SimpleDateFormat"/>
+
+
+        <variable
+            name="handler"
+            type="ListItemHandlers"/>
+
+
+        <variable
+            name="cardSize"
+            type="int"/>
+
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/photo_cv"
+        style="@style/PhotoCardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="@{handler.onOpenPhoto}"
+        app:cardSize="@{cardSize}">
+
+
+        <ImageView
+            android:id="@+id/thumbnail_iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.GONE : View.VISIBLE }'
+            app:cardSize="@{cardSize}"
+            app:imageNormalUrl="@{photoDB.getUrls()}"/>
+
+        <ImageButton
+            android:id="@+id/play_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/common_transparent"
+            android:onClick="@{handler.onOpenPhoto}"
+            android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.VISIBLE: View.GONE}'
+            app:srcCompat="@drawable/ic_play"/>
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            app:popupTheme="@style/PopupOverlay"/>
+
+
+    </android.support.v7.widget.CardView>
+</layout>
