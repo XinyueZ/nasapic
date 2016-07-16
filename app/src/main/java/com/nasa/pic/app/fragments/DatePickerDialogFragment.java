@@ -37,7 +37,7 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 				ResultReceiver resultReceiver = getArguments().getParcelable(EXTRAS_LISTENER);
 				Bundle args = new Bundle(3);
 				args.putInt(EXTRAS_YEAR, year);
-				args.putInt(EXTRAS_MONTH, month);
+				args.putInt(EXTRAS_MONTH, month + 1);
 				args.putInt(EXTRAS_DAY_OF_MONTH, dayOfMonth);
 				if (resultReceiver != null) {
 					resultReceiver.send(RESULT_CODE, args);
