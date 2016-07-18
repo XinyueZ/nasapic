@@ -26,4 +26,6 @@
 
     <color name="colorBrown">#795548</color>
     <color name="colorBrownDark">#3E2723</color>
+
+    <color name="cyan">#18FFFF</color>
 </resources>

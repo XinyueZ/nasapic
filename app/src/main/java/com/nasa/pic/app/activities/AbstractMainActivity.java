@@ -52,11 +52,8 @@ import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
-import com.nasa.pic.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -68,6 +65,8 @@ import io.realm.Sort;
 
 import static android.support.design.widget.Snackbar.make;
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
+import static com.nasa.pic.utils.Utils.extractSections;
+import static com.nasa.pic.utils.Utils.validateDateTimeSelection;
 
 /**
  * An abstract {@link android.app.Activity} that contains {@link android.support.v4.widget.DrawerLayout}.
@@ -224,29 +223,26 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				mPhotoListAdapter = new PhotoListAdapter(getCellSize());
 				mPhotoListAdapter.setData(getData());
 				//Sections
-				List<SectionedGridRecyclerViewAdapter.Section> sections = new ArrayList<>();
-				sections.add(new SectionedGridRecyclerViewAdapter.Section(0, "Section 1"));
-				sections.add(new SectionedGridRecyclerViewAdapter.Section(3, "Section 2"));
-				SectionedGridRecyclerViewAdapter.Section[] dummy = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
+				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
 				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, mPhotoListAdapter);
-				mSectionedAdapter.setSections(sections.toArray(dummy));
-
+				mSectionedAdapter.setSections(sectionsArray);
+				//Set
 				mBinding.responsesRv.setAdapter(mSectionedAdapter);
 			} else {
+				//Data
 				mPhotoListAdapter.setData(getData());
+				//Sections
+				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
+				mSectionedAdapter.setSections(sectionsArray);
+				//Update
+				mSectionedAdapter.notifyDataSetChanged();
 				mPhotoListAdapter.notifyDataSetChanged();
 			}
 			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
 			                                       View.VISIBLE :
 			                                       View.GONE);
 
-			Log.d("photo", "date: ");
-			Log.d("photo", "----------------------");
-			for(RealmObject object : getData()) {
-				PhotoDB photoDB = (PhotoDB) object;
-				Log.d("photo", photoDB.getDate().toString());
-			}
-			Log.d("photo", "----------------------");
+
 		}
 	}
 
@@ -385,7 +381,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mBinding.toolbar.setTitle(R.string.application_name);
 		mBinding.loadingFab.hide();
 		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -418,7 +413,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 								Log.d("keyword", "keyword: " + keyword);
 
 
-								if (!Utils.validateDateTimeSelection(year, month, -1, mBinding.errorContent)) {
+								if (!validateDateTimeSelection(year, month, -1, mBinding.errorContent)) {
 									return;
 								}
 
@@ -447,7 +442,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 								String keyword = String.format(Locale.getDefault(), "%d-%d-%d", year, month, dayOfMonth);
 								Log.d("keyword", "keyword: " + keyword);
 
-								if (!Utils.validateDateTimeSelection(year, month, dayOfMonth, mBinding.errorContent)) {
+								if (!validateDateTimeSelection(year, month, dayOfMonth, mBinding.errorContent)) {
 									return;
 								}
 

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.app.adapters.SectionedGridRecyclerViewAdapter;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareCompleteEvent;
@@ -24,9 +26,14 @@ import com.tinyurl4j.Api.TinyUrl;
 import com.tinyurl4j.data.Response;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -212,5 +219,32 @@ public final class Utils {
 			return false;
 		}
 		return true;
+	}
+
+	@NonNull
+	public static SectionedGridRecyclerViewAdapter.Section[] extractSections(RealmResults<? extends RealmObject> data) {
+		List<SectionedGridRecyclerViewAdapter.Section> sections = new ArrayList<>();
+		String usedSection = null;
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-M-d");
+		int position = 0;
+		for (RealmObject object : data) {
+			PhotoDB photoDB = (PhotoDB) object;
+
+			String date = fmt.format(photoDB.getDate());
+			String[] dateUnitGroup = date.split("-");
+			StringBuilder sb = new StringBuilder(3);
+			sb.append(dateUnitGroup[0])
+			  .append('-')
+			  .append(dateUnitGroup[1]);
+			String candidate = sb.toString();
+			if (!TextUtils.equals(usedSection, candidate)) {
+				usedSection = candidate;
+				sections.add(new SectionedGridRecyclerViewAdapter.Section(position, candidate));
+			}
+			position++;
+		}
+		SectionedGridRecyclerViewAdapter.Section[] sectionsArray = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
+		sectionsArray = sections.toArray(sectionsArray);
+		return sectionsArray;
 	}
 }
