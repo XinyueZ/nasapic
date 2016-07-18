@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="DatePickerBinding"></data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_query"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorPrimary"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+
+            <EditText
+                android:id="@+id/year_et"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="@string/lbl_year"
+                android:inputType="number"
+                android:maxLength="4"
+                android:maxLines="1"
+                android:minLines="1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorAccent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="/"
+                android:textColor="@color/common_black"/>
+
+            <EditText
+                android:id="@+id/month_et"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="@string/lbl_month"
+                android:inputType="number"
+                android:maxLength="2"
+                android:maxLines="1"
+                android:minLines="1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorAccent"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="/"
+                android:textColor="@color/common_black"/>
+
+            <EditText
+                android:id="@+id/day_et"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:hint="@string/lbl_day"
+                android:inputType="number"
+                android:maxLength="2"
+                android:maxLines="1"
+                android:minLines="1"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorAccent"/>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:drawablePadding="5dp"
+            android:gravity="start" android:text="@string/lbl_day_optional"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/warning_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="@drawable/state_ic_warning"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="invisible"
+            tools:text="warning warning warning"/>
+
+
+        <ImageButton
+            android:id="@+id/search_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:background="@color/common_transparent"
+            app:srcCompat="@drawable/ic_do_search"/>
+
+    </LinearLayout>
+</layout>

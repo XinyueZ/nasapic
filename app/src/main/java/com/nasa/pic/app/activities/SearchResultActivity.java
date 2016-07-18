@@ -8,8 +8,11 @@ import android.view.View;
 
 import com.nasa.pic.R;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
+import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.events.ClickPhotoItemEvent;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -56,9 +59,8 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
-		getBinding().showDayFab.hide();
+		getBinding().searchFab.hide();
 		getBinding().loadMoreFab.hide();
-		getBinding().showMonthFab.hide();
 		getBinding().toolbar.setTitle(keyword);
 		getBinding().responsesRv.clearOnScrollListeners();
 	}
@@ -67,6 +69,14 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	protected RealmResults<? extends RealmObject> createQuery(RealmQuery<? extends RealmObject> q) {
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
 		String[] words = keyword.split("-");
+		if (words.length > 2) {
+			try {
+				q.equalTo("date", new SimpleDateFormat("yyyy-M-d").parse(keyword));
+				return q.findAllSortedAsync("date", Sort.DESCENDING);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
 		int year = Integer.valueOf(words[0]);
 		int month = Integer.valueOf(words[1]);
 		Calendar calendar = Calendar.getInstance();
@@ -78,13 +88,10 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		int lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		calendar.set(Calendar.DAY_OF_MONTH, lastDay);
 		Date timeMax = calendar.getTime();
-		q.lessThanOrEqualTo("date", timeMax);
 		calendar.set(Calendar.DAY_OF_MONTH, 0);
 		Date timeMin = calendar.getTime();
-		q.greaterThanOrEqualTo("date", timeMin);
 		q.between("date", timeMin, timeMax);
-		RealmResults<? extends RealmObject> results = q.findAllSortedAsync("date", Sort.DESCENDING);
-		return results;
+		return q.findAllSortedAsync("date", Sort.DESCENDING);
 	}
 
 
@@ -92,14 +99,22 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	protected void loadList() {
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
 		String[] words = keyword.split("-");
-		int year = Integer.valueOf(words[0]);
-		int month = Integer.valueOf(words[1]);
-
 		String timeZone = Calendar.getInstance()
 		                          .getTimeZone()
 		                          .getID();
 
-		loadPhotoList(year, month, timeZone);
+		if (words.length > 2) {
+			int year = Integer.valueOf(words[0]);
+			int month = Integer.valueOf(words[1]);
+			int day = Integer.valueOf(words[2]);
+
+			loadPhotoList(year, month, day, timeZone);
+		} else {
+			int year = Integer.valueOf(words[0]);
+			int month = Integer.valueOf(words[1]);
+
+			loadPhotoList(year, month, DatePickerDialogFragment.IGNORED_DAY, timeZone);
+		}
 	}
 
 

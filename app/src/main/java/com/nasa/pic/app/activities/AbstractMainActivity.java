@@ -39,10 +39,10 @@ import com.nasa.pic.app.adapters.SectionedGridRecyclerViewAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
-import com.nasa.pic.app.fragments.MonthPickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.ds.PhotoDB;
+import com.nasa.pic.ds.RequestPhotoDayList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
@@ -53,7 +53,9 @@ import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -186,9 +188,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		                          .getID();
 
 
-		loadPhotoList(year, shownMonth, timeZone);
+		loadPhotoList(year, shownMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
 		if (currentDay < 15) {
-			loadPhotoList(year, currentMonth, timeZone);
+			loadPhotoList(year, currentMonth, DatePickerDialogFragment.IGNORED_DAY,timeZone);
 		}
 	}
 
@@ -198,7 +200,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		int shownMonth = currentMonth + 1;
 		String timeZone = calendar.getTimeZone()
 		                          .getID();
-		loadPhotoList(year, shownMonth, timeZone);
+		loadPhotoList(year, shownMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
 	}
 
 	@Override
@@ -266,16 +268,31 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
-	protected void loadPhotoList(int year, int month, String timeZone) {
-		RequestPhotoList requestPhotoList = new RequestPhotoList();
-		requestPhotoList.setReqId(UUID.randomUUID()
-		                              .toString());
-		requestPhotoList.setYear(year);
-		requestPhotoList.setMonth(month);
-		requestPhotoList.setTimeZone(timeZone);
-		App.Instance.getApiManager()
-		            .execAsync(AppGuardService.Retrofit.create(Api.class)
-		                                               .getPhotoMonthList(requestPhotoList), requestPhotoList);
+	protected void loadPhotoList(int year, int month, int day , String timeZone) {
+		if(day == DatePickerDialogFragment.IGNORED_DAY) {
+			RequestPhotoList requestPhotoList = new RequestPhotoList();
+			requestPhotoList.setReqId(UUID.randomUUID()
+			                              .toString());
+			requestPhotoList.setYear(year);
+			requestPhotoList.setMonth(month);
+			requestPhotoList.setTimeZone(timeZone);
+			App.Instance.getApiManager()
+			            .execAsync(AppGuardService.Retrofit.create(Api.class)
+			                                               .getPhotoMonthList(requestPhotoList), requestPhotoList);
+		} else {
+			List<String> keywords = new ArrayList<>(1);
+			keywords.add(String.format(Locale.getDefault(), "%d-%d-%d", year, month, day));
+			RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
+			dayListRequest.setReqId(UUID.randomUUID()
+			                            .toString());
+			dayListRequest.setDateTimes(keywords);
+			dayListRequest.setTimeZone(Calendar.getInstance()
+			                                   .getTimeZone()
+			                                   .getID());
+			App.Instance.getApiManager()
+			            .execAsync(AppGuardService.Retrofit.create(Api.class)
+			                                               .getPhotoList(dayListRequest), dayListRequest);
+		}
 	}
 
 
@@ -397,34 +414,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				startLoadingMoreIndicator();
 			}
 		});
-		mBinding.showMonthFab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				showDialogFragment(MonthPickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
-					@Override
-					protected void onReceiveResult(int resultCode, Bundle resultData) {
-						super.onReceiveResult(resultCode, resultData);
-						switch (resultCode) {
-							case RESULT_CODE:
-
-								int year = resultData.getInt(MonthPickerDialogFragment.EXTRAS_YEAR);
-								int month = resultData.getInt(MonthPickerDialogFragment.EXTRAS_MONTH);
-								String keyword = String.format(Locale.getDefault(), "%d-%d", year, month);
-								Log.d("keyword", "keyword: " + keyword);
-
-
-								if (!validateDateTimeSelection(year, month, -1, mBinding.errorContent)) {
-									return;
-								}
-
-								SearchResultActivity.showInstance(AbstractMainActivity.this, keyword);
-								break;
-						}
-					}
-				}), "picker");
-			}
-		});
-		mBinding.showDayFab.setOnClickListener(new View.OnClickListener() {
+		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				showDialogFragment(DatePickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
@@ -433,36 +423,26 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						super.onReceiveResult(resultCode, resultData);
 						switch (resultCode) {
 							case RESULT_CODE:
+
 								int year = resultData.getInt(DatePickerDialogFragment.EXTRAS_YEAR);
 								int month = resultData.getInt(DatePickerDialogFragment.EXTRAS_MONTH);
-								int dayOfMonth = resultData.getInt(DatePickerDialogFragment.EXTRAS_DAY_OF_MONTH);
-								Calendar calendar = Calendar.getInstance();
-								String timeZone = calendar.getTimeZone()
-								                          .getID();
-								String keyword = String.format(Locale.getDefault(), "%d-%d-%d", year, month, dayOfMonth);
-								Log.d("keyword", "keyword: " + keyword);
+								int day = resultData.getInt(DatePickerDialogFragment.EXTRAS_DAY_OF_MONTH);
 
-								if (!validateDateTimeSelection(year, month, dayOfMonth, mBinding.errorContent)) {
+								if (!validateDateTimeSelection(year, month, day, mBinding.errorContent)) {
 									return;
 								}
-
-//								List<String> keywords = new ArrayList<>(1);
-//								keywords.add(keyword);
-//								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
-//								dayListRequest.setReqId(UUID.randomUUID()
-//								                            .toString());
-//								dayListRequest.setDateTimes(keywords);
-//								dayListRequest.setTimeZone(timeZone);
-//								App.Instance.getApiManager()
-//								            .execAsync(AppGuardService.Retrofit.create(Api.class)
-//								                                               .getPhotoList(dayListRequest), dayListRequest);
-//								mBinding.contentSrl.setRefreshing(true);
+								if (day == DatePickerDialogFragment.IGNORED_DAY) {
+									SearchResultActivity.showInstance(AbstractMainActivity.this, String.format(Locale.getDefault(), "%d-%d", year, month));
+								} else {
+									SearchResultActivity.showInstance(AbstractMainActivity.this, String.format(Locale.getDefault(), "%d-%d-%d", year, month, day));
+								}
 								break;
 						}
 					}
 				}), "picker");
 			}
 		});
+
 		mBinding.responsesRv.setHasFixedSize(true);
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
@@ -470,18 +450,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				//Scrolling up and down can hidden and show the FAB.
 				float y = ViewCompat.getY(recyclerView);
 				if (y < dy) {
-					if (mBinding.showDayFab.isShown()) {
-						mBinding.showDayFab.hide();
-					}
-					if (mBinding.showMonthFab.isShown()) {
-						mBinding.showMonthFab.hide();
+					if (mBinding.searchFab.isShown()) {
+						mBinding.searchFab.hide();
 					}
 				} else {
-					if (!mBinding.showDayFab.isShown()) {
-						mBinding.showDayFab.show();
-					}
-					if (!mBinding.showMonthFab.isShown()) {
-						mBinding.showMonthFab.show();
+					if (!mBinding.searchFab.isShown()) {
+						mBinding.searchFab.show();
 					}
 				}
 

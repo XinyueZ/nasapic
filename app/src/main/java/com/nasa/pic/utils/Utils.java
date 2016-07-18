@@ -18,6 +18,7 @@ import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.SectionedGridRecyclerViewAdapter;
+import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareCompleteEvent;
@@ -203,7 +204,7 @@ public final class Utils {
 			});
 			snackbar.show();
 			return false;
-		} else if (year > thisYear || (year == thisYear && month > thisMonth + 1) || ((year == thisYear && month == thisMonth + 1 && dayOfMonth != -1 && dayOfMonth > today))) {
+		} else if (year > thisYear || (year == thisYear && month > thisMonth + 1) || ((year == thisYear && month == thisMonth + 1 && dayOfMonth != DatePickerDialogFragment.IGNORED_DAY && dayOfMonth > today))) {
 			Snackbar snackbar = make(anchorV, R.string.lbl_before_today, Snackbar.LENGTH_INDEFINITE);
 			final WeakReference<Snackbar> barRef = new WeakReference<>(snackbar);
 			snackbar.setAction(android.R.string.ok, new View.OnClickListener() {

@@ -28,7 +28,12 @@
 
     <string name="lbl_share_item_title">@string/application_name</string>
     <string name="lbl_share_item_content">Hi,\n\n%1$s\n%2$s\n\n%3$s</string>
-
+    <string name="lbl_query">Query</string>
+    <string name="lbl_year">year</string>
+    <string name="lbl_month">month</string>
+    <string name="lbl_day">day</string>
+    <string name="lbl_day_optional">* Empty day value is optional for query whole month.</string>
+    <string name="lbl_year_month_day_wrong">year-month-day all must be larger than 0.</string>
 
     <!-- Shown in the 'About' window of the app. -->
     <string name="about_body">&lt;b&gt;%1$s &lt;/b&gt;&lt;br&gt;Version %2$s &lt;br&gt;</string>
