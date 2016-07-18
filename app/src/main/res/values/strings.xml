@@ -22,6 +22,9 @@
     <string name="lbl_more_photos">More photos</string>
     <string name="lbl_photo_datetime_prefix">%s</string>
     <string name="lbl_more_photos_to_load">More photos will be loaded…</string>
+    <string name="lbl_no_results">No results!</string>
+    <string name="lbl_earlier_than_1998">You can not query before 1998, try somewhat later.</string>
+    <string name="lbl_before_today">You can not query for what from tomorrow.</string>
 
     <string name="lbl_share_item_title">@string/application_name</string>
     <string name="lbl_share_item_content">Hi,\n\n%1$s\n%2$s\n\n%3$s</string>

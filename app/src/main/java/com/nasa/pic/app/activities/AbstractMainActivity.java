@@ -52,6 +52,7 @@ import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
+import com.nasa.pic.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,6 +66,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
+import static android.support.design.widget.Snackbar.make;
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
 
 /**
@@ -253,7 +255,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
-
 	@Override
 	protected void buildViews() {
 		if (isDataLoaded()) {
@@ -264,7 +265,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				//Sections
 				List<SectionedGridRecyclerViewAdapter.Section> sections = new ArrayList<>();
 				sections.add(new SectionedGridRecyclerViewAdapter.Section(0, "Section 1"));
-				sections.add(new SectionedGridRecyclerViewAdapter.Section(4, "Section 1"));
+				sections.add(new SectionedGridRecyclerViewAdapter.Section(3, "Section 1"));
 				SectionedGridRecyclerViewAdapter.Section[] dummy = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
 				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, mPhotoListAdapter);
 				mSectionedAdapter.setSections(sections.toArray(dummy));
@@ -274,6 +275,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				mPhotoListAdapter.setData(getData());
 				mPhotoListAdapter.notifyDataSetChanged();
 			}
+			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
+			                                       View.VISIBLE :
+			                                       View.GONE);
 		}
 	}
 
@@ -425,8 +429,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				calendar.setTime(photoDB.getDate());
 				calendar.add(Calendar.MONTH, -1);
 				loadList(calendar);
-				Snackbar.make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG)
-				        .show();
+				make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG).show();
 				startLoadingMoreIndicator();
 			}
 		});
@@ -439,10 +442,17 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						super.onReceiveResult(resultCode, resultData);
 						switch (resultCode) {
 							case RESULT_CODE:
+
 								int year = resultData.getInt(MonthPickerDialogFragment.EXTRAS_YEAR);
 								int month = resultData.getInt(MonthPickerDialogFragment.EXTRAS_MONTH);
 								String keyword = String.format(Locale.getDefault(), "%d-%d", year, month);
 								Log.d("keyword", "keyword: " + keyword);
+
+
+								if (!Utils.validateDateTimeSelection(year, month, -1, mBinding.errorContent)) {
+									return;
+								}
+
 								SearchResultActivity.showInstance(AbstractMainActivity.this, keyword);
 								break;
 						}
@@ -467,6 +477,11 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 								                          .getID();
 								String keyword = String.format(Locale.getDefault(), "%d-%d-%d", year, month, dayOfMonth);
 								Log.d("keyword", "keyword: " + keyword);
+
+								if (!Utils.validateDateTimeSelection(year, month, dayOfMonth, mBinding.errorContent)) {
+									return;
+								}
+
 //								List<String> keywords = new ArrayList<>(1);
 //								keywords.add(keyword);
 //								RequestPhotoDayList dayListRequest = new RequestPhotoDayList();

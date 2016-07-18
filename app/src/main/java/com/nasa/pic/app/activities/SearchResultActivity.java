@@ -7,6 +7,7 @@ import android.support.v4.app.ActivityCompat;
 import android.view.View;
 
 import com.nasa.pic.R;
+import com.nasa.pic.app.adapters.PhotoListAdapter;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -93,5 +94,24 @@ public final class SearchResultActivity extends AbstractMainActivity {
 				ActivityCompat.finishAfterTransition(SearchResultActivity.this);
 			}
 		});
+	}
+
+	@Override
+	protected void buildViews() {
+		if (isDataLoaded()) {
+			if (getBinding().responsesRv.getAdapter() == null) {
+				//Data
+				PhotoListAdapter adp = new PhotoListAdapter(getCellSize());
+				adp.setData(getData());
+				getBinding().responsesRv.setAdapter(adp);
+			} else {
+				PhotoListAdapter adp = (PhotoListAdapter) getBinding().responsesRv.getAdapter();
+				adp.setData(getData());
+				adp.notifyDataSetChanged();
+			}
+			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
+			                                       View.VISIBLE :
+			                                       View.GONE);
+		}
 	}
 }

@@ -25,7 +25,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/responses_rv"
-                style="@style/RecyclerViewStyle" />
+                style="@style/RecyclerViewStyle"/>
         </android.support.v4.widget.SwipeRefreshLayout>
 
 
@@ -121,6 +121,19 @@
             android:layout_marginBottom="5dp"
             app:srcCompat="@drawable/ic_animated_loading_pb"
             />
+
+        <TextView
+            android:id="@+id/no_results_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="@drawable/state_ic_no_results"
+            android:text="@string/lbl_no_results"
+            android:textColor="@color/common_white"
+            android:visibility="gone"/>
+
+
+
     </android.support.design.widget.CoordinatorLayout>
 
 

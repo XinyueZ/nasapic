@@ -32,6 +32,7 @@
 package com.nasa.pic.app;
 
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 
 import com.chopping.net.TaskHelper;
@@ -61,6 +62,9 @@ public final class App extends MultiDexApplication {
 	 */
 	public static App Instance;
 
+	static{
+		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+	}
 	{
 		Instance = this;
 	}
