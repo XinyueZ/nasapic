@@ -94,7 +94,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	private int mVisibleItemCount;
 	private int mPastVisibleItems;
 	private int mTotalItemCount;
-	private PhotoListAdapter mPhotoListAdapter;
+	protected PhotoListAdapter mPhotoListAdapter;
 	private SectionedGridRecyclerViewAdapter mSectionedAdapter;
 	//[End]
 
@@ -130,46 +130,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	public void onEvent(ClickPhotoItemEvent e) {
 		final PhotoListAdapter.ViewHolder viewHolder = e.getViewHolder();
 		int pos = mSectionedAdapter.sectionedPositionToPosition(viewHolder.getAdapterPosition());
-		if (pos != RecyclerView.NO_POSITION) {
-			try {
-				ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
-				animator.setDuration(TransitCompat.ANIM_DURATION * 3);
-				animator.setTarget(viewHolder.mBinding.thumbnailIv);
-				animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
-					private float oldAlpha = 1;
-					private float endAlpha = 0;
-					private float oldEle = App.Instance.getResources()
-					                                   .getDimension(R.dimen.cardElevationNormal);
-					private float endEle = App.Instance.getResources()
-					                                   .getDimension(R.dimen.cardElevationSelected);
-					private Interpolator interpolator2 = new BakedBezierInterpolator();
-
-					@Override
-					public void onAnimationUpdate(ValueAnimatorCompat animation) {
-						float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
-
-						//Set background alpha
-						float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
-						ViewCompat.setAlpha(viewHolder.mBinding.thumbnailIv, alpha);
-						//Set frame on cardview.
-						float ele = oldEle + (fraction * (endEle - oldEle));
-						viewHolder.mBinding.photoCv.setCardElevation(ele);
-						viewHolder.mBinding.photoCv.setMaxCardElevation(ele);
-					}
-				});
-				animator.start();
-
-				int[] screenLocation = new int[2];
-				viewHolder.mBinding.thumbnailIv.getLocationOnScreen(screenLocation);
-				Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], viewHolder.mBinding.thumbnailIv.getWidth(), viewHolder.mBinding.thumbnailIv.getHeight());
-				EventBus.getDefault()
-				        .post(new OpenPhotoEvent(getData().get(pos), thumbnail, viewHolder.mBinding));
-			} catch (NullPointerException ex) {
-				EventBus.getDefault()
-				        .post(new OpenPhotoEvent(getData().get(pos), null, null));
-
-			}
-		}
+		openPhoto(viewHolder, pos);
 	}
 	//------------------------------------------------
 
@@ -265,7 +226,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				//Sections
 				List<SectionedGridRecyclerViewAdapter.Section> sections = new ArrayList<>();
 				sections.add(new SectionedGridRecyclerViewAdapter.Section(0, "Section 1"));
-				sections.add(new SectionedGridRecyclerViewAdapter.Section(3, "Section 1"));
+				sections.add(new SectionedGridRecyclerViewAdapter.Section(3, "Section 2"));
 				SectionedGridRecyclerViewAdapter.Section[] dummy = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
 				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, mPhotoListAdapter);
 				mSectionedAdapter.setSections(sections.toArray(dummy));
@@ -278,6 +239,14 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
 			                                       View.VISIBLE :
 			                                       View.GONE);
+
+			Log.d("photo", "date: ");
+			Log.d("photo", "----------------------");
+			for(RealmObject object : getData()) {
+				PhotoDB photoDB = (PhotoDB) object;
+				Log.d("photo", photoDB.getDate().toString());
+			}
+			Log.d("photo", "----------------------");
 		}
 	}
 
@@ -556,6 +525,49 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		if (drawable instanceof Animatable) {
 			((Animatable) drawable).stop();
 			mBinding.loadingFab.hide();
+		}
+	}
+
+	protected void openPhoto(final PhotoListAdapter.ViewHolder viewHolder, int pos) {
+		if (pos != RecyclerView.NO_POSITION) {
+			try {
+				ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+				animator.setDuration(TransitCompat.ANIM_DURATION * 3);
+				animator.setTarget(viewHolder.mBinding.thumbnailIv);
+				animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+					private float oldAlpha = 1;
+					private float endAlpha = 0;
+					private float oldEle = App.Instance.getResources()
+					                                   .getDimension(R.dimen.cardElevationNormal);
+					private float endEle = App.Instance.getResources()
+					                                   .getDimension(R.dimen.cardElevationSelected);
+					private Interpolator interpolator2 = new BakedBezierInterpolator();
+
+					@Override
+					public void onAnimationUpdate(ValueAnimatorCompat animation) {
+						float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+						//Set background alpha
+						float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
+						ViewCompat.setAlpha(viewHolder.mBinding.thumbnailIv, alpha);
+						//Set frame on cardview.
+						float ele = oldEle + (fraction * (endEle - oldEle));
+						viewHolder.mBinding.photoCv.setCardElevation(ele);
+						viewHolder.mBinding.photoCv.setMaxCardElevation(ele);
+					}
+				});
+				animator.start();
+
+				int[] screenLocation = new int[2];
+				viewHolder.mBinding.thumbnailIv.getLocationOnScreen(screenLocation);
+				Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], viewHolder.mBinding.thumbnailIv.getWidth(), viewHolder.mBinding.thumbnailIv.getHeight());
+				EventBus.getDefault()
+				        .post(new OpenPhotoEvent(getData().get(pos), thumbnail, viewHolder.mBinding));
+			} catch (NullPointerException ex) {
+				EventBus.getDefault()
+				        .post(new OpenPhotoEvent(getData().get(pos), null, null));
+
+			}
 		}
 	}
 }

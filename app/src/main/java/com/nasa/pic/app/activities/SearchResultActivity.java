@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.nasa.pic.R;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
+import com.nasa.pic.events.ClickPhotoItemEvent;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +20,24 @@ import io.realm.Sort;
 
 public final class SearchResultActivity extends AbstractMainActivity {
 	private static final String EXTRAS_KEYWORD = SearchResultActivity.class.getName() + ".EXTRAS.keyword";
+
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link ClickPhotoItemEvent}.
+	 *
+	 * @param e Event {@link ClickPhotoItemEvent}.
+	 */
+	public void onEvent(ClickPhotoItemEvent e) {
+		final PhotoListAdapter.ViewHolder viewHolder = e.getViewHolder();
+		int pos = viewHolder.getAdapterPosition();
+		openPhoto(viewHolder, pos);
+	}
+
+
+	//------------------------------------------------
 
 	/**
 	 * Show single instance of {@link SearchResultActivity}
@@ -63,7 +82,7 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		calendar.set(Calendar.DAY_OF_MONTH, 0);
 		Date timeMin = calendar.getTime();
 		q.greaterThanOrEqualTo("date", timeMin);
-
+		q.between("date", timeMin, timeMax);
 		RealmResults<? extends RealmObject> results = q.findAllSortedAsync("date", Sort.DESCENDING);
 		return results;
 	}
@@ -101,13 +120,12 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		if (isDataLoaded()) {
 			if (getBinding().responsesRv.getAdapter() == null) {
 				//Data
-				PhotoListAdapter adp = new PhotoListAdapter(getCellSize());
-				adp.setData(getData());
-				getBinding().responsesRv.setAdapter(adp);
+				mPhotoListAdapter = new PhotoListAdapter(getCellSize());
+				mPhotoListAdapter.setData(getData());
+				getBinding().responsesRv.setAdapter(mPhotoListAdapter);
 			} else {
-				PhotoListAdapter adp = (PhotoListAdapter) getBinding().responsesRv.getAdapter();
-				adp.setData(getData());
-				adp.notifyDataSetChanged();
+				mPhotoListAdapter.setData(getData());
+				mPhotoListAdapter.notifyDataSetChanged();
 			}
 			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
 			                                       View.VISIBLE :
