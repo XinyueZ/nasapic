@@ -1,7 +1,6 @@
 package com.nasa.pic.app.adapters;
 
 import android.databinding.BindingAdapter;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,13 +21,6 @@ public final class AdapterBinder {
 		view.getLayoutParams().height = size;
 	}
 
-
-	@SuppressWarnings("unchecked")
-	@BindingAdapter("listAdapter")
-	public static void setEntriesBinder(RecyclerView recyclerView,
-	                                    RecyclerView.Adapter adp) {
-		recyclerView.setAdapter(adp);
-	}
 
 
 	@BindingAdapter({ "imageNormalUrl" })

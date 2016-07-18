@@ -14,6 +14,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.Snackbar;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
@@ -24,6 +27,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -31,6 +35,7 @@ import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
+import com.nasa.pic.app.adapters.SectionedGridRecyclerViewAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
@@ -39,14 +44,22 @@ import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.ds.RequestPhotoList;
+import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
+import com.nasa.pic.events.OpenPhotoEvent;
+import com.nasa.pic.transition.BakedBezierInterpolator;
+import com.nasa.pic.transition.Thumbnail;
+import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import de.greenrobot.event.EventBus;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -79,6 +92,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	private int mVisibleItemCount;
 	private int mPastVisibleItems;
 	private int mTotalItemCount;
+	private PhotoListAdapter mPhotoListAdapter;
+	private SectionedGridRecyclerViewAdapter mSectionedAdapter;
 	//[End]
 
 	//------------------------------------------------
@@ -103,6 +118,56 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	public void onEvent(EULAConfirmedEvent e) {
 
 
+	}
+
+	/**
+	 * Handler for {@link ClickPhotoItemEvent}.
+	 *
+	 * @param e Event {@link ClickPhotoItemEvent}.
+	 */
+	public void onEvent(ClickPhotoItemEvent e) {
+		final PhotoListAdapter.ViewHolder viewHolder = e.getViewHolder();
+		int pos = mSectionedAdapter.sectionedPositionToPosition(viewHolder.getAdapterPosition());
+		if (pos != RecyclerView.NO_POSITION) {
+			try {
+				ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+				animator.setDuration(TransitCompat.ANIM_DURATION * 3);
+				animator.setTarget(viewHolder.mBinding.thumbnailIv);
+				animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+					private float oldAlpha = 1;
+					private float endAlpha = 0;
+					private float oldEle = App.Instance.getResources()
+					                                   .getDimension(R.dimen.cardElevationNormal);
+					private float endEle = App.Instance.getResources()
+					                                   .getDimension(R.dimen.cardElevationSelected);
+					private Interpolator interpolator2 = new BakedBezierInterpolator();
+
+					@Override
+					public void onAnimationUpdate(ValueAnimatorCompat animation) {
+						float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+						//Set background alpha
+						float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
+						ViewCompat.setAlpha(viewHolder.mBinding.thumbnailIv, alpha);
+						//Set frame on cardview.
+						float ele = oldEle + (fraction * (endEle - oldEle));
+						viewHolder.mBinding.photoCv.setCardElevation(ele);
+						viewHolder.mBinding.photoCv.setMaxCardElevation(ele);
+					}
+				});
+				animator.start();
+
+				int[] screenLocation = new int[2];
+				viewHolder.mBinding.thumbnailIv.getLocationOnScreen(screenLocation);
+				Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], viewHolder.mBinding.thumbnailIv.getWidth(), viewHolder.mBinding.thumbnailIv.getHeight());
+				EventBus.getDefault()
+				        .post(new OpenPhotoEvent(getData().get(pos), thumbnail, viewHolder.mBinding));
+			} catch (NullPointerException ex) {
+				EventBus.getDefault()
+				        .post(new OpenPhotoEvent(getData().get(pos), null, null));
+
+			}
+		}
 	}
 	//------------------------------------------------
 
@@ -188,19 +253,27 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
+
 	@Override
 	protected void buildViews() {
 		if (isDataLoaded()) {
-			if (mBinding.getAdapter() == null) {
-				mBinding.setAdapter(new PhotoListAdapter(getCellSize()));
+			if (mBinding.responsesRv.getAdapter() == null) {
+				//Data
+				mPhotoListAdapter = new PhotoListAdapter(getCellSize());
+				mPhotoListAdapter.setData(getData());
+				//Sections
+				List<SectionedGridRecyclerViewAdapter.Section> sections = new ArrayList<>();
+				sections.add(new SectionedGridRecyclerViewAdapter.Section(0, "Section 1"));
+				sections.add(new SectionedGridRecyclerViewAdapter.Section(4, "Section 1"));
+				SectionedGridRecyclerViewAdapter.Section[] dummy = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
+				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, mPhotoListAdapter);
+				mSectionedAdapter.setSections(sections.toArray(dummy));
+
+				mBinding.responsesRv.setAdapter(mSectionedAdapter);
+			} else {
+				mPhotoListAdapter.setData(getData());
+				mPhotoListAdapter.notifyDataSetChanged();
 			}
-			if (mBinding.getAdapter()
-			            .getData() == null) {
-				mBinding.getAdapter()
-				        .setData(getData());
-			}
-			mBinding.getAdapter()
-			        .notifyDataSetChanged();
 		}
 	}
 
@@ -411,6 +484,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				}), "picker");
 			}
 		});
+		mBinding.responsesRv.setHasFixedSize(true);
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

@@ -3,11 +3,7 @@ package com.nasa.pic.app.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.support.v4.animation.AnimatorCompatHelper;
-import android.support.v4.animation.AnimatorUpdateListenerCompat;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -15,18 +11,13 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Interpolator;
 
 import com.nasa.pic.BR;
 import com.nasa.pic.R;
-import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.ItemBinding;
+import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.FBShareEvent;
-import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
-import com.nasa.pic.transition.BakedBezierInterpolator;
-import com.nasa.pic.transition.Thumbnail;
-import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.DynamicShareActionProvider;
 
 import java.text.SimpleDateFormat;
@@ -120,7 +111,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, final int position) {
 		final T entry = mVisibleData.get(position);
-		final ListItemHandlers handlers = new ListItemHandlers(holder, this);
+		final ListItemHandlers handlers = new ListItemHandlers(holder);
 		holder.mBinding.setVariable(BR.photoDB, entry);
 		holder.mBinding.setVariable(BR.handler, handlers);
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
@@ -166,7 +157,7 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	 * ViewHolder for the list.
 	 */
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private ItemBinding mBinding;
+		public ItemBinding mBinding;
 		private Toolbar mToolbar;
 
 		ViewHolder(ItemBinding binding) {
@@ -180,58 +171,14 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 
 	public static final class ListItemHandlers {
 		private ViewHolder mViewHolder;
-		private PhotoListAdapter mAdapter;
 
-		public ListItemHandlers(ViewHolder viewHolder, PhotoListAdapter adapter) {
+		public ListItemHandlers(ViewHolder viewHolder  ) {
 			mViewHolder = viewHolder;
-			mAdapter = adapter;
 		}
 
 		public void onOpenPhoto(View view) {
-			int pos = mViewHolder.getAdapterPosition();
-			if (pos != RecyclerView.NO_POSITION) {
-
-				try {
-					ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
-					animator.setDuration(TransitCompat.ANIM_DURATION * 3);
-					animator.setTarget(mViewHolder.mBinding.thumbnailIv);
-					animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
-						private float oldAlpha = 1;
-						private float endAlpha = 0;
-						private float oldEle = App.Instance.getResources()
-						                                   .getDimension(R.dimen.cardElevationNormal);
-						private float endEle = App.Instance.getResources()
-						                                   .getDimension(R.dimen.cardElevationSelected);
-						private Interpolator interpolator2 = new BakedBezierInterpolator();
-
-						@Override
-						public void onAnimationUpdate(ValueAnimatorCompat animation) {
-							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
-
-							//Set background alpha
-							float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
-							ViewCompat.setAlpha(mViewHolder.mBinding.thumbnailIv, alpha);
-							//Set frame on cardview.
-							float ele = oldEle + (fraction * (endEle - oldEle));
-							mViewHolder.mBinding.photoCv.setCardElevation(ele);
-							mViewHolder.mBinding.photoCv.setMaxCardElevation(ele);
-						}
-					});
-					animator.start();
-
-					int[] screenLocation = new int[2];
-					mViewHolder.mBinding.thumbnailIv.getLocationOnScreen(screenLocation);
-					Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], mViewHolder.mBinding.thumbnailIv.getWidth(), mViewHolder.mBinding.thumbnailIv.getHeight());
-					EventBus.getDefault()
-					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()
-					                                                       .get(pos), thumbnail, mViewHolder.mBinding));
-				} catch (NullPointerException e) {
-					EventBus.getDefault()
-					        .post(new OpenPhotoEvent((RealmObject) mAdapter.getData()
-					                                                       .get(pos), null, null));
-
-				}
-			}
+			EventBus.getDefault()
+			        .post(new ClickPhotoItemEvent(mViewHolder));
 		}
 	}
 }

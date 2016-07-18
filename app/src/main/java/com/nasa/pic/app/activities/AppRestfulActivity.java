@@ -27,19 +27,23 @@ import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.databinding.ItemBinding;
 import com.nasa.pic.ds.PhotoDB;
+import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
+import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
 import java.math.BigDecimal;
 
+import de.greenrobot.event.EventBus;
 import io.realm.RealmObject;
 
 
@@ -79,6 +83,8 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 	public void onEvent(CompleteShareEvent e) {
 		ActivityCompat.startActivity(this, e.getIntent(), null);
 	}
+
+
 
 	/**
 	 * Handler for {@link com.nasa.pic.events.OpenPhotoEvent}.

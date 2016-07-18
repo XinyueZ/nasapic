@@ -41,7 +41,7 @@
         style="@style/PhotoCardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="@{handler.onOpenPhoto}"
+        android:onClick="@{handler::onOpenPhoto}"
         app:cardSize="@{cardSize}">
 
 
@@ -60,7 +60,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@color/common_transparent"
-            android:onClick="@{handler.onOpenPhoto}"
+            android:onClick="@{handler::onOpenPhoto}"
             android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.VISIBLE: View.GONE}'
             app:srcCompat="@drawable/ic_play"/>
 

@@ -5,10 +5,6 @@
         tools:context=".app.activities.AbstractMainActivity">
 
     <data>
-
-        <variable
-            name="adapter"
-            type="com.nasa.pic.app.adapters.PhotoListAdapter"/>
     </data>
 
 
@@ -29,8 +25,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/responses_rv"
-                style="@style/RecyclerViewStyle"
-                app:listAdapter="@{adapter}"/>
+                style="@style/RecyclerViewStyle" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
 
