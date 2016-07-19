@@ -40,6 +40,7 @@
         android:id="@+id/photo_cv"
         style="@style/PhotoCardView"
         android:layout_width="wrap_content"
+        android:clipChildren="false"
         android:layout_height="wrap_content"
         android:onClick="@{handler::onOpenPhoto}"
         app:cardSize="@{cardSize}">

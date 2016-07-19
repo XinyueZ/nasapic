@@ -1,5 +1,8 @@
 package com.nasa.pic.utils;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -9,11 +12,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
-import com.nineoldandroids.animation.ObjectAnimator;
-
 /**
  * Created by yugy on 14/11/21.
  * <p/>
@@ -132,7 +130,7 @@ public class RevealLayout extends FrameLayout {
 			mAnimator.cancel();
 		}
 
-		mAnimator = ObjectAnimator.ofFloat( this, "clipRadius", 0f, maxRadius );
+		mAnimator = ObjectAnimator.ofFloat(this, "clipRadius", 0f, maxRadius );
 		mAnimator.setInterpolator( new BakedBezierInterpolator() );
 		mAnimator.setDuration( duration );
 		mAnimator.addListener( new AnimatorListenerAdapter() {

@@ -475,7 +475,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						mBinding.searchFab.hide();
 					}
 				} else {
-					boolean shouldShow =  getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null;
+					boolean shouldShow = getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null;
 					if (!mBinding.searchFab.isShown() && shouldShow) {
 						mBinding.searchFab.show();
 					}
@@ -561,4 +561,11 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 			}
 		}
 	}
+
+	@Override
+	protected void onStop() {
+		mBinding.dialogFl.hide();
+		super.onStop();
+	}
+
 }

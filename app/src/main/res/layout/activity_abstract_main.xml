@@ -11,15 +11,14 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false">
 
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/content_srl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin">
+            android:layout_height="wrap_content">
             <!--Don't use this behavior because it makes list under toolbar.-->
             <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
@@ -78,8 +77,8 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/load_more_fab"
             style="@style/FAB"
-            app:backgroundTint="@color/colorPrimary"
             android:layout_gravity="end|bottom"
+            app:backgroundTint="@color/colorPrimary"
             app:rippleColor="@color/colorPrimaryDark"
             app:srcCompat="@drawable/ic_call_more"/>
 
