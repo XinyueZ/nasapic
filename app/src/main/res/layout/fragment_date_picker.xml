@@ -36,8 +36,8 @@
                 android:maxLength="4"
                 android:maxLines="1"
                 android:minLines="1"
-                android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorAccent"/>
+                android:textColor="@color/c_refresh_4"
+                android:textColorHint="@color/colorOrangeDark"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -57,8 +57,8 @@
                 android:maxLength="2"
                 android:maxLines="1"
                 android:minLines="1"
-                android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorAccent"/>
+                android:textColor="@color/c_refresh_4"
+                android:textColorHint="@color/colorOrangeDark"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -78,8 +78,8 @@
                 android:maxLength="2"
                 android:maxLines="1"
                 android:minLines="1"
-                android:textColor="@color/colorPrimary"
-                android:textColorHint="@color/colorAccent"/>
+                android:textColor="@color/c_refresh_4"
+                android:textColorHint="@color/colorOrangeDark"/>
 
 
         </LinearLayout>
@@ -101,7 +101,7 @@
             android:drawableLeft="@drawable/state_ic_warning"
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/c_refresh_1"
             android:visibility="invisible"
             tools:text="warning warning warning"/>
 

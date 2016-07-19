@@ -17,6 +17,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
@@ -190,7 +192,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 
 		loadPhotoList(year, shownMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
 		if (currentDay < 15) {
-			loadPhotoList(year, currentMonth, DatePickerDialogFragment.IGNORED_DAY,timeZone);
+			loadPhotoList(year, currentMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
 		}
 	}
 
@@ -268,8 +270,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
-	protected void loadPhotoList(int year, int month, int day , String timeZone) {
-		if(day == DatePickerDialogFragment.IGNORED_DAY) {
+	protected void loadPhotoList(int year, int month, int day, String timeZone) {
+		if (day == DatePickerDialogFragment.IGNORED_DAY) {
 			RequestPhotoList requestPhotoList = new RequestPhotoList();
 			requestPhotoList.setReqId(UUID.randomUUID()
 			                              .toString());
@@ -414,13 +416,15 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				startLoadingMoreIndicator();
 			}
 		});
+		mBinding.dialogFl.hide();
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				showDialogFragment(DatePickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
+				Fragment fragment = DatePickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
 					@Override
 					protected void onReceiveResult(int resultCode, Bundle resultData) {
 						super.onReceiveResult(resultCode, resultData);
+						getSupportFragmentManager().popBackStack();
 						switch (resultCode) {
 							case RESULT_CODE:
 
@@ -439,9 +443,26 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 								break;
 						}
 					}
-				}), "picker");
+				});
+				getSupportFragmentManager().beginTransaction()
+				                           .add(R.id.dialog_fl, fragment)
+				                           .addToBackStack(null)
+				                           .commit();
+				mBinding.dialogFl.show();
+				mBinding.searchFab.hide();
 			}
 		});
+
+		getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+			@Override
+			public void onBackStackChanged() {
+				if (getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null) {
+					mBinding.dialogFl.hide();
+					mBinding.searchFab.show();
+				}
+			}
+		});
+
 
 		mBinding.responsesRv.setHasFixedSize(true);
 		mBinding.responsesRv.addOnScrollListener(new RecyclerView.OnScrollListener() {

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.DatePickerBinding;
+import com.nasa.pic.utils.Prefs;
 
 public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	private static final String EXTRAS_LISTENER = DatePickerDialogFragment.class.getName() + ".EXTRAS.listener";
@@ -40,32 +41,47 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
+		Prefs prefs = Prefs.getInstance();
+		mBinding.yearEt.setText(prefs.getSearchYear());
+		mBinding.monthEt.setText(prefs.getSearchMonth());
+		mBinding.dayEt.setText(Integer.valueOf(prefs.getSearchDay()) == IGNORED_DAY ?
+		                       "" :
+		                       prefs.getSearchDay());
 		mBinding.searchBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				int year = Integer.valueOf(mBinding.yearEt.getText()
-				                                          .toString());
-				int month = Integer.valueOf(mBinding.monthEt.getText()
-				                                            .toString());
 
-				if (year <= 0 || month <= 0) {
+
+				if (TextUtils.isEmpty(mBinding.yearEt.getText()
+				                                     .toString()) || TextUtils.isEmpty(mBinding.monthEt.getText()
+				                                                                                       .toString()) || Integer.valueOf(mBinding.yearEt.getText()
+				                                                                                                                                      .toString()) <= 0 || Integer.valueOf(mBinding.monthEt.getText()
+				                                                                                                                                                                                           .toString()) <= 0) {
 					mBinding.warningTv.setVisibility(View.VISIBLE);
 					mBinding.warningTv.setText(R.string.lbl_year_month_day_wrong);
 				} else {
+					int year = Integer.valueOf(mBinding.yearEt.getText()
+					                                          .toString());
+					int month = Integer.valueOf(mBinding.monthEt.getText()
+					                                            .toString());
 					ResultReceiver resultReceiver = getArguments().getParcelable(EXTRAS_LISTENER);
 					Bundle args = new Bundle(3);
+					int day = TextUtils.isEmpty(mBinding.dayEt.getText()) || Integer.valueOf(mBinding.dayEt.getText()
+					                                                                                       .toString()) <= 0 ?
+					          IGNORED_DAY :
+					          Integer.valueOf(mBinding.dayEt.getText()
+					                                        .toString());
 					args.putInt(EXTRAS_YEAR, year);
 					args.putInt(EXTRAS_MONTH, month);
-					args.putInt(EXTRAS_DAY_OF_MONTH,
-					            TextUtils.isEmpty(mBinding.dayEt.getText()) || Integer.valueOf(mBinding.dayEt.getText()
-					                                                                                         .toString()) <= 0 ?
-					            IGNORED_DAY :
-					            Integer.valueOf(mBinding.dayEt.getText()
-					                                          .toString()));
+					args.putInt(EXTRAS_DAY_OF_MONTH, day);
 					if (resultReceiver != null) {
 						resultReceiver.send(RESULT_CODE, args);
 					}
+
+					Prefs prefs = Prefs.getInstance();
+					prefs.setSearchYear(String.valueOf(year));
+					prefs.setSearchMonth(String.valueOf(month));
+					prefs.setSearchDay(String.valueOf(day));
 					dismiss();
 				}
 			}
