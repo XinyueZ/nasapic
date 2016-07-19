@@ -58,6 +58,7 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getBinding().toolbar.setLogo(null);
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
 		getBinding().searchFab.hide();
 		getBinding().loadMoreFab.hide();

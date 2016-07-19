@@ -30,29 +30,24 @@
             type="ListItemHandlers"/>
 
 
-        <variable
-            name="cardSize"
-            type="int"/>
-
     </data>
 
     <android.support.v7.widget.CardView
         android:id="@+id/photo_cv"
         style="@style/PhotoCardView"
         android:layout_width="wrap_content"
-        android:clipChildren="false"
         android:layout_height="wrap_content"
+        android:clipChildren="true"
         android:onClick="@{handler::onOpenPhoto}"
-        app:cardSize="@{cardSize}">
+        >
 
 
-        <ImageView
+        <com.nasa.pic.utils.SquareImageView
             android:id="@+id/thumbnail_iv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.GONE : View.VISIBLE }'
-            app:cardSize="@{cardSize}"
             app:imageNormalUrl="@{photoDB.getUrls()}"/>
 
         <ImageButton
@@ -70,7 +65,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
+            android:layout_gravity="top|end"
             app:popupTheme="@style/PopupOverlay"/>
 
 

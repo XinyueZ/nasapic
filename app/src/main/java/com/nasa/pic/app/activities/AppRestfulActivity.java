@@ -249,10 +249,6 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 		animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
 			private float oldAlpha = 0;
 			private float endAlpha = 1;
-			private float oldEle = App.Instance.getResources()
-			                                   .getDimension(R.dimen.cardElevationSelected);
-			private float endEle = App.Instance.getResources()
-			                                   .getDimension(R.dimen.cardElevationNormal);
 			private Interpolator interpolator2 = new BakedBezierInterpolator();
 
 			@Override
@@ -261,10 +257,6 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 				//Set background alpha
 				float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
 				ViewCompat.setAlpha(mItemBinding.thumbnailIv, alpha);
-				//Set frame on cardview.
-				float ele = oldEle + (fraction * (endEle - oldEle));
-				mItemBinding.photoCv.setCardElevation(ele);
-				mItemBinding.photoCv.setMaxCardElevation(ele);
 			}
 		});
 		animator.start();

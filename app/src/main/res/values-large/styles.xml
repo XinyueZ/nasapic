@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BASE_ICON">
+
+        <item name="fabSize">normal</item>
+    </style>
+</resources>

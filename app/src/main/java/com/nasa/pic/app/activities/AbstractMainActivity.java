@@ -400,6 +400,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
 		mBinding.loadingFab.hide();
 		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -528,10 +529,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
 					private float oldAlpha = 1;
 					private float endAlpha = 0;
-					private float oldEle = App.Instance.getResources()
-					                                   .getDimension(R.dimen.cardElevationNormal);
-					private float endEle = App.Instance.getResources()
-					                                   .getDimension(R.dimen.cardElevationSelected);
 					private Interpolator interpolator2 = new BakedBezierInterpolator();
 
 					@Override
@@ -541,10 +538,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						//Set background alpha
 						float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
 						ViewCompat.setAlpha(viewHolder.mBinding.thumbnailIv, alpha);
-						//Set frame on cardview.
-						float ele = oldEle + (fraction * (endEle - oldEle));
-						viewHolder.mBinding.photoCv.setCardElevation(ele);
-						viewHolder.mBinding.photoCv.setMaxCardElevation(ele);
 					}
 				});
 				animator.start();

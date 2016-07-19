@@ -1,7 +1,6 @@
 package com.nasa.pic.app.adapters;
 
 import android.databinding.BindingAdapter;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -11,16 +10,6 @@ import com.nasa.pic.R;
 import com.nasa.pic.ds.PhotoUrlDB;
 
 public final class AdapterBinder {
-
-
-	@SuppressWarnings("unchecked")
-	@BindingAdapter("cardSize")
-	public static void setCellSize(View view,
-	                               int size) {
-		view.getLayoutParams().width = size;
-		view.getLayoutParams().height = size;
-	}
-
 
 
 	@BindingAdapter({ "imageNormalUrl" })
@@ -34,7 +23,7 @@ public final class AdapterBinder {
 			Glide.with(view.getContext())
 			     .load(Utils.uriStr2URI(url)
 			                .toASCIIString())
-			     .centerCrop()
+			     .thumbnail(0.1f)
 			     .crossFade()
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .placeholder(R.drawable.placeholder)
@@ -42,6 +31,7 @@ public final class AdapterBinder {
 		} catch (NullPointerException e) {
 			Glide.with(view.getContext())
 			     .load("http://tomatofish.com/wp-content/uploads/2013/08/placeholder-tomatofish.jpg")
+			     .thumbnail(0.5f)
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .into(view);
 		}
