@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.chopping.utils.Utils;
 import com.nasa.pic.R;
@@ -12,9 +13,8 @@ import com.nasa.pic.ds.PhotoUrlDB;
 public final class AdapterBinder {
 
 
-	@BindingAdapter({ "imageNormalUrl" })
-	public static void loadNormalImage(ImageView view,
-	                                   PhotoUrlDB urls) {
+	@BindingAdapter({ "imageNormalUrl", "thumbnail" })
+	public static void loadNormalImage(ImageView view, PhotoUrlDB urls, double thumbnail) {
 		String url = "http://tomatofish.com/wp-content/uploads/2013/08/placeholder-tomatofish.jpg";
 		if (urls != null) {
 			url = urls.getNormal();
@@ -23,8 +23,9 @@ public final class AdapterBinder {
 			Glide.with(view.getContext())
 			     .load(Utils.uriStr2URI(url)
 			                .toASCIIString())
-			     .thumbnail(0.1f)
-			     .crossFade()
+			     .asBitmap()
+			     .format(DecodeFormat.PREFER_RGB_565)
+			     .thumbnail((float) thumbnail)
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .placeholder(R.drawable.placeholder)
 			     .into(view);

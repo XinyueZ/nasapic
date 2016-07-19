@@ -48,7 +48,8 @@
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
             android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.GONE : View.VISIBLE }'
-            app:imageNormalUrl="@{photoDB.getUrls()}"/>
+            app:imageNormalUrl="@{photoDB.getUrls()}"
+            app:thumbnail="@{0.1}"/>
 
         <ImageButton
             android:id="@+id/play_btn"
