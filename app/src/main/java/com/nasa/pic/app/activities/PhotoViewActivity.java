@@ -3,6 +3,7 @@ package com.nasa.pic.app.activities;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.net.Uri;
@@ -59,10 +60,8 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
  *
  * @author Xinyue Zhao
  */
-public final class PhotoViewActivity
-		extends AppNormalActivity
-		implements OnPhotoTapListener,
-		           ConnectionCallback {
+public final class PhotoViewActivity extends AppNormalActivity implements OnPhotoTapListener,
+                                                                          ConnectionCallback {
 	private static final String EXTRAS_THUMBNAIL = PhotoViewActivity.class.getName() + ".EXTRAS.thumbnail";
 	/**
 	 * Data-binding.
@@ -78,16 +77,11 @@ public final class PhotoViewActivity
 	 */
 	private static final int MENU = R.menu.menu_photo_view;
 
+	private boolean mLarge;
+
 	private TransitCompat mTransit;
 
-	public static void showInstance(Context cxt,
-	                                String title,
-	                                String description,
-	                                String urlToPhoto,
-	                                String urlToPhotoFallback,
-	                                Date datetime,
-	                                String type,
-	                                Thumbnail thumbnail) {
+	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, String urlToPhotoFallback, Date datetime, String type, Thumbnail thumbnail) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
 		intent.putExtra(EXTRAS_TYPE, type);
 		intent.putExtra(EXTRAS_TITLE, title);
@@ -101,13 +95,7 @@ public final class PhotoViewActivity
 	}
 
 
-	public static void showInstance(Context cxt,
-	                                String title,
-	                                String description,
-	                                String urlToPhoto,
-	                                String urlToPhotoFallback,
-	                                Date datetime,
-	                                String type) {
+	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, String urlToPhotoFallback, Date datetime, String type) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
 		intent.putExtra(EXTRAS_TYPE, type);
 		intent.putExtra(EXTRAS_TITLE, title);
@@ -123,18 +111,30 @@ public final class PhotoViewActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mLarge = getResources().getBoolean(R.bool.large);
+		int orientation = getResources().getConfiguration().orientation;
 
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
 
-		mBinding.toolbar.setTitle(getPhotoTitle());
+		StringBuilder description;
+		if (mLarge || orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			mBinding.toolbar.setTitle(getPhotoTitle());
+			description = new StringBuilder(1);
+			description.append(getDescription());
+		} else {
+			description = new StringBuilder(3);
+			description.append(getPhotoTitle());
+			description.append("\n....\n");
+			description.append(getDescription());
+		}
 		initMenu(mBinding.toolbar);
 
 		mBinding.bigImgIv.setOnPhotoTapListener(this);
 		mBinding.bigImgIv.setZoomable(true);
 
-		mBinding.descriptionTv.setText(getDescription());
+		mBinding.descriptionTv.setText(description.toString());
 		mBinding.descriptionTv.setTextColor(Color.WHITE);
 		String datetime = DateTimeUtils.timeConvert2(App.Instance, getDatetime().getTime());
 		mBinding.datetimeTv.setText(String.format(getString(R.string.lbl_photo_datetime_prefix), datetime));
@@ -148,7 +148,7 @@ public final class PhotoViewActivity
 			mBinding.playBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					PendingIntent pendingIntentFb    = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1, getIntent());
+					PendingIntent pendingIntentFb = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_1, getIntent());
 					PendingIntent pendingIntentShare = CustomTabActivityHelper.createPendingIntent(PhotoViewActivity.this, ActionBroadcastReceiver.ACTION_ACTION_BUTTON_2, getIntent());
 
 					CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder().setToolbarColor(ContextCompat.getColor(PhotoViewActivity.this, R.color.common_black))
@@ -209,8 +209,9 @@ public final class PhotoViewActivity
 								float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
 
 								//Set background alpha
-								float alpha =  old + (fraction * (end - old));
-								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+								float alpha = old + (fraction * (end - old));
+								mBinding.errorContent.getBackground()
+								                     .setAlpha((int) alpha);
 							}
 						});
 
@@ -226,8 +227,9 @@ public final class PhotoViewActivity
 								float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
 
 								//Set background alpha
-								float alpha =  old + (fraction * (end - old));
-								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+								float alpha = old + (fraction * (end - old));
+								mBinding.errorContent.getBackground()
+								                     .setAlpha((int) alpha);
 							}
 						});
 
@@ -271,19 +273,12 @@ public final class PhotoViewActivity
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .listener(new RequestListener<String, GlideDrawable>() {
 				     @Override
-				     public boolean onException(Exception e,
-				                                String model,
-				                                Target<GlideDrawable> target,
-				                                boolean isFirstResource) {
+				     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
 					     return false;
 				     }
 
 				     @Override
-				     public boolean onResourceReady(GlideDrawable resource,
-				                                    String model,
-				                                    Target<GlideDrawable> target,
-				                                    boolean isFromMemoryCache,
-				                                    boolean isFirstResource) {
+				     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
 					     //Important to set background from transparent to black.
 					     mBinding.errorContent.setBackgroundResource(R.color.common_black);
 					     return false;
@@ -296,7 +291,7 @@ public final class PhotoViewActivity
 	@Override
 	public void onBackPressed() {
 		BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
-		if(behavior.getState() != STATE_COLLAPSED) {
+		if (behavior.getState() != STATE_COLLAPSED) {
 			behavior.setState(STATE_COLLAPSED);
 			return;
 		}
@@ -316,9 +311,7 @@ public final class PhotoViewActivity
 
 
 	@Override
-	public void onPhotoTap(View view,
-	                       float v,
-	                       float v1) {
+	public void onPhotoTap(View view, float v, float v1) {
 	}
 
 	@Override
@@ -372,8 +365,7 @@ public final class PhotoViewActivity
 		SwitchCompat quSwitch = (SwitchCompat) findViewById(R.id.qu_switch);
 		quSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-			                             boolean isChecked) {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				switchHd(isChecked);
 			}
 		});
@@ -381,10 +373,7 @@ public final class PhotoViewActivity
 
 	private RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
 		@Override
-		public boolean onException(Exception e,
-		                           String model,
-		                           Target<GlideDrawable> target,
-		                           boolean isFirstResource) {
+		public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
 			switchHd(false);
 			Snackbar.make(mBinding.errorContent, R.string.error_switch_hd, Snackbar.LENGTH_SHORT)
 			        .show();
@@ -392,11 +381,7 @@ public final class PhotoViewActivity
 		}
 
 		@Override
-		public boolean onResourceReady(GlideDrawable resource,
-		                               String model,
-		                               Target<GlideDrawable> target,
-		                               boolean isFromMemoryCache,
-		                               boolean isFirstResource) {
+		public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
 			mBinding.bigImgPb.setVisibility(View.GONE);
 			return false;
 		}
