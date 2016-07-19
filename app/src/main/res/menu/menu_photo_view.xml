@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/action_switch_hd"
         app:actionLayout="@layout/hd_switch_layout"
         app:showAsAction="always" />
 

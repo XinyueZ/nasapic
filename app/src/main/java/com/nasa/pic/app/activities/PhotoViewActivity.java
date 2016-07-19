@@ -17,7 +17,6 @@ import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
-import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -362,7 +361,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				onBackPressed();
 			}
 		});
-		SwitchCompat quSwitch = (SwitchCompat) findViewById(R.id.qu_switch);
+		CompoundButton quSwitch = (CompoundButton) findViewById(R.id.qu_switch);
 		quSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -402,8 +401,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
 
-			Snackbar.make(mBinding.errorContent, R.string.action_switch_hd, Snackbar.LENGTH_SHORT)
-			        .show();
 		} else {
 			Glide.with(App.Instance)
 			     .load(Utils.uriStr2URI(getUrl2PhotoFallback())
@@ -412,8 +409,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
 
-			Snackbar.make(mBinding.errorContent, R.string.action_switch_normal, Snackbar.LENGTH_SHORT)
-			        .show();
 		}
 	}
 
