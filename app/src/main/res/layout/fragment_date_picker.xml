@@ -37,7 +37,8 @@
                 android:maxLines="1"
                 android:minLines="1"
                 android:textColor="@color/c_refresh_4"
-                android:textColorHint="@color/colorOrangeDark"/>
+                android:textColorHint="@color/colorOrangeDark"
+                android:textCursorDrawable="@null"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -58,7 +59,8 @@
                 android:maxLines="1"
                 android:minLines="1"
                 android:textColor="@color/c_refresh_4"
-                android:textColorHint="@color/colorOrangeDark"/>
+                android:textColorHint="@color/colorOrangeDark"
+                android:textCursorDrawable="@null"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -79,7 +81,8 @@
                 android:maxLines="1"
                 android:minLines="1"
                 android:textColor="@color/c_refresh_4"
-                android:textColorHint="@color/colorOrangeDark"/>
+                android:textColorHint="@color/colorOrangeDark"
+                android:textCursorDrawable="@null"/>
 
 
         </LinearLayout>
@@ -90,8 +93,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:drawablePadding="5dp"
-            android:gravity="start" android:text="@string/lbl_day_optional"
-            android:textColor="@color/colorPrimaryDark" />
+            android:gravity="start"
+            android:text="@string/lbl_day_optional"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/warning_tv"

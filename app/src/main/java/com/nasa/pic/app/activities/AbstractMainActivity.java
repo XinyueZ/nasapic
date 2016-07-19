@@ -475,7 +475,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 						mBinding.searchFab.hide();
 					}
 				} else {
-					if (!mBinding.searchFab.isShown()) {
+					boolean shouldShow =  getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null;
+					if (!mBinding.searchFab.isShown() && shouldShow) {
 						mBinding.searchFab.show();
 					}
 				}

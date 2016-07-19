@@ -16,6 +16,8 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.DatePickerBinding;
 import com.nasa.pic.utils.Prefs;
 
+import java.util.Calendar;
+
 public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	private static final String EXTRAS_LISTENER = DatePickerDialogFragment.class.getName() + ".EXTRAS.listener";
 	public static final int RESULT_CODE = 0x09;
@@ -51,12 +53,11 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 			@Override
 			public void onClick(View view) {
 
-
-				if (TextUtils.isEmpty(mBinding.yearEt.getText()
-				                                     .toString()) || TextUtils.isEmpty(mBinding.monthEt.getText()
-				                                                                                       .toString()) || Integer.valueOf(mBinding.yearEt.getText()
-				                                                                                                                                      .toString()) <= 0 || Integer.valueOf(mBinding.monthEt.getText()
-				                                                                                                                                                                                           .toString()) <= 0) {
+				int thisYear = Calendar.getInstance()
+				                   .get(Calendar.YEAR);
+				if (TextUtils.isEmpty(mBinding.yearEt.getText().toString()) || TextUtils.isEmpty(mBinding.monthEt.getText().toString()) ||
+						(Integer.valueOf(mBinding.yearEt.getText().toString()) <= 0 || Integer.valueOf(mBinding.yearEt.getText().toString()) > thisYear) ||
+						(Integer.valueOf(mBinding.monthEt.getText().toString()) <= 0 || Integer.valueOf(mBinding.monthEt.getText().toString()) > 12)) {
 					mBinding.warningTv.setVisibility(View.VISIBLE);
 					mBinding.warningTv.setText(R.string.lbl_year_month_day_wrong);
 				} else {
