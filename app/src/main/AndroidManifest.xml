@@ -23,14 +23,17 @@
 
         <activity
             android:name=".app.activities.MainActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.SearchResultActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".app.activities.PhotoViewActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/Transparent"/>
         <activity
             android:name=".app.activities.WebViewActivity"
@@ -62,6 +65,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>

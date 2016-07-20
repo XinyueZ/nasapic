@@ -58,8 +58,8 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getBinding().toolbar.setLogo(null);
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
+		getBinding().toolbar.setLogo(null);
 		getBinding().searchFab.hide();
 		getBinding().toolbar.setTitle(keyword);
 		getBinding().responsesRv.clearOnScrollListeners();
@@ -135,7 +135,7 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		if (isDataLoaded()) {
 			if (getBinding().responsesRv.getAdapter() == null) {
 				//Data
-				mPhotoListAdapter = new PhotoListAdapter(getCellSize());
+				mPhotoListAdapter = new PhotoListAdapter();
 				mPhotoListAdapter.setData(getData());
 				getBinding().responsesRv.setAdapter(mPhotoListAdapter);
 			} else {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <RadioGroup
+        android:id="@+id/size_multiplier_rp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/common_transparent">
+
+        <RadioButton
+            android:id="@+id/size_multiplier_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/size_multiplier_25"
+            android:textColor="@color/common_white"/>
+
+        <RadioButton
+            android:id="@+id/size_multiplier_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:checked="true"
+            android:text="@string/size_multiplier_50"
+            android:textColor="@color/common_white"/>
+
+        <RadioButton
+            android:id="@+id/size_multiplier_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/size_multiplier_75"
+            android:textColor="@color/common_white"/>
+
+        <RadioButton
+            android:id="@+id/size_multiplier_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/size_multiplier_100"
+            android:textColor="@color/common_white"/>
+
+    </RadioGroup>
+</layout>

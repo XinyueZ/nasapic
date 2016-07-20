@@ -43,20 +43,6 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	 */
 	private List<T> mVisibleData;
 
-	private int mCellSize;
-
-	public PhotoListAdapter(int cellSize) {
-		mCellSize = cellSize;
-	}
-
-	/**
-	 * Get current used data-source.
-	 *
-	 * @return The data-source.
-	 */
-	public List<T> getData() {
-		return mVisibleData;
-	}
 
 	/**
 	 * Set data-source for list-view.
@@ -69,29 +55,6 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		return this;
 	}
 
-
-	/**
-	 * Add data-source for list-view.
-	 *
-	 * @param data Data-source.
-	 * @return This object.
-	 */
-	public PhotoListAdapter<T> addData(T data) {
-		mVisibleData.add(data);
-		return this;
-	}
-
-
-	/**
-	 * Add data-source for list-view.
-	 *
-	 * @param data Data-source.
-	 * @return This object.
-	 */
-	public PhotoListAdapter<T> addData(List<T> data) {
-		mVisibleData.addAll(data);
-		return this;
-	}
 
 	@Override
 	public int getItemCount() {
@@ -115,8 +78,8 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		holder.mBinding.setVariable(BR.photoDB, entry);
 		holder.mBinding.setVariable(BR.handler, handlers);
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
-		holder.mBinding.playBtn.setMinimumWidth(mCellSize);
-		holder.mBinding.playBtn.setMinimumHeight(mCellSize);
+
+
 		MenuItem openMi = holder.mToolbar.getMenu()
 		                                 .findItem(R.id.action_open);
 		openMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -157,8 +120,8 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	 * ViewHolder for the list.
 	 */
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		public ItemBinding mBinding;
-		private Toolbar mToolbar;
+		public final ItemBinding mBinding;
+		private final Toolbar mToolbar;
 
 		ViewHolder(ItemBinding binding) {
 			super(binding.getRoot());
@@ -170,13 +133,13 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 	}
 
 	public static final class ListItemHandlers {
-		private ViewHolder mViewHolder;
+		private final ViewHolder mViewHolder;
 
 		public ListItemHandlers(ViewHolder viewHolder  ) {
 			mViewHolder = viewHolder;
 		}
 
-		public void onOpenPhoto(View view) {
+		public void onOpenPhoto(@SuppressWarnings("UnusedParameters") View view) {
 			EventBus.getDefault()
 			        .post(new ClickPhotoItemEvent(mViewHolder));
 		}

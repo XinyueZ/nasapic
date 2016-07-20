@@ -68,4 +68,18 @@
     <string name="no_share_type">No share type specified!</string>
     <string name="error_occurred">Sorry, an error occurred.</string>
     <string name="error_switch_hd">Sorry, an error occurred while loading HD photo.</string>
+
+
+
+    <string name="size_multiplier_25">25%</string>
+    <string name="size_multiplier_50">50%</string>
+    <string name="size_multiplier_75">75%</string>
+    <string name="size_multiplier_100">100%</string>
+
+    <integer-array name="size_multipliers">
+        <item>25</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+    </integer-array>
 </resources>

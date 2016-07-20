@@ -1,20 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         app:actionLayout="@layout/hd_switch_layout"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_fb_share_photo"
         android:icon="@drawable/ic_share_fb_photo"
         android:title="@string/action_share_fb"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_share_photo"
         android:icon="@drawable/ic_share_photo"
         android:title="@string/action_share"
         android:visible="false"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always"/>
 </menu>

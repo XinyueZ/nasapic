@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
@@ -26,6 +28,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Interpolator;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -46,7 +49,6 @@ import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
@@ -60,7 +62,8 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
  * @author Xinyue Zhao
  */
 public final class PhotoViewActivity extends AppNormalActivity implements OnPhotoTapListener,
-                                                                          ConnectionCallback {
+                                                                          ConnectionCallback,
+                                                                          RadioGroup.OnCheckedChangeListener {
 	private static final String EXTRAS_THUMBNAIL = PhotoViewActivity.class.getName() + ".EXTRAS.thumbnail";
 	/**
 	 * Data-binding.
@@ -76,9 +79,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 */
 	private static final int MENU = R.menu.menu_photo_view;
 
-	private boolean mLarge;
-
 	private TransitCompat mTransit;
+	private CompoundButton mQuSwitch;
 
 	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, String urlToPhotoFallback, Date datetime, String type, Thumbnail thumbnail) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
@@ -88,7 +90,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		intent.putExtra(EXTRAS_DESCRIPTION, description);
 		intent.putExtra(EXTRAS_URL_TO_PHOTO, urlToPhoto);
 		intent.putExtra(EXTRAS_URL_TO_PHOTO_FALLBACK, urlToPhotoFallback);
-		intent.putExtra(EXTRAS_THUMBNAIL, (Serializable) thumbnail);
+		intent.putExtra(EXTRAS_THUMBNAIL, thumbnail);
 		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		cxt.startActivity(intent);
 	}
@@ -110,15 +112,16 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mLarge = getResources().getBoolean(R.bool.large);
+		boolean large = getResources().getBoolean(R.bool.large);
 		int orientation = getResources().getConfiguration().orientation;
 
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
+		mBinding.loadingFab.hide();
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
 
 		StringBuilder description;
-		if (mLarge || orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		if (large || orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			mBinding.toolbar.setTitle(getPhotoTitle());
 			description = new StringBuilder(1);
 			description.append(getDescription());
@@ -132,6 +135,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 		mBinding.bigImgIv.setOnPhotoTapListener(this);
 		mBinding.bigImgIv.setZoomable(true);
+		mBinding.hdSizeMultiplierLayout.sizeMultiplierRp.setOnCheckedChangeListener(this);
 
 		mBinding.descriptionTv.setText(description.toString());
 		mBinding.descriptionTv.setTextColor(Color.WHITE);
@@ -157,14 +161,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 					                                                                  .addMenuItem(getString(R.string.action_share_fb), pendingIntentFb)
 					                                                                  .addMenuItem(getString(R.string.action_share), pendingIntentShare)
 					                                                                  .build();
-					mCustomTabActivityHelper.openCustomTab(PhotoViewActivity.this,
-					                                       customTabsIntent,
-					                                       getPhotoTitle(),
-					                                       getDescription(),
-					                                       getUrl2Photo(),
-					                                       getDatetime(),
-					                                       getType(),
-					                                       new WebViewFallback());
+					CustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(), getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback
+							());
 					//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
 					//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
@@ -199,9 +197,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 						ValueAnimatorCompat enterTogether = AnimatorCompatHelper.emptyValueAnimator();
 						enterTogether.setDuration(TransitCompat.ANIM_DURATION * 2);
 						enterTogether.addUpdateListener(new AnimatorUpdateListenerCompat() {
-							private float old = 0;
-							private float end = 255;
-							private Interpolator interpolator2 = new BakedBezierInterpolator();
+							private final float old = 0;
+							private final float end = 255;
+							private final Interpolator interpolator2 = new BakedBezierInterpolator();
 
 							@Override
 							public void onAnimationUpdate(ValueAnimatorCompat animation) {
@@ -217,9 +215,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 						ValueAnimatorCompat exitTogether = AnimatorCompatHelper.emptyValueAnimator();
 						exitTogether.setDuration(TransitCompat.ANIM_DURATION * 4);
 						exitTogether.addUpdateListener(new AnimatorUpdateListenerCompat() {
-							private float old = 255;
-							private float end = 0;
-							private Interpolator interpolator2 = new BakedBezierInterpolator();
+							private final float old = 255;
+							private final float end = 0;
+							private final Interpolator interpolator2 = new BakedBezierInterpolator();
 
 							@Override
 							public void onAnimationUpdate(ValueAnimatorCompat animation) {
@@ -270,6 +268,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			     .load(Utils.uriStr2URI(path)
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .skipMemoryCache(false)
 			     .listener(new RequestListener<String, GlideDrawable>() {
 				     @Override
 				     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -311,6 +310,13 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	@Override
 	public void onPhotoTap(View view, float v, float v1) {
+		if (mQuSwitch.isChecked()) {
+			if (mBinding.hdSizeMultiplierLayout.getRoot()
+			                                   .getVisibility() != View.VISIBLE) {
+				mBinding.hdSizeMultiplierLayout.getRoot()
+				                               .setVisibility(View.VISIBLE);
+			}
+		}
 	}
 
 	@Override
@@ -361,18 +367,23 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				onBackPressed();
 			}
 		});
-		CompoundButton quSwitch = (CompoundButton) findViewById(R.id.qu_switch);
-		quSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		mQuSwitch = (CompoundButton) findViewById(R.id.qu_switch);
+		mQuSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				switchHd(isChecked);
+				mBinding.hdSizeMultiplierLayout.getRoot()
+				                               .setVisibility(isChecked ?
+				                                              View.VISIBLE :
+				                                              View.GONE);
 			}
 		});
 	}
 
-	private RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
+	private final RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
 		@Override
 		public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+			stopLoadingIndicator();
 			switchHd(false);
 			Snackbar.make(mBinding.errorContent, R.string.error_switch_hd, Snackbar.LENGTH_SHORT)
 			        .show();
@@ -381,7 +392,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 		@Override
 		public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-			mBinding.bigImgPb.setVisibility(View.GONE);
+			stopLoadingIndicator();
 			return false;
 		}
 	};
@@ -392,12 +403,14 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 * @param isChecked Is cheched or not.
 	 */
 	private void switchHd(boolean isChecked) {
-		mBinding.bigImgPb.setVisibility(View.VISIBLE);
 		if (isChecked) {
+			startLoadingIndicator();
 			Glide.with(App.Instance)
 			     .load(Utils.uriStr2URI(getUrl2Photo())
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .sizeMultiplier(getHdFactor())
+			     .skipMemoryCache(true)
 			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
 
@@ -406,27 +419,62 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			     .load(Utils.uriStr2URI(getUrl2PhotoFallback())
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
+			     .skipMemoryCache(false)
 			     .listener(mHdSwitchListener)
 			     .into(mBinding.bigImgIv);
 
 		}
 	}
 
-//
-//	private void startLoadingMoreIndicator() {
-//		Drawable drawable = mBinding.loadingFab.getDrawable();
-//		if (drawable instanceof Animatable) {
-//			((Animatable) drawable).start();
-//			mBinding.loadingFab.show();
-//		}
-//	}
-//
-//	private void stopLoadingMoreIndicator() {
-//		Drawable drawable = mBinding.loadingFab.getDrawable();
-//		if (drawable instanceof Animatable) {
-//			((Animatable) drawable).stop();
-//			mBinding.loadingFab.hide();
-//		}
-//	}
 
+	private void startLoadingIndicator() {
+		Drawable drawable = mBinding.loadingFab.getDrawable();
+		if (drawable instanceof Animatable) {
+			((Animatable) drawable).start();
+		}
+		mBinding.loadingFab.show();
+	}
+
+	private void stopLoadingIndicator() {
+		Drawable drawable = mBinding.loadingFab.getDrawable();
+		if (drawable instanceof Animatable) {
+			((Animatable) drawable).stop();
+		}
+		mBinding.loadingFab.hide();
+	}
+
+	@Override
+	public void onCheckedChanged(RadioGroup radioGroup, int id) {
+		Glide.with(App.Instance)
+		     .load(Utils.uriStr2URI(getUrl2Photo())
+		                .toASCIIString())
+		     .diskCacheStrategy(DiskCacheStrategy.ALL)
+		     .sizeMultiplier(getHdFactor())
+		     .skipMemoryCache(true)
+		     .listener(mHdSwitchListener)
+		     .into(mBinding.bigImgIv);
+		mBinding.hdSizeMultiplierLayout.getRoot()
+		                               .setVisibility(View.GONE);
+	}
+
+	private float getHdFactor() {
+		int index = 1;
+		switch (mBinding.hdSizeMultiplierLayout.sizeMultiplierRp.getCheckedRadioButtonId()) {
+			case R.id.size_multiplier_0:
+				index = 0;
+				break;
+			case R.id.size_multiplier_1:
+				index = 1;
+				break;
+			case R.id.size_multiplier_2:
+				index = 2;
+				break;
+			case R.id.size_multiplier_3:
+				index = 3;
+				break;
+		}
+
+		int[] multipliers = getResources().getIntArray(R.array.size_multipliers);
+		return multipliers[index] / 100f;
+	}
 }

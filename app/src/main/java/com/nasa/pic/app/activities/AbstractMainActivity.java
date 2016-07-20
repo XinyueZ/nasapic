@@ -97,7 +97,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	private ActivityAbstractMainBinding mBinding;
 
 	private SectionedGridRecyclerViewAdapter mSectionedAdapter;
-	private int mCellSize;
 	private ItemBinding mItemBinding;
 
 
@@ -264,7 +263,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		if (isDataLoaded()) {
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
-				mPhotoListAdapter = new PhotoListAdapter(getCellSize());
+				mPhotoListAdapter = new PhotoListAdapter( );
 				mPhotoListAdapter.setData(getData());
 				//Sections
 				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
@@ -450,9 +449,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
-		mBinding.loadingFab.hide();
-
-
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -583,14 +579,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
 		LL.d("CardCount: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
-		mCellSize = (int) (width / div);
-		LL.d("CardSize: " + mCellSize);
 	}
 
 
-	protected int getCellSize() {
-		return mCellSize;
-	}
 
 
 	private void revertLastSelectedListItemView() {
