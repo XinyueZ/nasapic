@@ -377,7 +377,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				}
 			});
 		} else {
-			mQuSwitch.setVisibility(View.GONE);
+			mBinding.toolbar.getMenu().findItem(R.id.action_hd_switch).setVisible(false);
 		}
 	}
 
