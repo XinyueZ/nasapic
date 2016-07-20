@@ -21,7 +21,6 @@
     <string name="lbl_share_download_app">Download %1$s\n%2$s</string>
     <string name="lbl_more_photos">More photos</string>
     <string name="lbl_photo_datetime_prefix">%s</string>
-    <string name="lbl_more_photos_to_load">More photos will be loaded…</string>
     <string name="lbl_no_results">No results!</string>
     <string name="lbl_earlier_than_1998">You can not query before 1998, try somewhat later.</string>
     <string name="lbl_before_today">You can not query for what from tomorrow.</string>

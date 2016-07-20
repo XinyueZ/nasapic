@@ -112,8 +112,9 @@
 
         <ImageButton
             android:id="@+id/search_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="@dimen/activity_vertical_margin"
             android:layout_gravity="end|center_vertical"
             android:background="@color/common_transparent"
             app:srcCompat="@drawable/ic_do_search"/>

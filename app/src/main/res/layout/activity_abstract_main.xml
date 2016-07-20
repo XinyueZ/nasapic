@@ -74,13 +74,7 @@
         </LinearLayout>
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/load_more_fab"
-            style="@style/FAB"
-            android:layout_gravity="end|bottom"
-            app:backgroundTint="@color/colorPrimary"
-            app:rippleColor="@color/colorPrimaryDark"
-            app:srcCompat="@drawable/ic_call_more"/>
+
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/search_fab"

@@ -13,7 +13,8 @@ import com.nasa.pic.ds.PhotoUrlDB;
 public final class AdapterBinder {
 
 
-	@BindingAdapter({ "imageNormalUrl", "thumbnail" })
+	@BindingAdapter({ "imageNormalUrl",
+	                  "thumbnail" })
 	public static void loadNormalImage(ImageView view, PhotoUrlDB urls, double thumbnail) {
 		String url = "http://tomatofish.com/wp-content/uploads/2013/08/placeholder-tomatofish.jpg";
 		if (urls != null) {
@@ -26,13 +27,14 @@ public final class AdapterBinder {
 			     .asBitmap()
 			     .format(DecodeFormat.PREFER_RGB_565)
 			     .thumbnail((float) thumbnail)
+			     .skipMemoryCache(false)
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .placeholder(R.drawable.placeholder)
 			     .into(view);
 		} catch (NullPointerException e) {
 			Glide.with(view.getContext())
 			     .load("http://tomatofish.com/wp-content/uploads/2013/08/placeholder-tomatofish.jpg")
-			     .thumbnail(0.5f)
+			     .skipMemoryCache(false)
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .into(view);
 		}

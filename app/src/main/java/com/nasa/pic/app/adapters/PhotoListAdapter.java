@@ -115,8 +115,8 @@ public final class PhotoListAdapter<T extends RealmObject> extends RecyclerView.
 		holder.mBinding.setVariable(BR.photoDB, entry);
 		holder.mBinding.setVariable(BR.handler, handlers);
 		holder.mBinding.setVariable(BR.formatter, new SimpleDateFormat("yyyy-M-d"));
-//		holder.mBinding.setVariable(BR.cardSize, mCellSize);
-
+		holder.mBinding.playBtn.setMinimumWidth(mCellSize);
+		holder.mBinding.playBtn.setMinimumHeight(mCellSize);
 		MenuItem openMi = holder.mToolbar.getMenu()
 		                                 .findItem(R.id.action_open);
 		openMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {

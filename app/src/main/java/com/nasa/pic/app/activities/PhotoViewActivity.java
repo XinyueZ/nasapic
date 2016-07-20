@@ -412,4 +412,21 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		}
 	}
 
+//
+//	private void startLoadingMoreIndicator() {
+//		Drawable drawable = mBinding.loadingFab.getDrawable();
+//		if (drawable instanceof Animatable) {
+//			((Animatable) drawable).start();
+//			mBinding.loadingFab.show();
+//		}
+//	}
+//
+//	private void stopLoadingMoreIndicator() {
+//		Drawable drawable = mBinding.loadingFab.getDrawable();
+//		if (drawable instanceof Animatable) {
+//			((Animatable) drawable).stop();
+//			mBinding.loadingFab.hide();
+//		}
+//	}
+
 }

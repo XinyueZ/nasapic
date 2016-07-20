@@ -61,7 +61,6 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		getBinding().toolbar.setLogo(null);
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
 		getBinding().searchFab.hide();
-		getBinding().loadMoreFab.hide();
 		getBinding().toolbar.setTitle(keyword);
 		getBinding().responsesRv.clearOnScrollListeners();
 	}

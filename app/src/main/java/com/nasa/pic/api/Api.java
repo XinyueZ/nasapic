@@ -2,6 +2,7 @@ package com.nasa.pic.api;
 
 import com.nasa.pic.ds.PhotoList;
 import com.nasa.pic.ds.RequestPhotoDayList;
+import com.nasa.pic.ds.RequestPhotoLastThreeList;
 import com.nasa.pic.ds.RequestPhotoList;
 
 import retrofit2.Call;
@@ -16,4 +17,7 @@ public interface Api {
 
 	@POST("/list")
 	Call<PhotoList> getPhotoList( @Body RequestPhotoDayList requestPhotoList );
+
+	@POST("/last_three_list")
+	Call<PhotoList> getPhotoListLast3Days( @Body RequestPhotoLastThreeList requestPhotoList );
 }

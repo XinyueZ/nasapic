@@ -2,18 +2,16 @@ package com.nasa.pic.app.activities;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
-import android.support.design.widget.Snackbar;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
@@ -23,16 +21,18 @@ import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog.Builder;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 
+import com.chopping.application.LL;
+import com.chopping.utils.DeviceUtils;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
@@ -43,8 +43,10 @@ import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
+import com.nasa.pic.databinding.ItemBinding;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.ds.RequestPhotoDayList;
+import com.nasa.pic.ds.RequestPhotoLastThreeList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
@@ -55,6 +57,7 @@ import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -62,12 +65,12 @@ import java.util.Locale;
 import java.util.UUID;
 
 import de.greenrobot.event.EventBus;
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-import static android.support.design.widget.Snackbar.make;
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
 import static com.nasa.pic.utils.Utils.extractSections;
 import static com.nasa.pic.utils.Utils.validateDateTimeSelection;
@@ -93,25 +96,70 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	 */
 	private ActivityAbstractMainBinding mBinding;
 
-	//[Begin for detecting scrolling onto bottom]
-	private int mVisibleItemCount;
-	private int mPastVisibleItems;
-	private int mTotalItemCount;
-	protected PhotoListAdapter mPhotoListAdapter;
 	private SectionedGridRecyclerViewAdapter mSectionedAdapter;
-	//[End]
+	private int mCellSize;
+	private ItemBinding mItemBinding;
+
+
+	protected PhotoListAdapter mPhotoListAdapter;
 
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
 
+	/**
+	 * Handler for {@link com.nasa.pic.events.OpenPhotoEvent}.
+	 *
+	 * @param e Event {@link com.nasa.pic.events.OpenPhotoEvent}.
+	 */
+	public void onEvent(OpenPhotoEvent e) {
+		PhotoDB photoDB = (PhotoDB) e.getObject();
+		if (e.getThumbnail() != null) {
+			e.getThumbnail()
+			 .setSource(photoDB.getUrls()
+			                   .getNormal());
+			PhotoViewActivity.showInstance(this,
+			                               TextUtils.isEmpty(photoDB.getTitle()) ?
+			                               "" :
+			                               photoDB.getTitle(),
+			                               photoDB.getDescription(),
+			                               TextUtils.isEmpty(photoDB.getUrls()
+			                                                        .getHd()) ?
+			                               photoDB.getUrls()
+			                                      .getNormal() :
+			                               photoDB.getUrls()
+			                                      .getHd(),
+			                               photoDB.getUrls()
+			                                      .getNormal(),
+			                               photoDB.getDate(),
+			                               photoDB.getType(),
+			                               e.getThumbnail());
+			mItemBinding = e.getItemBinding();
+		} else {
+			PhotoViewActivity.showInstance(this,
+			                               TextUtils.isEmpty(photoDB.getTitle()) ?
+			                               "" :
+			                               photoDB.getTitle(),
+			                               photoDB.getDescription(),
+			                               TextUtils.isEmpty(photoDB.getUrls()
+			                                                        .getHd()) ?
+			                               photoDB.getUrls()
+			                                      .getNormal() :
+			                               photoDB.getUrls()
+			                                      .getHd(),
+			                               photoDB.getUrls()
+			                                      .getNormal(),
+			                               photoDB.getDate(),
+			                               photoDB.getType());
+		}
+	}
 
 	/**
 	 * Handler for {@link  EULARejectEvent}.
 	 *
 	 * @param e Event {@link  EULARejectEvent}.
 	 */
-	public void onEvent(EULARejectEvent e) {
+	public void onEvent(@SuppressWarnings("UnusedParameters") EULARejectEvent e) {
 		finish();
 	}
 
@@ -120,7 +168,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	 *
 	 * @param e Event {@link  EULAConfirmedEvent}.
 	 */
-	public void onEvent(EULAConfirmedEvent e) {
+	public void onEvent(@SuppressWarnings("UnusedParameters") EULAConfirmedEvent e) {
 
 
 	}
@@ -142,8 +190,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	 * To confirm whether the validation of the Play-service of Google Inc.
 	 */
 	private void checkPlayService() {
-		final int isFound = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-		if (isFound == ConnectionResult.SUCCESS) {//Ignore update.
+		GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+		int result = googleAPI.isGooglePlayServicesAvailable(this);
+		if (result == ConnectionResult.SUCCESS) {//Ignore update.
 			//The "End User License Agreement" must be confirmed before you use this application.
 			if (!Prefs.getInstance()
 			          .isEULAOnceConfirmed()) {
@@ -172,7 +221,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 					                 }
 				                 }
 			                 })
-			                 .setCancelable(isFound == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED)
+			                 .setCancelable(result == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED)
 			                 .create()
 			                 .show();
 		}
@@ -184,26 +233,18 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
 		int currentMonth = calendar.get(Calendar.MONTH);
-		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-		int shownMonth = currentMonth + 1;
+		int thisMonth = currentMonth + 1;
+		int lastMonth = currentMonth;
+		int beforeLastMonth = currentMonth - 1;
 		String timeZone = calendar.getTimeZone()
 		                          .getID();
 
 
-		loadPhotoList(year, shownMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
-		if (currentDay < 15) {
-			loadPhotoList(year, currentMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
-		}
+		loadPhotoList(year, thisMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
+		loadPhotoList(year, lastMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
+		loadPhotoList(year, beforeLastMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
 	}
 
-	private void loadList(Calendar calendar) {
-		int year = calendar.get(Calendar.YEAR);
-		int currentMonth = calendar.get(Calendar.MONTH);
-		int shownMonth = currentMonth + 1;
-		String timeZone = calendar.getTimeZone()
-		                          .getID();
-		loadPhotoList(year, shownMonth, DatePickerDialogFragment.IGNORED_DAY, timeZone);
-	}
 
 	@Override
 	protected void queryLocalData() {
@@ -214,8 +255,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 
 	@Override
 	protected RealmResults<? extends RealmObject> createQuery(RealmQuery<? extends RealmObject> q) {
-		RealmResults<? extends RealmObject> results = q.findAllSortedAsync("date", Sort.DESCENDING);
-		return results;
+		return q.findAllSortedAsync("date", Sort.DESCENDING);
 	}
 
 
@@ -259,41 +299,50 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	@Override
 	protected void onRestApiSuccess() {
 		mBinding.contentSrl.setRefreshing(false);
-		stopLoadingMoreIndicator();
 	}
 
 
 	@Override
 	protected void onRestApiFail() {
 		mBinding.contentSrl.setRefreshing(false);
-		stopLoadingMoreIndicator();
 	}
 
 
+	//Load photos, yeae or month < 0 means load last three days
+	//otherwise try to load photo(s) with yyyy-month-day or yyyy-month .
 	protected void loadPhotoList(int year, int month, int day, String timeZone) {
-		if (day == DatePickerDialogFragment.IGNORED_DAY) {
-			RequestPhotoList requestPhotoList = new RequestPhotoList();
-			requestPhotoList.setReqId(UUID.randomUUID()
-			                              .toString());
-			requestPhotoList.setYear(year);
-			requestPhotoList.setMonth(month);
-			requestPhotoList.setTimeZone(timeZone);
+		String reqId = UUID.randomUUID()
+		                   .toString();
+		if (year < 0 || month < 0) {
+			RequestPhotoLastThreeList requestPhotoLastThreeList = new RequestPhotoLastThreeList();
+			requestPhotoLastThreeList.setReqId(reqId);
+			requestPhotoLastThreeList.setTimeZone(timeZone);
 			App.Instance.getApiManager()
 			            .execAsync(AppGuardService.Retrofit.create(Api.class)
-			                                               .getPhotoMonthList(requestPhotoList), requestPhotoList);
+			                                               .getPhotoListLast3Days(requestPhotoLastThreeList), requestPhotoLastThreeList);
 		} else {
-			List<String> keywords = new ArrayList<>(1);
-			keywords.add(String.format(Locale.getDefault(), "%d-%d-%d", year, month, day));
-			RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
-			dayListRequest.setReqId(UUID.randomUUID()
-			                            .toString());
-			dayListRequest.setDateTimes(keywords);
-			dayListRequest.setTimeZone(Calendar.getInstance()
-			                                   .getTimeZone()
-			                                   .getID());
-			App.Instance.getApiManager()
-			            .execAsync(AppGuardService.Retrofit.create(Api.class)
-			                                               .getPhotoList(dayListRequest), dayListRequest);
+			if (day == DatePickerDialogFragment.IGNORED_DAY) {
+				RequestPhotoList requestPhotoList = new RequestPhotoList();
+				requestPhotoList.setReqId(reqId);
+				requestPhotoList.setYear(year);
+				requestPhotoList.setMonth(month);
+				requestPhotoList.setTimeZone(timeZone);
+				App.Instance.getApiManager()
+				            .execAsync(AppGuardService.Retrofit.create(Api.class)
+				                                               .getPhotoMonthList(requestPhotoList), requestPhotoList);
+			} else {
+				List<String> keywords = new ArrayList<>(1);
+				keywords.add(String.format(Locale.getDefault(), "%d-%d-%d", year, month, day));
+				RequestPhotoDayList dayListRequest = new RequestPhotoDayList();
+				dayListRequest.setReqId(reqId);
+				dayListRequest.setDateTimes(keywords);
+				dayListRequest.setTimeZone(Calendar.getInstance()
+				                                   .getTimeZone()
+				                                   .getID());
+				App.Instance.getApiManager()
+				            .execAsync(AppGuardService.Retrofit.create(Api.class)
+				                                               .getPhotoList(dayListRequest), dayListRequest);
+			}
 		}
 	}
 
@@ -402,22 +451,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		super.onCreate(savedInstanceState);
 		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
 		mBinding.loadingFab.hide();
-		mBinding.loadMoreFab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				PhotoDB photoDB = (PhotoDB) getData().last();
-				Log.d("last searched",
-				      "searched date: " + photoDB.getDate()
-				                                 .toString());
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(photoDB.getDate());
-				calendar.add(Calendar.MONTH, -1);
-				loadList(calendar);
-				make(mBinding.errorContent, R.string.lbl_more_photos_to_load, Snackbar.LENGTH_LONG).show();
-				startLoadingMoreIndicator();
-			}
-		});
-		mBinding.dialogFl.hide();
+
+
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -482,43 +517,10 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 					}
 				}
 
-				//Calc whether the list has been scrolled on bottom,
-				//this lets app to getting next page.
-				LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-				mVisibleItemCount = linearLayoutManager.getChildCount();
-				mTotalItemCount = linearLayoutManager.getItemCount();
-				mPastVisibleItems = linearLayoutManager.findFirstVisibleItemPosition();
-				if (ViewCompat.getY(recyclerView) < dy) {
-					if ((mVisibleItemCount + mPastVisibleItems) == mTotalItemCount) {
-						//Load more
-						if (!mBinding.loadMoreFab.isShown()) {
-							mBinding.loadMoreFab.show();
-						}
-					}
-				} else {
-					if (mBinding.loadMoreFab.isShown()) {
-						mBinding.loadMoreFab.hide();
-					}
-				}
 			}
 		});
 	}
 
-	private void startLoadingMoreIndicator() {
-		Drawable drawable = mBinding.loadingFab.getDrawable();
-		if (drawable instanceof Animatable) {
-			((Animatable) drawable).start();
-			mBinding.loadingFab.show();
-		}
-	}
-
-	private void stopLoadingMoreIndicator() {
-		Drawable drawable = mBinding.loadingFab.getDrawable();
-		if (drawable instanceof Animatable) {
-			((Animatable) drawable).stop();
-			mBinding.loadingFab.hide();
-		}
-	}
 
 	protected void openPhoto(final PhotoListAdapter.ViewHolder viewHolder, int pos) {
 		if (pos != RecyclerView.NO_POSITION) {
@@ -527,9 +529,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				animator.setDuration(TransitCompat.ANIM_DURATION * 3);
 				animator.setTarget(viewHolder.mBinding.thumbnailIv);
 				animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
-					private float oldAlpha = 1;
-					private float endAlpha = 0;
-					private Interpolator interpolator2 = new BakedBezierInterpolator();
+					private final float oldAlpha = 1;
+					private final float endAlpha = 0;
+					private final Interpolator interpolator2 = new BakedBezierInterpolator();
 
 					@Override
 					public void onAnimationUpdate(ValueAnimatorCompat animation) {
@@ -556,9 +558,75 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 	@Override
-	protected void onStop() {
-		mBinding.dialogFl.hide();
-		super.onStop();
+	protected void onResume() {
+		super.onResume();
+		revertLastSelectedListItemView();
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (mBinding.dialogFl.isContentShown()) {
+					mBinding.dialogFl.show();
+				}
+			}
+		}, 500);
 	}
+
+	private void buildListView(Context cxt, RecyclerView recyclerView) {
+		DeviceUtils.ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
+		int width = screenSize.Width;
+		LL.d("Screen width: " + width);
+		float basic = cxt.getResources()
+		                 .getDimension(R.dimen.basic_card_width);
+		LL.d("Basic: " + basic);
+		float div = width / basic;
+		LL.d("Div: " + div);
+		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
+		LL.d("CardCount: " + cardCount);
+		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
+		mCellSize = (int) (width / div);
+		LL.d("CardSize: " + mCellSize);
+	}
+
+
+	protected int getCellSize() {
+		return mCellSize;
+	}
+
+
+	private void revertLastSelectedListItemView() {
+		if (mItemBinding == null) {
+			return;
+		}
+		ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+		animator.setDuration(TransitCompat.ANIM_DURATION * 4);
+		animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+			private final float oldAlpha = 0;
+			private final float endAlpha = 1;
+			private final Interpolator interpolator2 = new BakedBezierInterpolator();
+
+			@Override
+			public void onAnimationUpdate(ValueAnimatorCompat animation) {
+				float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+				//Set background alpha
+				float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
+				ViewCompat.setAlpha(mItemBinding.thumbnailIv, alpha);
+			}
+		});
+		animator.start();
+	}
+
+	@Override
+	protected boolean shouldLoadLocal(Context cxt) {
+		boolean shouldLoadLocal = super.shouldLoadLocal(cxt) || !Realm.getDefaultInstance()
+		                                                              .isEmpty();
+		if (shouldLoadLocal) {
+			onRestApiSuccess();
+			LL.d("shouldLoadLocal: " + shouldLoadLocal);
+		} else {
+			LL.d("shouldLoadLocal: " + shouldLoadLocal);
+		}
+		return shouldLoadLocal;
+	}
+
 
 }
