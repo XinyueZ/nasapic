@@ -74,8 +74,6 @@
         </LinearLayout>
 
 
-
-
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/search_fab"
             style="@style/FAB"
@@ -102,6 +100,22 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="@color/colorAccent"/>
+
+
+        <Button
+            android:id="@+id/load_new_photos_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/load_new_photos_button_height"
+            android:layout_gravity="top|center_horizontal"
+            android:background="@drawable/ic_new_photos"
+            android:paddingBottom="0dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="0dp"
+            android:text="@string/lbl_new_photos"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/common_white"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     </android.support.design.widget.CoordinatorLayout>
 
 

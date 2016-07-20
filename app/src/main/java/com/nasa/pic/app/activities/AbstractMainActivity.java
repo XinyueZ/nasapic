@@ -60,6 +60,7 @@ import com.nasa.pic.utils.Prefs;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -74,6 +75,7 @@ import io.realm.Sort;
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.RESULT_CODE;
 import static com.nasa.pic.utils.Utils.extractSections;
 import static com.nasa.pic.utils.Utils.validateDateTimeSelection;
+import static java.util.concurrent.TimeUnit.DAYS;
 
 /**
  * An abstract {@link android.app.Activity} that contains {@link android.support.v4.widget.DrawerLayout}.
@@ -91,6 +93,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	 * Main layout for this component.
 	 */
 	private static final int LAYOUT = R.layout.activity_abstract_main;
+	private static final int DURATION_FOUR_DAYS = 4;
+	private static final int DURATION_THREE_DAYS = 3;
+	private static final int DURATION_ONE_DAY = 1;
 	/**
 	 * Data-binding.
 	 */
@@ -454,6 +459,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
+		mBinding.loadNewPhotosBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				loadPhotoList(-1, -1, -1, null);
+			}
+		});
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -611,14 +622,38 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 
 	@Override
 	protected boolean shouldLoadLocal(Context cxt) {
-		boolean shouldLoadLocal = super.shouldLoadLocal(cxt) || !Realm.getDefaultInstance()
-		                                                              .isEmpty();
+		boolean notEmptyLocal = !Realm.getDefaultInstance()
+		                              .isEmpty();
+		boolean defaultShouldLoadLocal = super.shouldLoadLocal(cxt);
+		boolean shouldLoadLocal = defaultShouldLoadLocal || notEmptyLocal;
 		if (shouldLoadLocal) {
 			onRestApiSuccess();
-			LL.d("shouldLoadLocal: " + shouldLoadLocal);
-		} else {
-			LL.d("shouldLoadLocal: " + shouldLoadLocal);
+			if (notEmptyLocal) {
+				Date maxDate = Realm.getDefaultInstance()
+				                    .where(getDataClazz())
+				                    .maximumDate("date");
+				Calendar maxCalendar = Calendar.getInstance();
+				maxCalendar.setTime(maxDate);
+				maxCalendar.set(Calendar.HOUR_OF_DAY, 0);
+				maxCalendar.set(Calendar.MINUTE, 0);
+				maxCalendar.set(Calendar.SECOND, 0);
+				maxCalendar.set(Calendar.MILLISECOND, 0);
+				Calendar nowCalendar = Calendar.getInstance();
+				nowCalendar.set(Calendar.HOUR_OF_DAY, 0);
+				nowCalendar.set(Calendar.MINUTE, 0);
+				nowCalendar.set(Calendar.SECOND, 0);
+				nowCalendar.set(Calendar.MILLISECOND, 0);
+				long diff = nowCalendar.getTimeInMillis() - maxCalendar.getTimeInMillis();
+				boolean lessThanThreeDays = diff <= DAYS.toMillis(DURATION_THREE_DAYS) && diff >= DAYS.toMillis(DURATION_ONE_DAY);
+				mBinding.loadNewPhotosBtn.setVisibility(lessThanThreeDays ?
+				                                        View.VISIBLE :
+				                                        View.GONE);
+				if (diff >= DAYS.toMillis(DURATION_FOUR_DAYS) && !defaultShouldLoadLocal) {
+					shouldLoadLocal = false;
+				}
+			}
 		}
+		LL.d("shouldLoadLocal:" + shouldLoadLocal);
 		return shouldLoadLocal;
 	}
 
