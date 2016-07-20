@@ -112,7 +112,7 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="0dp"
-            android:text="@string/lbl_new_photos"
+            android:text="@string/lbl_new_photos" android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="@color/common_white"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

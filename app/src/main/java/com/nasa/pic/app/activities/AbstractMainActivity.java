@@ -534,7 +534,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
-	private void openPhoto(final PhotoListAdapter.ItemViewHolder viewHolder, int pos) {
+	protected void openPhoto(final PhotoListAdapter.ItemViewHolder viewHolder, int pos) {
 		if (pos != RecyclerView.NO_POSITION) {
 			try {
 				ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
@@ -564,7 +564,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 			} catch (NullPointerException ex) {
 				EventBus.getDefault()
 				        .post(new OpenPhotoEvent(getData().get(pos), null, null));
-
 			}
 		}
 	}

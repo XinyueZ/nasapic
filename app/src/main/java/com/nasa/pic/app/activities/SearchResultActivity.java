@@ -1,20 +1,25 @@
 package com.nasa.pic.app.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.nasa.pic.R;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
+import com.nasa.pic.events.ClickPhotoItemEvent;
+import com.nasa.pic.events.OpenPhotoEvent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import de.greenrobot.event.EventBus;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -22,6 +27,27 @@ import io.realm.Sort;
 
 public final class SearchResultActivity extends AbstractMainActivity {
 	private static final String EXTRAS_KEYWORD = SearchResultActivity.class.getName() + ".EXTRAS.keyword";
+
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link ClickPhotoItemEvent}.
+	 *
+	 * @param e Event {@link ClickPhotoItemEvent}.
+	 */
+	public void onEvent(ClickPhotoItemEvent e) {
+		final RecyclerView.ViewHolder viewHolder = e.getViewHolder();
+		int pos = viewHolder.getAdapterPosition();
+		if (viewHolder instanceof PhotoListAdapter.ItemViewHolder) {
+			openPhoto((PhotoListAdapter.ItemViewHolder) viewHolder, pos);
+		} else {
+			EventBus.getDefault()
+			        .post(new OpenPhotoEvent(getData().get(pos), null, null));
+		}
+	}
+	//------------------------------------------------
 
 	/**
 	 * Show single instance of {@link SearchResultActivity}
@@ -127,5 +153,11 @@ public final class SearchResultActivity extends AbstractMainActivity {
 			                                       View.VISIBLE :
 			                                       View.GONE);
 		}
+	}
+
+
+	@Override
+	protected boolean shouldLoadLocal(Context cxt) {
+		return false;
 	}
 }
