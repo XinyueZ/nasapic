@@ -1,17 +1,17 @@
 package com.nasa.pic.events;
 
 
-import com.nasa.pic.app.adapters.PhotoListAdapter;
+import android.support.v7.widget.RecyclerView;
 
 public final class ClickPhotoItemEvent {
-	private final PhotoListAdapter.ViewHolder mViewHolder;
+	private final  RecyclerView.ViewHolder mViewHolder;
 
 
-	public ClickPhotoItemEvent(PhotoListAdapter.ViewHolder viewHolder) {
+	public ClickPhotoItemEvent( RecyclerView.ViewHolder  viewHolder) {
 		mViewHolder = viewHolder;
 	}
 
-	public PhotoListAdapter.ViewHolder getViewHolder() {
+	public  RecyclerView.ViewHolder  getViewHolder() {
 		return mViewHolder;
 	}
 }

@@ -178,9 +178,15 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	 * @param e Event {@link ClickPhotoItemEvent}.
 	 */
 	public void onEvent(ClickPhotoItemEvent e) {
-		final PhotoListAdapter.ViewHolder viewHolder = e.getViewHolder();
+		final RecyclerView.ViewHolder viewHolder = e.getViewHolder();
 		int pos = mSectionedAdapter.sectionedPositionToPosition(viewHolder.getAdapterPosition());
-		openPhoto(viewHolder, pos);
+		if (viewHolder instanceof PhotoListAdapter.ItemViewHolder) {
+			openPhoto((PhotoListAdapter.ItemViewHolder) viewHolder, pos);
+		} else {
+			EventBus.getDefault()
+			        .post(new OpenPhotoEvent(getData().get(pos), null, null));
+			mItemBinding = null;
+		}
 	}
 	//------------------------------------------------
 
@@ -231,10 +237,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	protected void loadList() {
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
-		int currentMonth = calendar.get(Calendar.MONTH);
-		int thisMonth = currentMonth + 1;
-		int lastMonth = currentMonth;
-		int beforeLastMonth = currentMonth - 1;
+		int lastMonth = calendar.get(Calendar.MONTH);
+		int thisMonth = lastMonth + 1;
+		int beforeLastMonth = lastMonth - 1;
 		String timeZone = calendar.getTimeZone()
 		                          .getID();
 
@@ -263,7 +268,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		if (isDataLoaded()) {
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
-				mPhotoListAdapter = new PhotoListAdapter( );
+				mPhotoListAdapter = new PhotoListAdapter();
 				mPhotoListAdapter.setData(getData());
 				//Sections
 				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
@@ -518,7 +523,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
-	protected void openPhoto(final PhotoListAdapter.ViewHolder viewHolder, int pos) {
+	private void openPhoto(final PhotoListAdapter.ItemViewHolder viewHolder, int pos) {
 		if (pos != RecyclerView.NO_POSITION) {
 			try {
 				ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
@@ -580,8 +585,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		LL.d("CardCount: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
 	}
-
-
 
 
 	private void revertLastSelectedListItemView() {

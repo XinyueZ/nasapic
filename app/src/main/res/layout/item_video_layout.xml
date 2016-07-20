@@ -2,21 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="ItemBinding">
+    <data class="VideoBinding">
 
         <import type="android.view.View"/>
 
         <import type="android.text.TextUtils"/>
 
-        <import type="com.nasa.pic.ds.PhotoDB"/>
 
         <import type="com.nasa.pic.app.adapters.PhotoListAdapter"/>
 
         <import type="com.nasa.pic.app.adapters.PhotoListAdapter.ListItemHandlers"/>
-
-        <variable
-            name="photoDB"
-            type="PhotoDB"/>
 
 
 
@@ -24,28 +19,26 @@
             name="handler"
             type="ListItemHandlers"/>
 
-
     </data>
 
     <android.support.v7.widget.CardView
         android:id="@+id/photo_cv"
         style="@style/PhotoCardView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipChildren="true"
         android:onClick="@{handler::onOpenPhoto}"
         >
 
 
-        <com.nasa.pic.utils.SquareImageView
-            android:id="@+id/thumbnail_iv"
+        <ImageButton
+            android:id="@+id/play_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:visibility='@{!TextUtils.equals(photoDB.type, "image") ? View.GONE : View.VISIBLE }'
-            app:imageNormalUrl="@{photoDB.getUrls()}"
-            app:thumbnail="@{1}"/>
+            android:background="@color/common_transparent"
+            android:onClick="@{handler::onOpenPhoto}"
+            app:srcCompat="@drawable/ic_play"/>
 
 
         <android.support.v7.widget.Toolbar

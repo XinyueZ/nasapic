@@ -9,7 +9,6 @@ import android.view.View;
 import com.nasa.pic.R;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
-import com.nasa.pic.events.ClickPhotoItemEvent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,24 +22,6 @@ import io.realm.Sort;
 
 public final class SearchResultActivity extends AbstractMainActivity {
 	private static final String EXTRAS_KEYWORD = SearchResultActivity.class.getName() + ".EXTRAS.keyword";
-
-	//------------------------------------------------
-	//Subscribes, event-handlers
-	//------------------------------------------------
-
-	/**
-	 * Handler for {@link ClickPhotoItemEvent}.
-	 *
-	 * @param e Event {@link ClickPhotoItemEvent}.
-	 */
-	public void onEvent(ClickPhotoItemEvent e) {
-		final PhotoListAdapter.ViewHolder viewHolder = e.getViewHolder();
-		int pos = viewHolder.getAdapterPosition();
-		openPhoto(viewHolder, pos);
-	}
-
-
-	//------------------------------------------------
 
 	/**
 	 * Show single instance of {@link SearchResultActivity}

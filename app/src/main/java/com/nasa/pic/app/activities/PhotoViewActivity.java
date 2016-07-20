@@ -18,6 +18,7 @@ import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -163,11 +164,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 					                                                                  .build();
 					CustomTabActivityHelper.openCustomTab(PhotoViewActivity.this, customTabsIntent, getPhotoTitle(), getDescription(), getUrl2Photo(), getDatetime(), getType(), new WebViewFallback
 							());
-					//										new WebViewFallback().openUri(PhotoViewActivity.this, getPhotoTitle(),
-					//																			getDescription(), getUrl2Photo(), getDatetime(), getType());
 				}
 			});
-			mBinding.errorContent.setBackgroundResource(R.color.common_black);
+			mBinding.errorContent.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.common_black, null));
 		}
 	}
 
@@ -207,8 +206,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 								//Set background alpha
 								float alpha = old + (fraction * (end - old));
-								mBinding.errorContent.getBackground()
-								                     .setAlpha((int) alpha);
+								mBinding.errorContent.getBackground().setAlpha((int) alpha);
 							}
 						});
 
@@ -225,8 +223,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 								//Set background alpha
 								float alpha = old + (fraction * (end - old));
-								mBinding.errorContent.getBackground()
-								                     .setAlpha((int) alpha);
+								mBinding.errorContent.getBackground().setAlpha((int) alpha);
 							}
 						});
 
@@ -311,11 +308,11 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	@Override
 	public void onPhotoTap(View view, float v, float v1) {
 		if (mQuSwitch.isChecked()) {
-			if (mBinding.hdSizeMultiplierLayout.getRoot()
-			                                   .getVisibility() != View.VISIBLE) {
-				mBinding.hdSizeMultiplierLayout.getRoot()
-				                               .setVisibility(View.VISIBLE);
-			}
+			mBinding.hdSizeMultiplierLayout.getRoot()
+			                               .setVisibility(mBinding.hdSizeMultiplierLayout.getRoot()
+			                                                                             .getVisibility() != View.VISIBLE ?
+			                                              View.VISIBLE :
+			                                              View.GONE);
 		}
 	}
 
@@ -368,16 +365,20 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			}
 		});
 		mQuSwitch = (CompoundButton) findViewById(R.id.qu_switch);
-		mQuSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				switchHd(isChecked);
-				mBinding.hdSizeMultiplierLayout.getRoot()
-				                               .setVisibility(isChecked ?
-				                                              View.VISIBLE :
-				                                              View.GONE);
-			}
-		});
+		if (TextUtils.equals(getType(), "image")) {
+			mQuSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					switchHd(isChecked);
+					mBinding.hdSizeMultiplierLayout.getRoot()
+					                               .setVisibility(isChecked ?
+					                                              View.VISIBLE :
+					                                              View.GONE);
+				}
+			});
+		} else {
+			mQuSwitch.setVisibility(View.GONE);
+		}
 	}
 
 	private final RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
