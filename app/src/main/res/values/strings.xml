@@ -54,6 +54,7 @@
     <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
 
     <string name="action_share">More share</string>
+    <string name="action_invite">Invite more people to use this app</string>
     <string name="action_open">Open</string>
     <string name="action_share_fb">Post on Facebook</string>
     <string name="action_about">About</string>
@@ -84,4 +85,14 @@
         <item>75</item>
         <item>100</item>
     </integer-array>
+
+
+
+
+    <string name="invitation_message">Use the Android app nasaPic to find your favorite photos from space.</string>
+    <string name="invitation_custom_image">https://dl.dropboxusercontent.com/s/dei9b4b54sgvy3r/app_logo.png</string>
+    <string name="invitation_cta">Install!</string>
+
+    <string name="send_failed">Sending invitations failed.</string>
+    <string name="google_play_services_error">Google Play Services Error.</string>
 </resources>

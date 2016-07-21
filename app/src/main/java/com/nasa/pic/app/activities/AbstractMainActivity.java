@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
+import android.support.design.widget.Snackbar;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
 import android.support.v4.animation.ValueAnimatorCompat;
@@ -31,8 +32,11 @@ import android.view.animation.Interpolator;
 
 import com.chopping.application.LL;
 import com.chopping.utils.DeviceUtils;
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
@@ -82,7 +86,7 @@ import static java.util.concurrent.TimeUnit.DAYS;
  *
  * @author Xinyue Zhao
  */
-public abstract class AbstractMainActivity extends AppRestfulActivity {
+public abstract class AbstractMainActivity extends AppRestfulActivity implements GoogleApiClient.OnConnectionFailedListener {
 
 	/**
 	 * The menu to this view.
@@ -107,6 +111,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 
 	protected PhotoListAdapter mPhotoListAdapter;
 
+	private GoogleApiClient mGoogleApiClient;
+	private static final int REQUEST_INVITE = 0x97;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -381,7 +387,26 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 		                             .getAppDownloadInfo());
 
 		provider.setShareIntent(com.chopping.utils.Utils.getDefaultShareIntent(provider, subject, text));
+	}
 
+
+
+
+	private void sendAppInvitation() {
+		String invitationTitle = getString(R.string.lbl_share_app_title);
+		String invitationMessage = getString(R.string.invitation_message);
+		String invitationDeepLink = getString(R.string.lbl_store_url, getPackageName());
+		String invitationCustomImage = getString(R.string.invitation_custom_image);
+		String invitationCta = getString(R.string.invitation_cta);
+
+
+		Intent intent = new AppInviteInvitation.IntentBuilder(invitationTitle)
+				.setMessage(invitationMessage)
+				.setDeepLink(Uri.parse(invitationDeepLink))
+				.setCustomImage(Uri.parse(invitationCustomImage))
+				.setCallToActionText(invitationCta)
+				.build();
+		startActivityForResult(intent, REQUEST_INVITE);
 	}
 
 
@@ -451,6 +476,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 				BottomSheetBehavior behavior = BottomSheetBehavior.from(mBinding.bottomSheet);
 				behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 				break;
+			case R.id.action_invite:
+				sendAppInvitation();
+				break;
 		}
 		return super.onMenuItemClick(item);
 	}
@@ -458,6 +486,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(AppInvite.API)
+		                                                    .enableAutoManage(this, this)
+		                                                    .build();
 		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
 		mBinding.loadNewPhotosBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -659,4 +690,24 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 	}
 
 
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		Snackbar.make(mBinding.errorContent, R.string.google_play_services_error, Snackbar.LENGTH_LONG)
+		        .show();
+	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_INVITE) {
+			if (resultCode == RESULT_OK) {
+				// Get the invitation IDs of all sent messages
+//				String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+			} else {
+				Snackbar.make(mBinding.errorContent, R.string.send_failed, Snackbar.LENGTH_LONG)
+				        .show();
+			}
+		}
+	}
 }
