@@ -1,4 +1,4 @@
-nasaPic
+NasaPic
 ======
 
 A tool application to view all daily space photos from NASA.
