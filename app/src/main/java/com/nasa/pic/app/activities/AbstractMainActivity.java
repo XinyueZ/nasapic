@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,6 +33,10 @@ import android.view.animation.Interpolator;
 
 import com.chopping.application.LL;
 import com.chopping.utils.DeviceUtils;
+import com.chopping.utils.Utils;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.ConnectionResult;
@@ -111,8 +116,13 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 	protected PhotoListAdapter mPhotoListAdapter;
 
-	private GoogleApiClient mGoogleApiClient;
 	private static final int REQUEST_INVITE = 0x97;
+
+	/**
+	 * The interstitial ad.
+	 */
+	private InterstitialAd mInterstitialAd;
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -390,8 +400,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	}
 
 
-
-
 	private void sendAppInvitation() {
 		String invitationTitle = getString(R.string.lbl_share_app_title);
 		String invitationMessage = getString(R.string.invitation_message);
@@ -400,12 +408,11 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		String invitationCta = getString(R.string.invitation_cta);
 
 
-		Intent intent = new AppInviteInvitation.IntentBuilder(invitationTitle)
-				.setMessage(invitationMessage)
-				.setDeepLink(Uri.parse(invitationDeepLink))
-				.setCustomImage(Uri.parse(invitationCustomImage))
-				.setCallToActionText(invitationCta)
-				.build();
+		Intent intent = new AppInviteInvitation.IntentBuilder(invitationTitle).setMessage(invitationMessage)
+		                                                                      .setDeepLink(Uri.parse(invitationDeepLink))
+		                                                                      .setCustomImage(Uri.parse(invitationCustomImage))
+		                                                                      .setCallToActionText(invitationCta)
+		                                                                      .build();
 		startActivityForResult(intent, REQUEST_INVITE);
 	}
 
@@ -486,9 +493,10 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(AppInvite.API)
-		                                                    .enableAutoManage(this, this)
-		                                                    .build();
+		new GoogleApiClient.Builder(this).addApi(AppInvite.API)
+		                                 .enableAutoManage(this, this)
+		                                 .build();
+		initAdmob();
 		mBinding.toolbar.setLogo(R.drawable.ic_logo_toolbar);
 		mBinding.loadNewPhotosBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -710,4 +718,55 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 			}
 		}
 	}
+
+	/**
+	 * Ads for the app.
+	 */
+	private void initAdmob() {
+		Prefs prefs = Prefs.getInstance();
+		int curTime = prefs.getAdsCount();
+		int adsTimes = 5;
+		if (curTime % adsTimes == 0) {
+			// Create an ad.
+			mInterstitialAd = new InterstitialAd(this);
+			mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+			// Create ad request.
+			AdRequest adRequest = new AdRequest.Builder().build();
+			// Begin loading your interstitial.
+			mInterstitialAd.setAdListener(new AdListener() {
+				@Override
+				public void onAdLoaded() {
+					super.onAdLoaded();
+					displayInterstitial();
+				}
+			});
+			mInterstitialAd.loadAd(adRequest);
+		}
+		curTime++;
+		prefs.setAdsCount(curTime);
+	}
+
+	/**
+	 * Invoke displayInterstitial() when you are ready to display an interstitial.
+	 */
+	public void displayInterstitial() {
+		if (mInterstitialAd.isLoaded()) {
+			mInterstitialAd.show();
+		}
+	}
+
+	private void initPull2Load(SwipeRefreshLayout swipeRefreshLayout) {
+		int actionbarHeight = Utils.getActionBarHeight(App.Instance);
+		swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				loadList();
+			}
+		});
+		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3, R.color.c_refresh_4);
+		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
+		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
+		swipeRefreshLayout.setRefreshing(true);
+	}
+
 }

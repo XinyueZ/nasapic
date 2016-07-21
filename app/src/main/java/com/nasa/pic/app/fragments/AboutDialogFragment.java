@@ -106,7 +106,7 @@ public final class AboutDialogFragment extends DialogFragment {
 		LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 		TextView aboutBodyView = (TextView) layoutInflater.inflate( R.layout.fragment_dialog_about, null );
 		aboutBodyView.setText( aboutBody );
-		aboutBodyView.setLinkTextColor(getResources().getColor(R.color.colorPrimary ) );
+		aboutBodyView.setLinkTextColor(getResources().getColor(R.color.linkColor ) );
 		aboutBodyView.setMovementMethod( new LinkMovementMethod() );
 
 		return new AlertDialog.Builder( getActivity() ).setTitle( R.string.action_about ).setView( aboutBodyView ).setPositiveButton(

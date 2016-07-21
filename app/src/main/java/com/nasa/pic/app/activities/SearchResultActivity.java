@@ -8,9 +8,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
 import com.nasa.pic.R;
 import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
+import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 
@@ -65,11 +67,44 @@ public final class SearchResultActivity extends AbstractMainActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ActivityAbstractMainBinding binding = getBinding();
+		binding.av.setVisibility(View.VISIBLE);
+		binding.av.loadAd(new AdRequest.Builder().build());
+
 		String keyword = getIntent().getStringExtra(EXTRAS_KEYWORD);
-		getBinding().toolbar.setLogo(null);
-		getBinding().searchFab.hide();
-		getBinding().toolbar.setTitle(keyword);
-		getBinding().responsesRv.clearOnScrollListeners();
+		binding.toolbar.setLogo(null);
+		binding.searchFab.hide();
+		binding.toolbar.setTitle(keyword);
+		binding.responsesRv.clearOnScrollListeners();
+	}
+
+	// [START add_lifecycle_methods]
+
+	/**
+	 * Called when leaving the activity
+	 */
+	@Override
+	public void onPause() {
+		getBinding().av.pause();
+		super.onPause();
+	}
+
+	/**
+	 * Called when returning to the activity
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		getBinding().av.resume();
+	}
+
+	/**
+	 * Called before the activity is destroyed
+	 */
+	@Override
+	public void onDestroy() {
+		getBinding().av.destroy();
+		super.onDestroy();
 	}
 
 	@Override

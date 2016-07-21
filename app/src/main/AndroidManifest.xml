@@ -37,14 +37,17 @@
             android:theme="@style/Transparent"/>
         <activity
             android:name=".app.activities.WebViewActivity"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.FacebookShareHelperActivity"
+            android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".app.activities.SplashActivity"
+            android:configChanges="orientation|screenSize"
 
             android:theme="@style/AppTheme">
             <intent-filter>

@@ -63,7 +63,8 @@
     <string name="action_forward">Forward</string>
     <string name="action_settings">Settings</string>
 
-
+    <string name="normal_ad_unit">ca-app-pub-9133982521997162/2818268530</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-9133982521997162/3097470130</string>
     <string name="applicationId">813465918763218</string>
 
 
@@ -71,7 +72,6 @@
     <string name="no_share_type">No share type specified!</string>
     <string name="error_occurred">Sorry, an error occurred.</string>
     <string name="error_switch_hd">Sorry, an error occurred while loading HD photo.</string>
-
 
 
     <string name="size_multiplier_25">25%</string>
@@ -85,8 +85,6 @@
         <item>75</item>
         <item>100</item>
     </integer-array>
-
-
 
 
     <string name="invitation_message">Use the Android app nasaPic to find your favorite photos from space.</string>

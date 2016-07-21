@@ -54,6 +54,12 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:theme">@style/AppBarOverlay</item>
+        <item name="elevation">@dimen/ab_elevation</item>
+        <item name="android:elevation">@dimen/ab_elevation</item>
+    </style>
+
+
+    <style name="DetailAppBarStyle" parent="AppBarStyle">
         <item name="android:background">@color/common_black_trans</item>
     </style>
 

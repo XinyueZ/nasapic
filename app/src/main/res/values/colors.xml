@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0b3e8f</color>
-    <color name="colorPrimaryDark">#001361</color>
-    <color name="colorPrimaryDarkTrans">#B3001361</color>
+    <color name="colorPrimary">@color/grey</color>
+    <color name="colorPrimaryDark">@color/greyDark</color>
     <color name="colorAccent">#fa3c23</color>
     <color name="common_black">#000000</color>
     <color name="common_black_trans">#33000000</color>
     <color name="common_black_trans_100">#00000000</color>
     <color name="common_white">#FFFFFF</color>
     <color name="common_transparent">@android:color/transparent</color>
-    <color name="grey_500">#9E9E9E</color>
-    <color name="grey_500_half">#809E9E9E</color>
+    <color name="grey">#616161</color>
+    <color name="greyDark">#212121</color>
+    <color name="grey_half">#80616161</color>
+
+    <color name="linkColor">
+        #3F51B5
+    </color>
 
     <color name="c_refresh_1">#4CAF50</color>
     <color name="c_refresh_2">#3F51B5</color>
@@ -18,10 +22,8 @@
     <color name="c_refresh_4">#009688</color>
 
 
-
     <color name="colorOrange">#FF9800</color>
     <color name="colorOrangeDark">#FF6D00</color>
-
 
 
     <color name="cyan">#18FFFF</color>

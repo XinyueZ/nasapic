@@ -16,6 +16,7 @@ import com.chopping.application.BasicPrefs;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.nasa.pic.R;
+import com.nasa.pic.app.App;
 import com.nasa.pic.app.noactivities.AppGuardService;
 import com.nasa.pic.databinding.ActivitySplashBinding;
 import com.nasa.pic.utils.Prefs;
@@ -123,8 +124,7 @@ public final class SplashActivity extends BaseActivity {
 
 	public static void startAppGuardService(Context cxt) {
 		AppGuardService.buildRetrofit();
-		long scheduleSec = 60 * 2;
-//		long scheduleSec = 10800L;
+		long scheduleSec = App.API_SERVER_SWITCH_SCHEDULE;
 		long flexSecs = 60L;
 		String tag = System.currentTimeMillis() + "";
 		PeriodicTask scheduleTask = new PeriodicTask.Builder().setService(AppGuardService.class).setPeriod(scheduleSec)

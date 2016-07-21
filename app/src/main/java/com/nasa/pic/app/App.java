@@ -57,6 +57,7 @@ import retrofit2.Callback;
  * @author Xinyue Zhao
  */
 public final class App extends MultiDexApplication {
+	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;
 	/**
 	 * Application's instance.
 	 */

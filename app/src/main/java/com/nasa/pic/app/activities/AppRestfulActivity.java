@@ -5,17 +5,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.chopping.activities.RestfulActivity;
 import com.chopping.application.BasicPrefs;
-import com.chopping.utils.Utils;
 import com.nasa.pic.R;
-import com.nasa.pic.app.App;
 import com.nasa.pic.app.fragments.AboutDialogFragment;
 import com.nasa.pic.ds.PhotoDB;
 import com.nasa.pic.events.CompleteShareEvent;
@@ -94,19 +90,7 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 		return PhotoDB.class;
 	}
 
-	protected void initPull2Load(SwipeRefreshLayout swipeRefreshLayout) {
-		int actionbarHeight = Utils.getActionBarHeight(App.Instance);
-		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				loadList();
-			}
-		});
-		swipeRefreshLayout.setColorSchemeResources(R.color.c_refresh_1, R.color.c_refresh_2, R.color.c_refresh_3, R.color.c_refresh_4);
-		swipeRefreshLayout.setProgressViewEndTarget(true, actionbarHeight * 2);
-		swipeRefreshLayout.setProgressViewOffset(false, 0, actionbarHeight * 2);
-		swipeRefreshLayout.setRefreshing(true);
-	}
+
 
 	/**
 	 * Show  {@link android.support.v4.app.DialogFragment}.

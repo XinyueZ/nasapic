@@ -35,6 +35,8 @@ public final class Prefs extends BasicPrefs {
 
 	private static final String KEY_SEARCH_DAY = "key.search.day";
 
+	private static final String KEY_ADS_COUNT = "key.ads.count";
+
 	/**
 	 * The Instance.
 	 */
@@ -143,7 +145,7 @@ public final class Prefs extends BasicPrefs {
 	}
 
 	public String getSearchDay() {
-		return getString(KEY_SEARCH_DAY, String.valueOf(IGNORED_DAY ));
+		return getString(KEY_SEARCH_DAY, String.valueOf(IGNORED_DAY));
 	}
 
 
@@ -157,5 +159,15 @@ public final class Prefs extends BasicPrefs {
 
 	public void setSearchDay(String value) {
 		setString(KEY_SEARCH_DAY, value);
+	}
+
+
+	public int getAdsCount() {
+		return getInt(KEY_ADS_COUNT, 1);
+	}
+
+
+	public void setAdsCount(int count) {
+		setInt(KEY_ADS_COUNT, count);
 	}
 }
