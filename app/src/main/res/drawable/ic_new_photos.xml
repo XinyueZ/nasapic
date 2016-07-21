@@ -5,7 +5,7 @@
         android:top="5dp">
         <shape>
             <corners android:radius="19dp"/>
-            <solid android:color="@color/common_black_trans_100"/>
+            <solid android:color="@color/colorAccent"/>
         </shape>
     </item>
     <item
@@ -14,7 +14,7 @@
         <shape>
             <gradient
                 android:angle="270"
-                android:endColor="#E2E2E2"
+                android:endColor="@color/colorAccent"
                 android:startColor="@color/colorAccent"/>
             <corners android:radius="20dp"/>
             <padding

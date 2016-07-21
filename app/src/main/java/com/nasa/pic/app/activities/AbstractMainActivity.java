@@ -463,6 +463,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity {
 			@Override
 			public void onClick(View view) {
 				loadPhotoList(-1, -1, -1, null);
+				view.setVisibility(View.GONE);
+				mBinding.contentSrl.setRefreshing(true);
 			}
 		});
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
