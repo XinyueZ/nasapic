@@ -89,8 +89,8 @@
 
     <string name="invitation_message">Use the Android app nasaPic to find your favorite photos from space.</string>
     <string name="invitation_custom_image">https://dl.dropboxusercontent.com/s/dei9b4b54sgvy3r/app_logo.png</string>
-    <string name="invitation_cta">Install!</string>
+    <string name="invitation_cta">Try</string>
 
-    <string name="send_failed">Sending invitations failed.</string>
+    <string name="send_failed">No invitation has been sent.</string>
     <string name="google_play_services_error">Google Play Services Error.</string>
 </resources>
