@@ -174,6 +174,7 @@ public final class SearchResultActivity extends AbstractMainActivity {
 
 	@Override
 	protected void buildViews() {
+		setHasShownDataOnUI(!getData().isEmpty());
 		if (isDataLoaded()) {
 			if (getBinding().responsesRv.getAdapter() == null) {
 				//Data

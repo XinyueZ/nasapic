@@ -9,7 +9,7 @@
 
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+        android:id="@id/error_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipChildren="false">
@@ -36,11 +36,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-
-        <FrameLayout
-            android:id="@id/error_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
 
 
         <LinearLayout

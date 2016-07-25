@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.animation.AnimatorCompatHelper;
 import android.support.v4.animation.AnimatorUpdateListenerCompat;
@@ -26,6 +27,7 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -286,6 +288,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 	@Override
 	protected void buildViews() {
+		setHasShownDataOnUI(!getData().isEmpty());
 		if (isDataLoaded()) {
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
@@ -376,6 +379,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	protected void initDataBinding() {
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
+		View stickyV = mBinding.getRoot()
+		                       .findViewById(com.chopping.R.id.err_sticky_container);
+		((CoordinatorLayout.LayoutParams) mBinding.getRoot()
+		                                          .findViewById(com.chopping.R.id.err_sticky_container)
+		                                          .getLayoutParams()).gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+		ViewCompat.setElevation(stickyV, getResources().getDimension(R.dimen.ab_elevation));
 
 		//Pull-2-load indicator
 		initPull2Load(mBinding.contentSrl);
