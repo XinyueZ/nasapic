@@ -6,6 +6,8 @@ A tool application to view all daily space photos from NASA.
 
 [![https://play.google.com/store/apps/details?id=com.nasa.pic](https://dl.dropbox.com/s/phrg0387osr3riz/images.jpeg)](https://play.google.com/store/apps/details?id=com.nasa.pic)
 
+#### There's also a [sub-project](https://github.com/XinyueZ/NasaPic-Chatbot) based on [Facebook Messenger Platform](https://developers.facebook.com/docs/messenger-platform).
+
 License
 ======
 ```json
