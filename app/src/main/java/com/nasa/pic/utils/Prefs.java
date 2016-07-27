@@ -38,6 +38,8 @@ public final class Prefs extends BasicPrefs {
 
 	private static final String KEY_ADS_COUNT = "key.ads.count";
 
+	private static final String KEY_NEVER_LOADED = "key.never.loaded";
+
 	/**
 	 * The Instance.
 	 */
@@ -170,5 +172,13 @@ public final class Prefs extends BasicPrefs {
 
 	public void setAdsCount(int count) {
 		setInt(KEY_ADS_COUNT, count);
+	}
+
+	public void setNeverLoaded(boolean never) {
+		setBoolean(KEY_NEVER_LOADED, never);
+	}
+
+	public boolean isNeverLoaded() {
+		return getBoolean(KEY_NEVER_LOADED, true);
 	}
 }

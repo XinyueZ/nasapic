@@ -13,6 +13,7 @@
     <string name="btn_ok">Ok</string>
     <string name="btn_agree">I agree.</string>
     <string name="btn_not_agree">I do not agree.</string>
+    <string name="btn_check">Check</string>
 
     <string name="msg_permission_prompt">Without "Read Phone State" and "Write External Storage" the App can\'t work…</string>
 
@@ -91,6 +92,7 @@
     <string name="invitation_message">Use the Android app nasaPic to find your favorite photos from space.</string>
     <string name="invitation_custom_image">https://dl.dropboxusercontent.com/s/dei9b4b54sgvy3r/app_logo.png</string>
     <string name="invitation_cta">Try</string>
+    <string name="invitation_error">Some errors happened when opening App-invite, please checkout whether you should update your Play-Service or not.</string>
 
     <string name="send_failed">No invitation has been sent.</string>
     <string name="google_play_services_error">Google Play Services Error.</string>

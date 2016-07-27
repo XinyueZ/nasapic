@@ -229,25 +229,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		} else {
 			new Builder(this).setTitle(R.string.application_name)
 			                 .setMessage(R.string.play_service)
-			                 .setCancelable(false)
 			                 .setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
 				                 public void onClick(DialogInterface dialog, int whichButton) {
-					                 dialog.dismiss();
-					                 Intent intent = new Intent(Intent.ACTION_VIEW);
-					                 intent.setData(Uri.parse(getString(R.string.play_service_url)));
-					                 try {
-						                 startActivity(intent);
-					                 } catch (ActivityNotFoundException e0) {
-						                 intent.setData(Uri.parse(getString(R.string.play_service_web)));
-						                 try {
-							                 startActivity(intent);
-						                 } catch (Exception e1) {
-							                 //Ignore now.
-						                 }
-					                 } finally {
-						                 finish();
-					                 }
+					                 goToPlayServiceDownload(dialog);
 				                 }
+
+
 			                 })
 			                 .setCancelable(result == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED)
 			                 .create()
@@ -255,6 +242,23 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		}
 	}
 
+	private void goToPlayServiceDownload(DialogInterface dialog) {
+		dialog.dismiss();
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(getString(R.string.play_service_url)));
+		try {
+			startActivity(intent);
+		} catch (ActivityNotFoundException e0) {
+			intent.setData(Uri.parse(getString(R.string.play_service_web)));
+			try {
+				startActivity(intent);
+			} catch (Exception e1) {
+				//Ignore now.
+			}
+		} finally {
+			finish();
+		}
+	}
 
 	@Override
 	protected void loadList() {
@@ -290,6 +294,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	protected void buildViews() {
 		setHasShownDataOnUI(!getData().isEmpty());
 		if (isDataLoaded()) {
+			Prefs.getInstance().setNeverLoaded(false);
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
 				mPhotoListAdapter = new PhotoListAdapter();
@@ -422,7 +427,20 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		                                                                      .setCustomImage(Uri.parse(invitationCustomImage))
 		                                                                      .setCallToActionText(invitationCta)
 		                                                                      .build();
-		startActivityForResult(intent, REQUEST_INVITE);
+		try {
+			startActivityForResult(intent, REQUEST_INVITE);
+		} catch (ActivityNotFoundException ex) {
+			new Builder(this).setTitle(R.string.application_name)
+			                 .setMessage(R.string.invitation_error)
+			                 .setPositiveButton(R.string.btn_check, new DialogInterface.OnClickListener() {
+				                 public void onClick(DialogInterface dialog, int whichButton) {
+					                 goToPlayServiceDownload(dialog);
+				                 }
+			                 })
+			                 .setCancelable(true)
+			                 .create()
+			                 .show();
+		}
 	}
 
 
@@ -660,7 +678,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 			@Override
 			public void onAnimationUpdate(ValueAnimatorCompat animation) {
-				if(mItemBinding == null || mItemBinding.thumbnailIv == null ) {
+				if (mItemBinding == null || mItemBinding.thumbnailIv == null) {
 					return;
 				}
 				float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
@@ -707,7 +725,11 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				}
 			}
 		}
-		LL.d("shouldLoadLocal:" + shouldLoadLocal);
+		if (Prefs.getInstance().isNeverLoaded()) {
+			LL.w("shouldLoadLocal: Must be false, because you have never gona data.");
+			shouldLoadLocal = false;
+		}
+		LL.i("shouldLoadLocal:" + shouldLoadLocal);
 		return shouldLoadLocal;
 	}
 
