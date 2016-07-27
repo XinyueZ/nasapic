@@ -3,6 +3,7 @@ package com.nasa.pic.utils;
 import android.content.Context;
 
 import com.chopping.application.BasicPrefs;
+import com.nasa.pic.R;
 
 import static com.nasa.pic.app.fragments.DatePickerDialogFragment.IGNORED_DAY;
 
@@ -132,7 +133,7 @@ public final class Prefs extends BasicPrefs {
 	}
 
 	public String getApiMeta() {
-		return getString(KEY_API_META, null);
+		return getString(KEY_API_META, mContext.getString(R.string.api_meta_fallback));
 	}
 
 

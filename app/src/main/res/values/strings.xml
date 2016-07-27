@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">NasaPic</string>
     <string name="application_name">NasaPic</string>
+    <string name="api_meta_fallback">http://nasapicapp-live-%s.appspot.com/</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
