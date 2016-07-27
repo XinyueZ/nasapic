@@ -531,6 +531,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				loadPhotoList(-1, -1, -1, null);
 				view.setVisibility(View.GONE);
 				mBinding.contentSrl.setRefreshing(true);
+
+				mBinding.responsesRv.smoothScrollToPosition(0);
 			}
 		});
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
