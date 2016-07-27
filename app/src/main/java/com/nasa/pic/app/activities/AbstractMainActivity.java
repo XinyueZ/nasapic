@@ -660,6 +660,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 			@Override
 			public void onAnimationUpdate(ValueAnimatorCompat animation) {
+				if(mItemBinding == null || mItemBinding.thumbnailIv == null ) {
+					return;
+				}
 				float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
 				//Set background alpha
 				float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
