@@ -682,7 +682,9 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				                    .where(getDataClazz())
 				                    .maximumDate("date");
 				Calendar maxCalendar = Calendar.getInstance();
-				maxCalendar.setTime(maxDate);
+				if (maxDate != null) {
+					maxCalendar.setTime(maxDate);
+				}
 				maxCalendar.set(Calendar.HOUR_OF_DAY, 0);
 				maxCalendar.set(Calendar.MINUTE, 0);
 				maxCalendar.set(Calendar.SECOND, 0);
