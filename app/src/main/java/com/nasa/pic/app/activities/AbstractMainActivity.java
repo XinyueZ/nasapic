@@ -400,6 +400,10 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mBinding.toolbar.inflateMenu(getMenuRes());
 		mBinding.toolbar.setOnMenuItemClickListener(this);
 
+		buildShareActionProviderForApp();
+	}
+
+	private void buildShareActionProviderForApp() {
 		MenuItem menuShare = mBinding.toolbar.getMenu()
 		                                     .findItem(R.id.action_share);
 		android.support.v7.widget.ShareActionProvider provider = (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
@@ -409,8 +413,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		                        getString(R.string.application_name),
 		                        Prefs.getInstance()
 		                             .getAppDownloadInfo());
-
-		provider.setShareIntent(com.chopping.utils.Utils.getDefaultShareIntent(provider, subject, text));
+		Intent intent = Utils.getDefaultShareIntent(provider, subject, text);
+		provider.setShareIntent(intent);
 	}
 
 
@@ -640,6 +644,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 	@Override
 	protected void onResume() {
+		buildShareActionProviderForApp();
 		super.onResume();
 		revertLastSelectedListItemView();
 		new Handler().postDelayed(new Runnable() {
