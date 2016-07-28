@@ -429,7 +429,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		                                                                      .build();
 		try {
 			startActivityForResult(intent, REQUEST_INVITE);
-		} catch (ActivityNotFoundException ex) {
+		} catch (ActivityNotFoundException | NullPointerException ex) {
 			new Builder(this).setTitle(R.string.application_name)
 			                 .setMessage(R.string.invitation_error)
 			                 .setPositiveButton(R.string.btn_check, new DialogInterface.OnClickListener() {
