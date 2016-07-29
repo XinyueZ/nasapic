@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -247,5 +251,35 @@ public final class Utils {
 		SectionedGridRecyclerViewAdapter.Section[] sectionsArray = new SectionedGridRecyclerViewAdapter.Section[sections.size()];
 		sectionsArray = sections.toArray(sectionsArray);
 		return sectionsArray;
+	}
+
+	/**
+	 * Show  {@link android.support.v4.app.DialogFragment}.
+	 *
+	 * @param fmg {@link FragmentManager}.
+	 * @param dialogFragment  An instance of {@link android.support.v4.app.DialogFragment}.
+	 * @param _tagName Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
+	 *                 android.support.v4.app.DialogFragment} can been seen.
+	 */
+	public  static void showDialogFragment(FragmentManager fmg , DialogFragment dialogFragment, String _tagName) {
+		try {
+			if (dialogFragment != null) {
+				FragmentTransaction ft = fmg.beginTransaction();
+				// Ensure that there's only one dialog to the user.
+				Fragment prev = fmg.findFragmentByTag("dlg");
+				if (prev != null) {
+					ft.remove(prev);
+				}
+				try {
+					if (TextUtils.isEmpty(_tagName)) {
+						dialogFragment.show(ft, "dlg");
+					} else {
+						dialogFragment.show(ft, _tagName);
+					}
+				} catch (Exception ignored) {
+				}
+			}
+		} catch (Exception ignored) {
+		}
 	}
 }

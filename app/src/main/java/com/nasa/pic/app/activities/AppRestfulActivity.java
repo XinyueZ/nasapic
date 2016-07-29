@@ -2,11 +2,7 @@ package com.nasa.pic.app.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
-import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.chopping.activities.RestfulActivity;
@@ -18,6 +14,7 @@ import com.nasa.pic.events.CompleteShareEvent;
 import com.nasa.pic.events.FBShareEvent;
 import com.nasa.pic.events.ShareEvent;
 import com.nasa.pic.utils.Prefs;
+import com.nasa.pic.utils.Utils;
 
 import io.realm.RealmObject;
 
@@ -76,7 +73,7 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 			case android.R.id.home:
 				ActivityCompat.finishAfterTransition(this);
 			case R.id.action_about:
-				showDialogFragment(AboutDialogFragment.newInstance(this), null);
+				Utils.showDialogFragment(getSupportFragmentManager(), AboutDialogFragment.newInstance(this), null);
 				break;
 		}
 		return true;
@@ -90,36 +87,6 @@ public abstract class AppRestfulActivity extends RestfulActivity implements OnMe
 		return PhotoDB.class;
 	}
 
-
-
-	/**
-	 * Show  {@link android.support.v4.app.DialogFragment}.
-	 *
-	 * @param dialogFragment  An instance of {@link android.support.v4.app.DialogFragment}.
-	 * @param _tagName Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
-	 *                 android.support.v4.app.DialogFragment} can been seen.
-	 */
-	protected void showDialogFragment(DialogFragment dialogFragment, String _tagName) {
-		try {
-			if (dialogFragment != null) {
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				// Ensure that there's only one dialog to the user.
-				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
-				if (prev != null) {
-					ft.remove(prev);
-				}
-				try {
-					if (TextUtils.isEmpty(_tagName)) {
-						dialogFragment.show(ft, "dlg");
-					} else {
-						dialogFragment.show(ft, _tagName);
-					}
-				} catch (Exception ignored) {
-				}
-			}
-		} catch (Exception ignored) {
-		}
-	}
 
 	@Override
 	protected BasicPrefs getPrefs() {

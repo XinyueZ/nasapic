@@ -224,7 +224,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 			//The "End User License Agreement" must be confirmed before you use this application.
 			if (!Prefs.getInstance()
 			          .isEULAOnceConfirmed()) {
-				showDialogFragment(new EulaConfirmationDialog(), null);
+				com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), new EulaConfirmationDialog(), null);
 			}
 		} else {
 			new Builder(this).setTitle(R.string.application_name)

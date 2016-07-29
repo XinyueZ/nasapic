@@ -39,7 +39,6 @@
                 app:srcCompat="@drawable/ic_play"/>
 
 
-
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/loading_fab"
                 style="@style/ICON"
@@ -132,7 +131,8 @@
             layout="@layout/wallpaper_setting_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical" />
+            android:layout_gravity="start|center_vertical"
+            android:visibility="gone"/>
     </android.support.design.widget.CoordinatorLayout>
 
 

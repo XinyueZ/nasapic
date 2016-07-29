@@ -1,7 +1,9 @@
 package com.nasa.pic.app.activities;
 
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
@@ -20,6 +22,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,6 +43,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
+import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.customtab.ActionBroadcastReceiver;
@@ -46,6 +51,7 @@ import com.nasa.pic.customtab.CustomTabActivityHelper;
 import com.nasa.pic.customtab.CustomTabActivityHelper.ConnectionCallback;
 import com.nasa.pic.customtab.WebViewFallback;
 import com.nasa.pic.databinding.ActivityPhotoViewBinding;
+import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
@@ -54,6 +60,7 @@ import com.nasa.pic.utils.Prefs;
 
 import java.util.Date;
 
+import de.greenrobot.event.EventBus;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
@@ -84,6 +91,22 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	private TransitCompat mTransit;
 	private CompoundButton mQuSwitch;
+
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link  CloseDialogEvent}.
+	 *
+	 * @param e Event {@link CloseDialogEvent}.
+	 */
+	@Subscribe
+	public void onEvent(CloseDialogEvent e) {
+		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
+		                                                                        .doesWallpaperChangeDaily());
+	}
+	//------------------------------------------------
 
 	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, String urlToPhotoFallback, Date datetime, String type, Thumbnail thumbnail) {
 		Intent intent = new Intent(cxt, PhotoViewActivity.class);
@@ -122,7 +145,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		mBinding.loadingFab.hide();
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
-		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance().doesWallpaperChangeDaily());
+
 
 		StringBuilder description;
 		if (large || orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -319,6 +342,11 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			                                              View.VISIBLE :
 			                                              View.GONE);
 		}
+		mBinding.wallpaperSettingLayout.getRoot()
+		                               .setVisibility(mBinding.wallpaperSettingLayout.getRoot()
+		                                                                             .getVisibility() != View.VISIBLE ?
+		                                              View.VISIBLE :
+		                                              View.GONE);
 	}
 
 	@Override
@@ -376,6 +404,10 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					switchHd(isChecked);
 					mBinding.hdSizeMultiplierLayout.getRoot()
+					                               .setVisibility(isChecked ?
+					                                              View.VISIBLE :
+					                                              View.GONE);
+					mBinding.wallpaperSettingLayout.getRoot()
 					                               .setVisibility(isChecked ?
 					                                              View.VISIBLE :
 					                                              View.GONE);
@@ -463,6 +495,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		     .into(mBinding.bigImgIv);
 		mBinding.hdSizeMultiplierLayout.getRoot()
 		                               .setVisibility(View.GONE);
+		mBinding.wallpaperSettingLayout.getRoot()
+		                               .setVisibility(View.GONE);
 	}
 
 	private float getHdFactor() {
@@ -495,5 +529,52 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		Prefs prefs = Prefs.getInstance();
 		checkedTextView.setChecked(!prefs.doesWallpaperChangeDaily());
 		prefs.setWallpaperChangeDaily(checkedTextView.isChecked());
+	}
+
+	public void setAsWallpaper(View view) {
+		Prefs prefs = Prefs.getInstance();
+		if (prefs.doesWallpaperChangeDaily()) {
+			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), AsWallpaperDialogFragment.newInstance(App.Instance), null);
+		}
+	}
+
+
+	public static class AsWallpaperDialogFragment extends AppCompatDialogFragment {
+		public static AsWallpaperDialogFragment newInstance(Context cxt) {
+			return (AsWallpaperDialogFragment) AsWallpaperDialogFragment.instantiate(cxt, AsWallpaperDialogFragment.class.getName());
+		}
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			return new AlertDialog.Builder(getActivity()).setTitle(R.string.wallpaper_as)
+			                                             .setMessage(R.string.wallpaper_change_daily_cancel)
+			                                             .setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
+				                                             public void onClick(DialogInterface dialog, int whichButton) {
+
+				                                             }
+			                                             })
+			                                             .setNegativeButton(R.string.btn_no, new DialogInterface.OnClickListener() {
+				                                             public void onClick(DialogInterface dialog, int whichButton) {
+					                                             Prefs.getInstance()
+					                                                  .setWallpaperChangeDaily(false);
+				                                             }
+			                                             })
+			                                             .setCancelable(false)
+			                                             .create();
+		}
+
+		@Override
+		public void onDismiss(DialogInterface dialog) {
+			super.onDismiss(dialog);
+			EventBus.getDefault()
+			        .post(new CloseDialogEvent());
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
+		                                                                        .doesWallpaperChangeDaily());
 	}
 }

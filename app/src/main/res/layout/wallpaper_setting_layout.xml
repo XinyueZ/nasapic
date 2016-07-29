@@ -13,11 +13,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/padding_detail_options"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:drawableLeft="@drawable/state_ic_wallpaper"
+            android:drawablePadding="5dp"
             android:drawableStart="@drawable/state_ic_wallpaper"
             android:gravity="center_vertical"
+            android:onClick="setAsWallpaper"
             android:text="@string/wallpaper_as"
             android:textColor="@color/common_white"/>
 
@@ -27,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/padding_detail_options"
             android:checked="false"
             android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
             android:drawableStart="?android:attr/listChoiceIndicatorMultiple"

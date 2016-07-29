@@ -96,6 +96,9 @@
 
     <string name="send_failed">No invitation has been sent.</string>
     <string name="google_play_services_error">Google Play Services Error.</string>
+
     <string name="wallpaper_as">As Wallpaper</string>
     <string name="wallpaper_change_daily">Change wallpaper daily</string>
+    <string name="wallpaper_change_daily_cancel">Save this photo as wallpaper, still keep changing wallpaper daily?</string>
+    <string name="wallpaper_change_undo">Undo</string>
 </resources>
