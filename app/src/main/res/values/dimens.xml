@@ -18,4 +18,5 @@
     <dimen name="cardElevationSelected">15dp</dimen>
     <dimen name="load_new_photos_button_height">40dp</dimen>
     <dimen name="load_new_photos_button_padding_left_right">16dp</dimen>
+    <dimen name="padding_detail_options">10dp</dimen>
 </resources>

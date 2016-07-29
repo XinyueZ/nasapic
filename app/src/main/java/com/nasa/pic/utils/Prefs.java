@@ -40,6 +40,8 @@ public final class Prefs extends BasicPrefs {
 
 	private static final String KEY_NEVER_LOADED = "key.never.loaded";
 
+	private static final String KEY_WALLPAPER_CHANGE_DAILY = "key.wallpaper.change.daily";
+
 	/**
 	 * The Instance.
 	 */
@@ -180,5 +182,13 @@ public final class Prefs extends BasicPrefs {
 
 	public boolean isNeverLoaded() {
 		return getBoolean(KEY_NEVER_LOADED, true);
+	}
+
+	public void setWallpaperChangeDaily(boolean daily) {
+		setBoolean(KEY_WALLPAPER_CHANGE_DAILY, daily);
+	}
+
+	public boolean doesWallpaperChangeDaily() {
+		return getBoolean(KEY_WALLPAPER_CHANGE_DAILY, false);
 	}
 }

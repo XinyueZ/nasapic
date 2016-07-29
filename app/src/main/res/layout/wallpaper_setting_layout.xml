@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/common_black_trans_100"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/wallpaper_set_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/padding_detail_options"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:drawableLeft="@drawable/state_ic_wallpaper"
+            android:drawableStart="@drawable/state_ic_wallpaper"
+            android:gravity="center_vertical"
+            android:text="@string/wallpaper_as"
+            android:textColor="@color/common_white"/>
+
+
+        <CheckedTextView
+            android:id="@+id/wallpaper_change_daily_ctv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:checked="false"
+            android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
+            android:gravity="center_vertical"
+            android:onClick="wallpaperChangeDaily"
+            android:text="@string/wallpaper_change_daily"/>
+    </LinearLayout>
+</layout>

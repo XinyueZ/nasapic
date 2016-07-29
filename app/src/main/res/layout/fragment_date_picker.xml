@@ -103,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableLeft="@drawable/state_ic_warning"
+            android:drawableStart="@drawable/state_ic_warning"
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:textColor="@color/c_refresh_1"

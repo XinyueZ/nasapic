@@ -27,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Interpolator;
+import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RadioGroup;
@@ -49,6 +50,7 @@ import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
+import com.nasa.pic.utils.Prefs;
 
 import java.util.Date;
 
@@ -120,6 +122,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		mBinding.loadingFab.hide();
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
+		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance().doesWallpaperChangeDaily());
 
 		StringBuilder description;
 		if (large || orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -206,7 +209,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 								//Set background alpha
 								float alpha = old + (fraction * (end - old));
-								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+								mBinding.errorContent.getBackground()
+								                     .setAlpha((int) alpha);
 							}
 						});
 
@@ -223,7 +227,8 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 								//Set background alpha
 								float alpha = old + (fraction * (end - old));
-								mBinding.errorContent.getBackground().setAlpha((int) alpha);
+								mBinding.errorContent.getBackground()
+								                     .setAlpha((int) alpha);
 							}
 						});
 
@@ -377,7 +382,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				}
 			});
 		} else {
-			mBinding.toolbar.getMenu().findItem(R.id.action_hd_switch).setVisible(false);
+			mBinding.toolbar.getMenu()
+			                .findItem(R.id.action_hd_switch)
+			                .setVisible(false);
 		}
 	}
 
@@ -477,5 +484,16 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 		int[] multipliers = getResources().getIntArray(R.array.size_multipliers);
 		return multipliers[index] / 100f;
+	}
+
+	public void wallpaperChangeDaily(View view) {
+		CheckedTextView checkedTextView = (CheckedTextView) view;
+		updateWallpaperSetting(checkedTextView);
+	}
+
+	private static void updateWallpaperSetting(CheckedTextView checkedTextView) {
+		Prefs prefs = Prefs.getInstance();
+		checkedTextView.setChecked(!prefs.doesWallpaperChangeDaily());
+		prefs.setWallpaperChangeDaily(checkedTextView.isChecked());
 	}
 }

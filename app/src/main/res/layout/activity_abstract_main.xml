@@ -84,6 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:drawableLeft="@drawable/state_ic_no_results"
+            android:drawableStart="@drawable/state_ic_no_results"
             android:text="@string/lbl_no_results"
             android:textColor="@color/common_white"
             android:visibility="gone"/>
