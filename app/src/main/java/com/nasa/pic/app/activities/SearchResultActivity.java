@@ -78,7 +78,6 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		binding.responsesRv.clearOnScrollListeners();
 	}
 
-	// [START add_lifecycle_methods]
 
 	/**
 	 * Called when leaving the activity
@@ -178,12 +177,11 @@ public final class SearchResultActivity extends AbstractMainActivity {
 		if (isDataLoaded()) {
 			if (getBinding().responsesRv.getAdapter() == null) {
 				//Data
-				mPhotoListAdapter = new PhotoListAdapter();
-				mPhotoListAdapter.setData(getData());
-				getBinding().responsesRv.setAdapter(mPhotoListAdapter);
+				PhotoListAdapter photoListAdp = new PhotoListAdapter();
+				photoListAdp.setData(getData());
+				getBinding().responsesRv.setAdapter(photoListAdp);
 			} else {
-				mPhotoListAdapter.setData(getData());
-				mPhotoListAdapter.notifyDataSetChanged();
+				getBinding().responsesRv.getAdapter().notifyDataSetChanged();
 			}
 			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
 			                                       View.VISIBLE :

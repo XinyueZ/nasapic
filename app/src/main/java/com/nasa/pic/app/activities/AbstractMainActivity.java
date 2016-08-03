@@ -116,7 +116,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	private ItemBinding mItemBinding;
 
 
-	protected PhotoListAdapter mPhotoListAdapter;
 
 	private static final int REQUEST_INVITE = 0x97;
 
@@ -279,7 +278,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 	@Override
 	protected void queryLocalData() {
-		buildListView(this, mBinding.responsesRv);
+		configListView(this, mBinding.responsesRv);
 		super.queryLocalData();
 	}
 
@@ -297,23 +296,20 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 			Prefs.getInstance().setNeverLoaded(false);
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
-				mPhotoListAdapter = new PhotoListAdapter();
-				mPhotoListAdapter.setData(getData());
+				PhotoListAdapter photoListAdp = new PhotoListAdapter();
+				photoListAdp.setData(getData());
 				//Sections
 				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
-				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, mPhotoListAdapter);
+				mSectionedAdapter = new SectionedGridRecyclerViewAdapter(this, R.layout.item_section, R.id.section_title_tv, mBinding.responsesRv, photoListAdp);
 				mSectionedAdapter.setSections(sectionsArray);
 				//Set
 				mBinding.responsesRv.setAdapter(mSectionedAdapter);
 			} else {
-				//Data
-				mPhotoListAdapter.setData(getData());
 				//Sections
 				SectionedGridRecyclerViewAdapter.Section[] sectionsArray = extractSections(getData());
 				mSectionedAdapter.setSections(sectionsArray);
 				//Update
 				mSectionedAdapter.notifyDataSetChanged();
-				mPhotoListAdapter.notifyDataSetChanged();
 			}
 			getBinding().noResultsTv.setVisibility(getData().isEmpty() ?
 			                                       View.VISIBLE :
@@ -657,7 +653,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		}, 500);
 	}
 
-	private void buildListView(Context cxt, RecyclerView recyclerView) {
+	private void configListView(Context cxt, RecyclerView recyclerView) {
 		DeviceUtils.ScreenSize screenSize = DeviceUtils.getScreenSize(App.Instance);
 		int width = screenSize.Width;
 		LL.d("Screen width: " + width);
@@ -667,7 +663,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		float div = width / basic;
 		LL.d("Div: " + div);
 		BigDecimal cardCount = new BigDecimal(div).setScale(0, BigDecimal.ROUND_HALF_UP);
-		LL.d("CardCount: " + cardCount);
+		LL.d("Card/Row: " + cardCount);
 		recyclerView.setLayoutManager(new GridLayoutManager(cxt, cardCount.intValue()));
 	}
 
@@ -742,7 +738,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 
 	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
+	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 		Snackbar.make(mBinding.errorContent, R.string.google_play_services_error, Snackbar.LENGTH_LONG)
 		        .show();
 	}
@@ -752,10 +748,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_INVITE) {
-			if (resultCode == RESULT_OK) {
-				// Get the invitation IDs of all sent messages
-//				String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-			} else {
+			if (resultCode != RESULT_OK) {
 				Snackbar.make(mBinding.errorContent, R.string.send_failed, Snackbar.LENGTH_LONG)
 				        .show();
 			}
@@ -792,7 +785,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	/**
 	 * Invoke displayInterstitial() when you are ready to display an interstitial.
 	 */
-	public void displayInterstitial() {
+	private void displayInterstitial() {
 		if (mInterstitialAd.isLoaded()) {
 			mInterstitialAd.show();
 		}

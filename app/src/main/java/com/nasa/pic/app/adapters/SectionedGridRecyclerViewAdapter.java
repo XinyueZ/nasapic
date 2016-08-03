@@ -21,23 +21,19 @@ public class SectionedGridRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 	private static final int SECTION_TYPE = 0;
 
 	private boolean mValid = true;
-	private int mSectionResourceId;
-	private int mTextResourceId;
-	private LayoutInflater mLayoutInflater;
-	private RecyclerView.Adapter mBaseAdapter;
-	private SparseArray<Section> mSections = new SparseArray<Section>();
-	private RecyclerView mRecyclerView;
+	private final int mSectionResourceId;
+	private final int mTextResourceId;
+	private final RecyclerView.Adapter mBaseAdapter;
+	private final SparseArray<Section> mSections = new SparseArray<>();
 
 
 	public SectionedGridRecyclerViewAdapter(Context context, int sectionResourceId, int textResourceId,RecyclerView recyclerView,
 	                                        RecyclerView.Adapter baseAdapter) {
 
-		mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mSectionResourceId = sectionResourceId;
 		mTextResourceId = textResourceId;
 		mBaseAdapter = baseAdapter;
 		mContext = context;
-		mRecyclerView = recyclerView;
 
 		mBaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
 			@Override
@@ -65,7 +61,7 @@ public class SectionedGridRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 			}
 		});
 
-		final GridLayoutManager layoutManager = (GridLayoutManager)(mRecyclerView.getLayoutManager());
+		final GridLayoutManager layoutManager = (GridLayoutManager)(recyclerView.getLayoutManager());
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
 			@Override
 			public int getSpanSize(int position) {
@@ -77,7 +73,7 @@ public class SectionedGridRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 
 	public static class SectionViewHolder extends RecyclerView.ViewHolder {
 
-		public TextView title;
+		public final TextView title;
 
 		public SectionViewHolder(View view,int mTextResourceid) {
 			super(view);
@@ -114,9 +110,9 @@ public class SectionedGridRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 
 
 	public static class Section {
-		int firstPosition;
+		final int firstPosition;
 		int sectionedPosition;
-		CharSequence title;
+		final CharSequence title;
 
 		public Section(int firstPosition, CharSequence title) {
 			this.firstPosition = firstPosition;
@@ -177,7 +173,7 @@ public class SectionedGridRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
 		return sectionedPosition + offset;
 	}
 
-	public boolean isSectionHeaderPosition(int position) {
+	private boolean isSectionHeaderPosition(int position) {
 		return mSections.get(position) != null;
 	}
 
