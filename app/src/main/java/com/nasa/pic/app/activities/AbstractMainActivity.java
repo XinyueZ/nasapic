@@ -53,6 +53,7 @@ import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
+import com.nasa.pic.app.noactivities.wallpaper.WallpaperChangeDelegate;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.databinding.ItemBinding;
 import com.nasa.pic.ds.PhotoDB;
@@ -638,10 +639,18 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		}
 	}
 
+	private WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
+		@Override
+		protected View getSnackBarAnchor() {
+			return mBinding.errorContent;
+		}
+	};
+
 	@Override
 	protected void onResume() {
 		buildShareActionProviderForApp();
 		super.onResume();
+		EventBus.getDefault().register(mWallpaperChangeDelegate);
 		revertLastSelectedListItemView();
 		new Handler().postDelayed(new Runnable() {
 			@Override
@@ -651,6 +660,12 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				}
 			}
 		}, 500);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		EventBus.getDefault().unregister(mWallpaperChangeDelegate);
 	}
 
 	private void configListView(Context cxt, RecyclerView recyclerView) {

@@ -46,6 +46,8 @@ import com.chopping.utils.Utils;
 import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.app.noactivities.wallpaper.SetWallpaperService;
+import com.nasa.pic.app.noactivities.wallpaper.WallpaperChangeDelegate;
 import com.nasa.pic.customtab.ActionBroadcastReceiver;
 import com.nasa.pic.customtab.CustomTabActivityHelper;
 import com.nasa.pic.customtab.CustomTabActivityHelper.ConnectionCallback;
@@ -335,18 +337,20 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	@Override
 	public void onPhotoTap(View view, float v, float v1) {
-		if (mQuSwitch.isChecked()) {
-			mBinding.hdSizeMultiplierLayout.getRoot()
-			                               .setVisibility(mBinding.hdSizeMultiplierLayout.getRoot()
+		if (TextUtils.equals(getType(), "image")) {
+			if (mQuSwitch.isChecked()) {
+				mBinding.hdSizeMultiplierLayout.getRoot()
+				                               .setVisibility(mBinding.hdSizeMultiplierLayout.getRoot()
+				                                                                             .getVisibility() != View.VISIBLE ?
+				                                              View.VISIBLE :
+				                                              View.GONE);
+			}
+			mBinding.wallpaperSettingLayout.getRoot()
+			                               .setVisibility(mBinding.wallpaperSettingLayout.getRoot()
 			                                                                             .getVisibility() != View.VISIBLE ?
 			                                              View.VISIBLE :
 			                                              View.GONE);
 		}
-		mBinding.wallpaperSettingLayout.getRoot()
-		                               .setVisibility(mBinding.wallpaperSettingLayout.getRoot()
-		                                                                             .getVisibility() != View.VISIBLE ?
-		                                              View.VISIBLE :
-		                                              View.GONE);
 	}
 
 	@Override
@@ -536,8 +540,12 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		if (prefs.doesWallpaperChangeDaily()) {
 			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), AsWallpaperDialogFragment.newInstance(App.Instance), null);
 		}
+		setWallpaper();
 	}
 
+	private void setWallpaper() {
+		SetWallpaperService.createService(App.Instance, !mQuSwitch.isChecked() ? getUrl2PhotoFallback() : getUrl2Photo());
+	}
 
 	public static class AsWallpaperDialogFragment extends AppCompatDialogFragment {
 		public static AsWallpaperDialogFragment newInstance(Context cxt) {
@@ -548,11 +556,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			return new AlertDialog.Builder(getActivity()).setTitle(R.string.wallpaper_as)
 			                                             .setMessage(R.string.wallpaper_change_daily_cancel)
-			                                             .setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
-				                                             public void onClick(DialogInterface dialog, int whichButton) {
-
-				                                             }
-			                                             })
+			                                             .setPositiveButton(R.string.btn_yes, null)
 			                                             .setNegativeButton(R.string.btn_no, new DialogInterface.OnClickListener() {
 				                                             public void onClick(DialogInterface dialog, int whichButton) {
 					                                             Prefs.getInstance()
@@ -571,10 +575,27 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		}
 	}
 
+
+	private WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
+		@Override
+		protected View getSnackBarAnchor() {
+			return mBinding.errorContent;
+		}
+	};
+
 	@Override
 	protected void onResume() {
 		super.onResume();
+		EventBus.getDefault().register(mWallpaperChangeDelegate);
 		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
 		                                                                        .doesWallpaperChangeDaily());
+	}
+
+
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		EventBus.getDefault().unregister(mWallpaperChangeDelegate);
 	}
 }

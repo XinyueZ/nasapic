@@ -94,7 +94,7 @@
         <receiver android:name=".customtab.ActionBroadcastReceiver"/>
 
         <service
-            android:name=".app.noactivities.ChangeWallpaperService"
+            android:name=".app.noactivities.wallpaper.SetWallpaperService"
             android:exported="true" />
 
     </application>

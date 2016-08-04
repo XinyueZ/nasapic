@@ -101,4 +101,7 @@
     <string name="wallpaper_change_daily">Change wallpaper daily</string>
     <string name="wallpaper_change_daily_cancel">Save this photo as wallpaper, still keep changing wallpaper daily?</string>
     <string name="wallpaper_change_undo">Undo</string>
+    <string name="wallpaper_changing">Changing wallpaper…</string>
+    <string name="wallpaper_changed">Wallpaper changed.</string>
+    <string name="wallpaper_undo_finished">Wallpaper has been reset.</string>
 </resources>

@@ -35,6 +35,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
 import com.chopping.net.TaskHelper;
 import com.chopping.rest.RestApiManager;
 import com.chopping.utils.RestUtils;
@@ -56,7 +57,7 @@ import retrofit2.Callback;
  *
  * @author Xinyue Zhao
  */
-public final class App extends MultiDexApplication {
+public final class App extends MultiDexApplication    {
 	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;
 	/**
 	 * Application's instance.
@@ -118,5 +119,17 @@ public final class App extends MultiDexApplication {
 
 	public RestApiManager getApiManager() {
 		return mApiManager;
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		Glide.get(this).clearMemory();
+	}
+
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		Glide.get(this).clearMemory();
 	}
 }
