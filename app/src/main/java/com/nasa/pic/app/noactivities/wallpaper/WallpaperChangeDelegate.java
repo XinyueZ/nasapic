@@ -20,7 +20,7 @@ public abstract class WallpaperChangeDelegate {
 	 * @param e Event {@link WallpaperChangingEvent}.
 	 */
 	public void onEventMainThread(WallpaperChangingEvent e) {
-		Snackbar.make(getSnackBarAnchor(), R.string.wallpaper_changing, Snackbar.LENGTH_SHORT).show();
+		Snackbar.make(getSnackBarAnchor(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
 	}
 
 
@@ -29,7 +29,7 @@ public abstract class WallpaperChangeDelegate {
 	 * @param e Event {@link WallpaperChangedEvent}.
 	 */
 	public void onEventMainThread(WallpaperChangedEvent e) {
-		Snackbar.make(getSnackBarAnchor(), R.string.wallpaper_changed, Snackbar.LENGTH_LONG).setAction(R.string.wallpaper_change_undo, new View.OnClickListener() {
+		Snackbar.make(getSnackBarAnchor(),e.getMessage(), Snackbar.LENGTH_LONG).setAction(R.string.wallpaper_change_undo, new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				SetWallpaperService.createService(App.Instance, null, true);
@@ -43,7 +43,7 @@ public abstract class WallpaperChangeDelegate {
 	 * @param e Event {@link WallpaperUndoEvent}.
 	 */
 	public void onEventMainThread(WallpaperUndoEvent e) {
-		Snackbar.make(getSnackBarAnchor(), R.string.wallpaper_undo_finished, Snackbar.LENGTH_SHORT).show();
+		Snackbar.make(getSnackBarAnchor(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
 	}
 
 	//------------------------------------------------

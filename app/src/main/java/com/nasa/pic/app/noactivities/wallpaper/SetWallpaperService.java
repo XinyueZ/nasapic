@@ -56,14 +56,31 @@ public final class SetWallpaperService extends Service {
 		boolean undo = intent.getBooleanExtra(EXTRA_UNDO_OPERATION, false);
 		WallpaperSettingNotification.createChangingNotification(this);
 		if (undo) {
-			try {
-				undoLastWallpaperChangeSync(SetWallpaperService.this);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			AsyncTaskCompat.executeParallel(new AsyncTask<Void, Void, IOException>() {
+				@Override
+				protected IOException doInBackground(Void... voids) {
+					IOException e = null;
+					try {
+						undoLastWallpaperChangeSync(SetWallpaperService.this);
+					} catch (IOException e1) {
+						e = e1;
+					}
+					return e;
+				}
 
-			WallpaperSettingNotification.removeChangingNotification(this);
-			WallpaperSettingNotification.createUndoFinishedNotification(this, getString(R.string.wallpaper_undo_finished));
+				@Override
+				protected void onPostExecute(IOException e) {
+					super.onPostExecute(e);
+					WallpaperSettingNotification.removeChangingNotification(SetWallpaperService.this);
+					WallpaperSettingNotification.createUndoFinishedNotification(SetWallpaperService.this,
+					                                                            getString(e != null ?
+					                                                                      R.string.wallpaper_error :
+					                                                                      R.string.wallpaper_undo_finished));
+					stopSelf();
+				}
+			});
+
+
 		} else {
 			Glide.with(this)
 			     .load(Utils.uriStr2URI(url)
@@ -73,15 +90,36 @@ public final class SetWallpaperService extends Service {
 			     .into(new SimpleTarget<Bitmap>() {
 				     @Override
 				     public void onResourceReady(Bitmap loadedBitmap, GlideAnimation<? super Bitmap> glideAnimation) {
-					     AsyncTaskCompat.executeParallel(new AsyncTask<Bitmap, Void, Void>() {
+					     AsyncTaskCompat.executeParallel(new AsyncTask<Bitmap, Void, IOException>() {
 						     @Override
-						     protected Void doInBackground(Bitmap... bitmaps) {
+						     protected IOException doInBackground(Bitmap... bitmaps) {
+							     IOException e = null;
 							     Bitmap bitmap = bitmaps[0];
 							     if (bitmap != null && !bitmap.isRecycled()) {
-								     doChangeWallpaper(bitmap);
-								     stopSelf();
+								     try {
+									     doChangeWallpaper(bitmap);
+								     } catch (IOException e0) {
+									     e = e0;
+									     try {
+										     undoLastWallpaperChangeSync(SetWallpaperService.this);
+									     } catch (IOException e1) {
+										     //Ignore.
+										     e = e1;
+									     }
+								     }
 							     }
-							     return null;
+							     return e;
+						     }
+
+						     @Override
+						     protected void onPostExecute(IOException e) {
+							     super.onPostExecute(e);
+							     WallpaperSettingNotification.removeChangingNotification(SetWallpaperService.this);
+							     WallpaperSettingNotification.createChangedNotification(SetWallpaperService.this,
+							                                                            SetWallpaperService.this.getString(e != null ?
+							                                                                                               R.string.wallpaper_error :
+							                                                                                               R.string.wallpaper_changed));
+							     stopSelf();
 						     }
 					     }, loadedBitmap);
 				     }
@@ -137,25 +175,10 @@ public final class SetWallpaperService extends Service {
 
 
 	@WorkerThread
-	private void doChangeWallpaper(Bitmap loadedBitmap) {
-		try {
-			storeLastWallpaper(SetWallpaperService.this);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void doChangeWallpaper(Bitmap loadedBitmap) throws IOException {
+		storeLastWallpaper(SetWallpaperService.this);
 		WallpaperManager wallpaperMgr = WallpaperManager.getInstance(SetWallpaperService.this);
 		wallpaperMgr.setWallpaperOffsetSteps(0.5f, 1.0f);
-		try {
-			wallpaperMgr.setBitmap(loadedBitmap);
-		} catch (IOException e) {
-			e.printStackTrace();
-			try {
-				undoLastWallpaperChangeSync(SetWallpaperService.this);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-		WallpaperSettingNotification.removeChangingNotification(this);
-		WallpaperSettingNotification.createChangedNotification(SetWallpaperService.this, SetWallpaperService.this.getString(R.string.wallpaper_changed));
+		wallpaperMgr.setBitmap(loadedBitmap);
 	}
 }
