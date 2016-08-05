@@ -3,10 +3,12 @@ package com.nasa.pic.app.noactivities.wallpaper;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.chopping.utils.Utils;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.events.WallpaperChangedEvent;
 import com.nasa.pic.events.WallpaperChangingEvent;
+import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.events.WallpaperUndoEvent;
 
 public abstract class WallpaperChangeDelegate {
@@ -46,6 +48,14 @@ public abstract class WallpaperChangeDelegate {
 		Snackbar.make(getSnackBarAnchor(), e.getMessage(), Snackbar.LENGTH_SHORT).show();
 	}
 
+
+	/**
+	 * Handler for {@link WallpaperDailyChangedEvent}.
+	 * @param e Event {@link WallpaperDailyChangedEvent}.
+	 */
+	public void onEventMainThread(WallpaperDailyChangedEvent e) {
+		Utils.showLongToast(App.Instance, e.getMessage());
+	}
 	//------------------------------------------------
 
 	protected abstract View getSnackBarAnchor();

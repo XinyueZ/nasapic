@@ -17,7 +17,7 @@ public final class BootReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		final Prefs prefs = Prefs.getInstance();
 		if (prefs.doesWallpaperChangeDaily()) {
-			CreateWallpaperDaily.setDailyUpdate(context, prefs.getWallpaperDailyTimePlan() * Prefs.TIME_BASE);
+			CreateWallpaperDaily.setDailyUpdate(context, prefs.getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
 		}
 	}
 }

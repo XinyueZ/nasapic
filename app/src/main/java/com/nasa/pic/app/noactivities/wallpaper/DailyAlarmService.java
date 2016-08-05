@@ -38,7 +38,7 @@ public final class DailyAlarmService extends WakefulBroadcastReceiver {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 				CreateWallpaperDaily.setDailyUpdate(context,
 				                                    Prefs.getInstance()
-				                                         .getWallpaperDailyTimePlan() * Prefs.TIME_BASE);
+				                                         .getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
 			}
 			return;
 		}

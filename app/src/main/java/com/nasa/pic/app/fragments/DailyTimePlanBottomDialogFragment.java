@@ -120,7 +120,7 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 	@Override
 	public final void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		CreateWallpaperDaily.setDailyUpdate(App.Instance, getSelectedPlanIndex() * Prefs.TIME_BASE);
+		CreateWallpaperDaily.setDailyUpdate(App.Instance, getSelectedPlanIndex() * Prefs.WALLPAPER_TIME_BASE);
 		EventBus.getDefault()
 		        .post(new WallpaperDailyChangedEvent(String.format(App.Instance.getString(R.string.wallpaper_update_frequency),
 		                                                           App.Instance.getString(getCurrentSelectedPlanString()))));

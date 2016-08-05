@@ -31,6 +31,7 @@
 
 package com.nasa.pic.app;
 
+import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
@@ -41,7 +42,10 @@ import com.chopping.rest.RestApiManager;
 import com.chopping.utils.RestUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.PeriodicTask;
 import com.nasa.pic.R;
+import com.nasa.pic.app.noactivities.LocalPushService;
 import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.utils.Prefs;
 import com.tinyurl4j.Api;
@@ -118,8 +122,9 @@ public final class App extends MultiDexApplication    {
 
 		final Prefs prefs = Prefs.getInstance();
 		if (prefs.doesWallpaperChangeDaily()) {
-			CreateWallpaperDaily.setDailyUpdate(this, prefs.getWallpaperDailyTimePlan() * Prefs.TIME_BASE);
+			CreateWallpaperDaily.setDailyUpdate(this, prefs.getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
 		}
+		startLocalPush(this);
 	}
 
 
@@ -137,5 +142,15 @@ public final class App extends MultiDexApplication    {
 	public void onLowMemory() {
 		super.onLowMemory();
 		Glide.get(this).clearMemory();
+	}
+
+	public static void startLocalPush(Context cxt) {
+		long scheduleSec = Prefs.LOCAL_PUSH;
+		long flexSecs = 60L;
+		String tag = System.currentTimeMillis() + "";
+		PeriodicTask scheduleTask = new PeriodicTask.Builder().setService(LocalPushService.class).setPeriod(scheduleSec)
+		                                                      .setFlex(flexSecs).setTag(tag).setPersisted(true).setRequiredNetwork(
+						com.google.android.gms.gcm.Task.NETWORK_STATE_ANY).setRequiresCharging(false).build();
+		GcmNetworkManager.getInstance(cxt).schedule(scheduleTask);
 	}
 }

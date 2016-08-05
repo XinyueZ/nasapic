@@ -111,14 +111,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		                                                                        .doesWallpaperChangeDaily());
 	}
 
-	/**
-	 * Handler for {@link WallpaperDailyChangedEvent}.
-	 *
-	 * @param e Event {@link WallpaperDailyChangedEvent}.
-	 */
-	public void onEvent(WallpaperDailyChangedEvent e) {
-		Utils.showLongToast(App.Instance, e.getMessage());
-	}
+
 	//------------------------------------------------
 
 	public static void showInstance(Context cxt, String title, String description, String urlToPhoto, String urlToPhotoFallback, Date datetime, String type, Thumbnail thumbnail) {
