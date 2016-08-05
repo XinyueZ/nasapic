@@ -12,6 +12,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
@@ -43,9 +44,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.chopping.utils.DateTimeUtils;
 import com.chopping.utils.Utils;
-import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.app.fragments.DailyTimePlanBottomDialogFragment;
+import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.app.noactivities.wallpaper.SetWallpaperService;
 import com.nasa.pic.app.noactivities.wallpaper.WallpaperChangeDelegate;
 import com.nasa.pic.customtab.ActionBroadcastReceiver;
@@ -55,6 +57,7 @@ import com.nasa.pic.customtab.WebViewFallback;
 import com.nasa.pic.databinding.ActivityPhotoViewBinding;
 import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
+import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
@@ -103,10 +106,18 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 *
 	 * @param e Event {@link CloseDialogEvent}.
 	 */
-	@Subscribe
-	public void onEvent(CloseDialogEvent e) {
+	public void onEvent(@SuppressWarnings("UnusedParameters") CloseDialogEvent e) {
 		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
 		                                                                        .doesWallpaperChangeDaily());
+	}
+
+	/**
+	 * Handler for {@link WallpaperDailyChangedEvent}.
+	 *
+	 * @param e Event {@link WallpaperDailyChangedEvent}.
+	 */
+	public void onEvent(WallpaperDailyChangedEvent e) {
+		Utils.showLongToast(App.Instance, e.getMessage());
 	}
 	//------------------------------------------------
 
@@ -527,6 +538,13 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	public void wallpaperChangeDaily(View view) {
 		CheckedTextView checkedTextView = (CheckedTextView) view;
 		updateWallpaperSetting(checkedTextView);
+
+		if (Prefs.getInstance()
+		         .doesWallpaperChangeDaily()) {
+			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
+		} else {
+			CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
+		}
 	}
 
 	private static void updateWallpaperSetting(CheckedTextView checkedTextView) {
@@ -535,7 +553,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		prefs.setWallpaperChangeDaily(checkedTextView.isChecked());
 	}
 
-	public void setAsWallpaper(View view) {
+	public void setAsWallpaper(@SuppressWarnings("UnusedParameters") View view) {
 		Prefs prefs = Prefs.getInstance();
 		if (prefs.doesWallpaperChangeDaily()) {
 			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), AsWallpaperDialogFragment.newInstance(App.Instance), null);
@@ -544,7 +562,10 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	}
 
 	private void setWallpaper() {
-		SetWallpaperService.createService(App.Instance, !mQuSwitch.isChecked() ? getUrl2PhotoFallback() : getUrl2Photo());
+		SetWallpaperService.createService(App.Instance,
+		                                  !mQuSwitch.isChecked() ?
+		                                  getUrl2PhotoFallback() :
+		                                  getUrl2Photo());
 	}
 
 	public static class AsWallpaperDialogFragment extends AppCompatDialogFragment {
@@ -552,6 +573,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			return (AsWallpaperDialogFragment) AsWallpaperDialogFragment.instantiate(cxt, AsWallpaperDialogFragment.class.getName());
 		}
 
+		@NonNull
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			return new AlertDialog.Builder(getActivity()).setTitle(R.string.wallpaper_as)
@@ -561,6 +583,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 				                                             public void onClick(DialogInterface dialog, int whichButton) {
 					                                             Prefs.getInstance()
 					                                                  .setWallpaperChangeDaily(false);
+					                                             CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
 				                                             }
 			                                             })
 			                                             .setCancelable(false)
@@ -576,7 +599,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	}
 
 
-	private WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
+	private final WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
 		@Override
 		protected View getSnackBarAnchor() {
 			return mBinding.errorContent;
@@ -586,16 +609,17 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	@Override
 	protected void onResume() {
 		super.onResume();
-		EventBus.getDefault().register(mWallpaperChangeDelegate);
+		EventBus.getDefault()
+		        .register(mWallpaperChangeDelegate);
 		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
 		                                                                        .doesWallpaperChangeDaily());
 	}
 
 
-
 	@Override
 	protected void onPause() {
 		super.onPause();
-		EventBus.getDefault().unregister(mWallpaperChangeDelegate);
+		EventBus.getDefault()
+		        .unregister(mWallpaperChangeDelegate);
 	}
 }

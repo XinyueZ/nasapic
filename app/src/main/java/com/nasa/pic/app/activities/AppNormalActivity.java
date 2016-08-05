@@ -225,7 +225,7 @@ public abstract class AppNormalActivity
 		return mUrl2PhotoFallback;
 	}
 
-	public void setUrl2PhotoFallback(String url2PhotoFallback) {
+	private void setUrl2PhotoFallback(String url2PhotoFallback) {
 		mUrl2PhotoFallback = url2PhotoFallback;
 	}
 

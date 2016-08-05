@@ -29,18 +29,23 @@ import java.io.IOException;
 public final class SetWallpaperService extends Service {
 	private static final String EXTRAS_PHOTO_LOCATION = SetWallpaperService.class.getName() + ".EXTRAS.photo.location";
 	private static final String LAST_WALLPAPER_FILE_NAME = "last_wallpaper";
-	static final String EXTRA_UNDO_OPERATION = "UNDO_OPERATION_EXTRA";
+	private static final String EXTRA_UNDO_OPERATION = "UNDO_OPERATION_EXTRA";
 	static final int UNDO_REQUEST_CODE = 0x99;
+	public static final int SET_REQUEST_CODE = 0x101;
 
 	public static void createService(Context cxt, String photoLocation) {
 		createService(cxt, photoLocation, false);
 	}
 
 	public static void createService(Context cxt, String photoLocation, boolean undo) {
+		cxt.startService(createServiceIntent(cxt, photoLocation, undo));
+	}
+
+	public static Intent createServiceIntent(Context cxt, String photoLocation, boolean undo) {
 		Intent intent = new Intent(cxt, SetWallpaperService.class);
 		intent.putExtra(EXTRAS_PHOTO_LOCATION, photoLocation);
 		intent.putExtra(EXTRA_UNDO_OPERATION, undo);
-		cxt.startService(intent);
+		return intent;
 	}
 
 	@Nullable

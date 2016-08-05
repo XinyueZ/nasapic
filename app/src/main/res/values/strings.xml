@@ -88,6 +88,16 @@
         <item>100</item>
     </integer-array>
 
+    <string name="wallpaper_daily_time_plan_1_hour">1 hour</string>
+    <string name="wallpaper_daily_time_plan_2_hour">2 hours</string>
+    <string name="wallpaper_daily_time_plan_3_hour">3 hours</string>
+    <string name="wallpaper_daily_time_plan_4_hour">4 hours</string>
+    <string name="wallpaper_daily_time_plan_5_hour">5 hours</string>
+    <string name="wallpaper_daily_time_plan_6_hour">6 hours</string>
+
+
+
+
 
     <string name="invitation_message">Use the Android app nasaPic to find your favorite photos from space.</string>
     <string name="invitation_custom_image">https://dl.dropboxusercontent.com/s/dei9b4b54sgvy3r/app_logo.png</string>
@@ -97,12 +107,14 @@
     <string name="send_failed">No invitation has been sent.</string>
     <string name="google_play_services_error">Google Play Services Error.</string>
 
-    <string name="wallpaper_as">As Wallpaper</string>
-    <string name="wallpaper_change_daily">Change wallpaper daily</string>
+    <string name="wallpaper_as">This as Wallpaper</string>
+    <string name="wallpaper_change_daily">Random wallpaper daily</string>
     <string name="wallpaper_change_daily_cancel">Save this photo as wallpaper, still keep changing wallpaper daily?</string>
     <string name="wallpaper_change_undo">Undo</string>
     <string name="wallpaper_changing">Changing wallpaper…</string>
     <string name="wallpaper_changed">Wallpaper changed.</string>
     <string name="wallpaper_undo_finished">Wallpaper has been reset.</string>
     <string name="wallpaper_error">Wallpaper can not be changed, some errors.</string>
+    <string name="wallpaper_current_time_plan_dialog_title">Current update frequency, you can change:</string>
+    <string name="wallpaper_update_frequency">Wallpaper update frequency has been changed: %s daily.</string>
 </resources>

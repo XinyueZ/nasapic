@@ -17,10 +17,11 @@
     <style name="AppTheme" parent="AppTheme.Base"/>
 
 
-    <style name="Transparent" parent="AppTheme">
+    <style name="TransparentTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/common_transparent</item>
         <item name="colorPrimaryDark">@color/common_transparent</item>
+        <item name="android:textColorSecondary">@color/colorAccent</item>
     </style>
 
 

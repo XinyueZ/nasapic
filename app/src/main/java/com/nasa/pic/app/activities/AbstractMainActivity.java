@@ -190,6 +190,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 *
 	 * @param e Event {@link  EULAConfirmedEvent}.
 	 */
+	@SuppressWarnings("EmptyMethod")
 	public void onEvent(@SuppressWarnings("UnusedParameters") EULAConfirmedEvent e) {
 
 
@@ -639,7 +640,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		}
 	}
 
-	private WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
+	private final WallpaperChangeDelegate mWallpaperChangeDelegate = new WallpaperChangeDelegate() {
 		@Override
 		protected View getSnackBarAnchor() {
 			return mBinding.errorContent;

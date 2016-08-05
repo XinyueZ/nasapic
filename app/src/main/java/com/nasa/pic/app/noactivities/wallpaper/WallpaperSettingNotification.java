@@ -28,19 +28,22 @@ import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
 class WallpaperSettingNotification {
 	private static final int WALLPAPER_CHANGED_NOTIFICATION_ID = 0x34;
 	private static final int CHANGING_WALLPAPER_NOTIFICATION_ID = 0x35;
+	private static final int SMALL_ICON = R.drawable.ic_logo_toolbar;
+	private static final int LARGE_ICON = R.drawable.ic_logo_splash;
 
 	@UiThread
 	@MainThread
 	static void createChangedNotification(Context context, CharSequence message) {
 		Resources res = context.getResources();
 		PendingIntent contentPendingIntent = PendingIntent.getActivities(context, 0, new Intent[] { new Intent(context, MainActivity.class) }, PendingIntent.FLAG_UPDATE_CURRENT);
-		Intent undoChangeIntent = new Intent(context, SetWallpaperService.class);
-		undoChangeIntent.putExtra(SetWallpaperService.EXTRA_UNDO_OPERATION, true);
-		PendingIntent undoChangePendingIntent = PendingIntent.getService(context, SetWallpaperService.UNDO_REQUEST_CODE, undoChangeIntent, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent undoChangePendingIntent = PendingIntent.getService(context,
+		                                                                 SetWallpaperService.UNDO_REQUEST_CODE,
+		                                                                 SetWallpaperService.createServiceIntent(context, null, true),
+		                                                                 PendingIntent.FLAG_ONE_SHOT);
 		String undoChangeButtonTitle = context.getResources()
 		                                      .getString(R.string.wallpaper_change_undo);
-		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_logo_splash)
-		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_logo_splash))
+		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(SMALL_ICON)
+		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, LARGE_ICON))
 		                                                                   .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
 		                                                                   .setContentTitle(res.getString(R.string.application_name))
 		                                                                   .setContentText(message)
@@ -63,8 +66,8 @@ class WallpaperSettingNotification {
 	static void createUndoFinishedNotification(Context context, CharSequence message) {
 		Resources res = context.getResources();
 		PendingIntent contentPendingIntent = PendingIntent.getActivities(context, 0, new Intent[] { new Intent(context, MainActivity.class) }, PendingIntent.FLAG_UPDATE_CURRENT);
-		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_logo_splash)
-		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_logo_splash))
+		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(SMALL_ICON)
+		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, LARGE_ICON))
 		                                                                   .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
 		                                                                   .setContentTitle(res.getString(R.string.application_name))
 		                                                                   .setContentText(message)
@@ -86,8 +89,8 @@ class WallpaperSettingNotification {
 		String message = context.getString(R.string.wallpaper_changing);
 		Resources res = context.getResources();
 		PendingIntent contentPendingIntent = PendingIntent.getActivities(context, 0, new Intent[] { new Intent(context, MainActivity.class) }, PendingIntent.FLAG_UPDATE_CURRENT);
-		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(R.drawable.ic_logo_splash)
-		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_logo_splash))
+		Notification notification = new NotificationCompat.Builder(context).setSmallIcon(SMALL_ICON)
+		                                                                   .setLargeIcon(BitmapFactory.decodeResource(res, LARGE_ICON))
 		                                                                   .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
 		                                                                   .setContentTitle(res.getString(R.string.application_name))
 		                                                                   .setContentText(message)

@@ -13,6 +13,8 @@ import static com.nasa.pic.app.fragments.DatePickerDialogFragment.IGNORED_DAY;
  * @author Chris.Xinyue Zhao
  */
 public final class Prefs extends BasicPrefs {
+	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;
+	public static final int TIME_BASE = 60000 ;//3600000;
 	/**
 	 * Storage. Whether the "End User License Agreement" has been shown and agreed at application's first start.
 	 * <p/>
@@ -41,6 +43,8 @@ public final class Prefs extends BasicPrefs {
 	private static final String KEY_NEVER_LOADED = "key.never.loaded";
 
 	private static final String KEY_WALLPAPER_CHANGE_DAILY = "key.wallpaper.change.daily";
+
+	private static final String KEY_WALLPAPER_DAILY_TIME_PLAN = "key.wallpaper.daily.time.plan";
 
 	/**
 	 * The Instance.
@@ -190,5 +194,13 @@ public final class Prefs extends BasicPrefs {
 
 	public boolean doesWallpaperChangeDaily() {
 		return getBoolean(KEY_WALLPAPER_CHANGE_DAILY, false);
+	}
+
+	public void setWallpaperDailyTimePlan(int plan) {
+		setLong(KEY_WALLPAPER_DAILY_TIME_PLAN, plan);
+	}
+
+	public long getWallpaperDailyTimePlan() {
+		return getLong(KEY_WALLPAPER_DAILY_TIME_PLAN, 3);
 	}
 }

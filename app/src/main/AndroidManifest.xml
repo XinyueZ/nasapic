@@ -36,7 +36,7 @@
         <activity
             android:name=".app.activities.PhotoViewActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/Transparent"/>
+            android:theme="@style/TransparentTheme"/>
         <activity
             android:name=".app.activities.WebViewActivity"
             android:configChanges="orientation|screenSize"
@@ -97,7 +97,9 @@
         <service
             android:name=".app.noactivities.wallpaper.SetWallpaperService"
             android:exported="true" />
-
+        <receiver
+            android:name=".app.noactivities.wallpaper.DailyAlarmService"
+            android:enabled="true"/>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -36,10 +37,10 @@
             android:layout_gravity="center_vertical"
             android:layout_marginTop="@dimen/padding_detail_options"
             android:checked="false"
-            android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
-            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableLeft="?android:attr/textCheckMark"
+            android:drawableStart="?android:attr/textCheckMark"
             android:gravity="center_vertical"
             android:onClick="wallpaperChangeDaily"
-            android:text="@string/wallpaper_change_daily"/>
+            android:text="@string/wallpaper_change_daily" />
     </LinearLayout>
 </layout>

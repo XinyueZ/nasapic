@@ -42,6 +42,7 @@ import com.chopping.utils.RestUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.nasa.pic.R;
+import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.utils.Prefs;
 import com.tinyurl4j.Api;
 import com.tinyurl4j.Api.TinyUrl;
@@ -58,7 +59,7 @@ import retrofit2.Callback;
  * @author Xinyue Zhao
  */
 public final class App extends MultiDexApplication    {
-	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;
+
 	/**
 	 * Application's instance.
 	 */
@@ -113,6 +114,11 @@ public final class App extends MultiDexApplication    {
 									getString(R.string.lbl_store_url, getPackageName())));
 				}
 			});
+		}
+
+		final Prefs prefs = Prefs.getInstance();
+		if (prefs.doesWallpaperChangeDaily()) {
+			CreateWallpaperDaily.setDailyUpdate(this, prefs.getWallpaperDailyTimePlan() * Prefs.TIME_BASE);
 		}
 	}
 
