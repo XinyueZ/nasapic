@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -17,10 +16,7 @@ import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.databinding.TimePlanBinding;
-import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.utils.Prefs;
-
-import de.greenrobot.event.EventBus;
 
 
 public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFragment implements RadioGroup.OnCheckedChangeListener {
@@ -75,27 +71,7 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 		}
 	}
 
-	private static
-	@StringRes
-	int getCurrentSelectedPlanString() {
-		switch ((int) Prefs.getInstance()
-		                   .getWallpaperDailyTimePlan()) {
-			case 1:
-				return R.string.wallpaper_daily_time_plan_1_hour;
-			case 2:
-				return R.string.wallpaper_daily_time_plan_2_hour;
-			case 3:
-				return R.string.wallpaper_daily_time_plan_3_hour;
-			case 4:
-				return R.string.wallpaper_daily_time_plan_4_hour;
-			case 5:
-				return R.string.wallpaper_daily_time_plan_5_hour;
-			case 6:
-				return R.string.wallpaper_daily_time_plan_6_hour;
-			default:
-				return R.string.wallpaper_daily_time_plan_3_hour;
-		}
-	}
+
 
 	private int getSelectedPlanIndex() {
 		switch (mBinding.timePlanRp.getCheckedRadioButtonId()) {
@@ -121,10 +97,6 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 	public final void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
 		CreateWallpaperDaily.setDailyUpdate(App.Instance, getSelectedPlanIndex() * Prefs.WALLPAPER_TIME_BASE);
-		Prefs.getInstance().setWallpaperChangeDaily(true);
-		EventBus.getDefault()
-		        .post(new WallpaperDailyChangedEvent(String.format(App.Instance.getString(R.string.wallpaper_update_frequency),
-		                                                           App.Instance.getString(getCurrentSelectedPlanString()))));
 	}
 
 	@Override

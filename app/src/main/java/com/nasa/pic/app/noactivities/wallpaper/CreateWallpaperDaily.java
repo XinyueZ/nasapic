@@ -4,11 +4,16 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.support.annotation.StringRes;
 
+import com.nasa.pic.R;
 import com.nasa.pic.app.App;
+import com.nasa.pic.events.WallpaperDailyChangedEvent;
+import com.nasa.pic.utils.Prefs;
 
 import java.util.Calendar;
+
+import de.greenrobot.event.EventBus;
 
 public final class CreateWallpaperDaily {
 	private static PendingIntent createDailyPendingIntent() {
@@ -16,18 +21,50 @@ public final class CreateWallpaperDaily {
 	}
 
 	public static void setDailyUpdate(Context cxt, long plan) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			((AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE)).setExact(AlarmManager.RTC_WAKEUP, plan, createDailyPendingIntent());
-		} else {
-			((AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE)).setRepeating(AlarmManager.RTC_WAKEUP,
-			                                                                          Calendar.getInstance()
-			                                                                                  .getTimeInMillis(),
-			                                                                          plan,
-			                                                                          createDailyPendingIntent());
+		Prefs prefs = Prefs.getInstance();
+		if (!prefs.doesWallpaperChangeDaily()) {
+			prefs.setWallpaperChangeDaily(true);
 		}
+		EventBus.getDefault()
+		        .post(new WallpaperDailyChangedEvent(String.format(App.Instance.getString(R.string.wallpaper_update_frequency), App.Instance.getString(getCurrentSelectedPlanString()))));
+
+		((AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE)).setInexactRepeating(AlarmManager.RTC_WAKEUP,
+		                                                                                 Calendar.getInstance()
+		                                                                                         .getTimeInMillis() + plan,
+		                                                                                 plan,
+		                                                                                 createDailyPendingIntent());
 	}
 
 	public static void cancelDailyUpdate(Context cxt) {
+		Prefs prefs = Prefs.getInstance();
+		if (prefs.doesWallpaperChangeDaily()) {
+			prefs.setWallpaperChangeDaily(false);
+		}
+		EventBus.getDefault()
+		        .post(new WallpaperDailyChangedEvent(App.Instance.getString(R.string.wallpaper_cancel_wallpaper_update)));
+
 		((AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE)).cancel(createDailyPendingIntent());
+	}
+
+	private static
+	@StringRes
+	int getCurrentSelectedPlanString() {
+		switch ((int) Prefs.getInstance()
+		                   .getWallpaperDailyTimePlan()) {
+			case 1:
+				return R.string.wallpaper_daily_time_plan_1_hour;
+			case 2:
+				return R.string.wallpaper_daily_time_plan_2_hour;
+			case 3:
+				return R.string.wallpaper_daily_time_plan_3_hour;
+			case 4:
+				return R.string.wallpaper_daily_time_plan_4_hour;
+			case 5:
+				return R.string.wallpaper_daily_time_plan_5_hour;
+			case 6:
+				return R.string.wallpaper_daily_time_plan_6_hour;
+			default:
+				return R.string.wallpaper_daily_time_plan_3_hour;
+		}
 	}
 }

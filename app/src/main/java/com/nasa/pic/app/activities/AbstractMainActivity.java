@@ -426,8 +426,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				if (Prefs.getInstance()
 				         .doesWallpaperChangeDaily()) {
 					CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
-					Prefs.getInstance()
-					     .setWallpaperChangeDaily(false);
 					updateDailyUIs();
 				} else {
 					com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);

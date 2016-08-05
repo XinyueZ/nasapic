@@ -13,9 +13,9 @@ import static com.nasa.pic.app.fragments.DatePickerDialogFragment.IGNORED_DAY;
  * @author Chris.Xinyue Zhao
  */
 public final class Prefs extends BasicPrefs {
-	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;
-	public static final int WALLPAPER_TIME_BASE = 3600000 ;//3600000; //60000;
-	public static final int LOCAL_PUSH = 604800;//604800;//120;
+	public static final int API_SERVER_SWITCH_SCHEDULE = 1800;//sec
+	public static final int WALLPAPER_TIME_BASE = 3600000 ;//3600000; //60000;//milisec
+	public static final int LOCAL_PUSH = 604800;//604800;//120;//sec
 
 	/**
 	 * Storage. Whether the "End User License Agreement" has been shown and agreed at application's first start.

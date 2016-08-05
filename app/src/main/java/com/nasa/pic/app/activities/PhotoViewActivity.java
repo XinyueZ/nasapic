@@ -57,7 +57,6 @@ import com.nasa.pic.customtab.WebViewFallback;
 import com.nasa.pic.databinding.ActivityPhotoViewBinding;
 import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
-import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
@@ -530,21 +529,16 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 
 	public void wallpaperChangeDaily(View view) {
 		CheckedTextView checkedTextView = (CheckedTextView) view;
-		updateWallpaperSetting(checkedTextView);
 
-		if (Prefs.getInstance()
-		         .doesWallpaperChangeDaily()) {
+		if (!Prefs.getInstance()
+		          .doesWallpaperChangeDaily()) {
+			checkedTextView.setChecked(true);
 			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
 		} else {
 			CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
 		}
 	}
 
-	private static void updateWallpaperSetting(CheckedTextView checkedTextView) {
-		Prefs prefs = Prefs.getInstance();
-		checkedTextView.setChecked(!prefs.doesWallpaperChangeDaily());
-		prefs.setWallpaperChangeDaily(checkedTextView.isChecked());
-	}
 
 	public void setAsWallpaper(@SuppressWarnings("UnusedParameters") View view) {
 		Prefs prefs = Prefs.getInstance();
@@ -574,8 +568,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			                                             .setPositiveButton(R.string.btn_yes, null)
 			                                             .setNegativeButton(R.string.btn_no, new DialogInterface.OnClickListener() {
 				                                             public void onClick(DialogInterface dialog, int whichButton) {
-					                                             Prefs.getInstance()
-					                                                  .setWallpaperChangeDaily(false);
 					                                             CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
 				                                             }
 			                                             })

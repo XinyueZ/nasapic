@@ -7,7 +7,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.TextUtils;
 
 import com.nasa.pic.ds.PhotoDB;
-import com.nasa.pic.utils.Prefs;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,11 +34,7 @@ public final class DailyAlarmService extends WakefulBroadcastReceiver {
 			String url = photo.getUrls()
 			                  .getNormal();
 			startWakefulService(context, SetWallpaperService.createServiceIntent(context, url, false));
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-				CreateWallpaperDaily.setDailyUpdate(context,
-				                                    Prefs.getInstance()
-				                                         .getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
-			}
+
 			return;
 		}
 	}
