@@ -31,8 +31,11 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.chopping.application.LL;
 import com.chopping.utils.DeviceUtils;
@@ -130,6 +133,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 	private CompoundButton mDailySwitch;
 
+	private TextView mDailyTimePlanTv;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -140,8 +144,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 * @param e Event {@link WallpaperDailyChangedEvent}.
 	 */
 	public void onEventMainThread(WallpaperDailyChangedEvent e) {
-		mDailySwitch.setChecked(Prefs.getInstance()
-		                             .doesWallpaperChangeDaily());
+		updateDailyUIs();
 	}
 
 	/**
@@ -420,15 +423,32 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mDailySwitch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if(Prefs.getInstance().doesWallpaperChangeDaily()) {
+				if (Prefs.getInstance()
+				         .doesWallpaperChangeDaily()) {
 					CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
-					Prefs.getInstance().setWallpaperChangeDaily(false);
-					mDailySwitch.setChecked(false);
+					Prefs.getInstance()
+					     .setWallpaperChangeDaily(false);
+					updateDailyUIs();
 				} else {
 					com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
 				}
 			}
 		});
+		mDailyTimePlanTv = (TextView) findViewById(R.id.daily_time_plan_tv);
+		updateDailyUIs();
+	}
+
+	private void updateDailyUIs() {
+		Prefs prefs = Prefs.getInstance();
+		mDailyTimePlanTv.setText(String.valueOf(prefs.getWallpaperDailyTimePlan()));
+		mDailyTimePlanTv.setVisibility(prefs.doesWallpaperChangeDaily() ?
+		                               View.VISIBLE :
+		                               View.GONE);
+		mDailySwitch.setChecked(prefs.doesWallpaperChangeDaily());
+		if (mDailyTimePlanTv.getVisibility() == View.VISIBLE) {
+			Animation shake = AnimationUtils.loadAnimation(App.Instance, R.anim.shake);
+			mDailyTimePlanTv.startAnimation(shake);
+		}
 	}
 
 	private void buildShareActionProviderForApp() {
@@ -694,8 +714,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				}
 			}, 500);
 		}
-		mDailySwitch.setChecked(Prefs.getInstance()
-		                             .doesWallpaperChangeDaily());
+		updateDailyUIs();
 	}
 
 	@Override

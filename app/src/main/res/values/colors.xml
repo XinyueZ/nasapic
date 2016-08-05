@@ -16,6 +16,10 @@
         #3F51B5
     </color>
 
+    <color name="ball">
+        #3F51B5
+    </color>
+
     <color name="c_refresh_1">#4CAF50</color>
     <color name="c_refresh_2">#3F51B5</color>
     <color name="c_refresh_3">#F44336</color>
