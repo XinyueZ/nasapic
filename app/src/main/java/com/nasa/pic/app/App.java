@@ -46,7 +46,6 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.nasa.pic.R;
 import com.nasa.pic.app.noactivities.LocalPushService;
-import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.utils.Prefs;
 import com.tinyurl4j.Api;
 import com.tinyurl4j.Api.TinyUrl;
@@ -120,10 +119,7 @@ public final class App extends MultiDexApplication    {
 			});
 		}
 
-		final Prefs prefs = Prefs.getInstance();
-		if (prefs.doesWallpaperChangeDaily()) {
-			CreateWallpaperDaily.setDailyUpdate(this, prefs.getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
-		}
+		 
 		startLocalPush(this);
 	}
 
