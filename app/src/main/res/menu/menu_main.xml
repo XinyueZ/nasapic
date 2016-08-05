@@ -9,6 +9,13 @@
         android:title="@string/action_invite"
         app:showAsAction="always"/>
 
+
+    <item
+        android:id="@+id/action_wallpaper_daily_setting"
+        app:actionLayout="@layout/wallpaper_daily_setting_layout"
+        android:title="@string/action_wallpaper_daily"
+        app:showAsAction="always"/>
+
     <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_share_app"

@@ -59,6 +59,8 @@
     <string name="action_invite">Invite more people to use this app</string>
     <string name="action_open">Open</string>
     <string name="action_share_fb">Post on Facebook</string>
+    <string name="action_photo_qu">Quality</string>
+    <string name="action_wallpaper_daily">Set wallpaper daily</string>
     <string name="action_about">About</string>
     <string name="action_more_apps">More Apps</string>
     <string name="action_backward">Backward</string>

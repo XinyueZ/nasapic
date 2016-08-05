@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
+import android.widget.CompoundButton;
 
 import com.chopping.application.LL;
 import com.chopping.utils.DeviceUtils;
@@ -51,8 +52,10 @@ import com.nasa.pic.app.adapters.PhotoListAdapter;
 import com.nasa.pic.app.adapters.SectionedGridRecyclerViewAdapter;
 import com.nasa.pic.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.nasa.pic.app.fragments.AppListImpFragment;
+import com.nasa.pic.app.fragments.DailyTimePlanBottomDialogFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
+import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.app.noactivities.wallpaper.WallpaperChangeDelegate;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.databinding.ItemBinding;
@@ -64,6 +67,7 @@ import com.nasa.pic.events.ClickPhotoItemEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
+import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
@@ -117,7 +121,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	private ItemBinding mItemBinding;
 
 
-
 	private static final int REQUEST_INVITE = 0x97;
 
 	/**
@@ -125,9 +128,21 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 */
 	private InterstitialAd mInterstitialAd;
 
+	private CompoundButton mDailySwitch;
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
+
+	/**
+	 * Handler for {@link WallpaperDailyChangedEvent}.
+	 *
+	 * @param e Event {@link WallpaperDailyChangedEvent}.
+	 */
+	public void onEventMainThread(WallpaperDailyChangedEvent e) {
+		mDailySwitch.setChecked(Prefs.getInstance()
+		                             .doesWallpaperChangeDaily());
+	}
 
 	/**
 	 * Handler for {@link com.nasa.pic.events.OpenPhotoEvent}.
@@ -295,7 +310,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	protected void buildViews() {
 		setHasShownDataOnUI(!getData().isEmpty());
 		if (isDataLoaded()) {
-			Prefs.getInstance().setNeverLoaded(false);
+			Prefs.getInstance()
+			     .setNeverLoaded(false);
 			if (mBinding.responsesRv.getAdapter() == null) {
 				//Data
 				PhotoListAdapter photoListAdp = new PhotoListAdapter();
@@ -399,6 +415,20 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mBinding.toolbar.setOnMenuItemClickListener(this);
 
 		buildShareActionProviderForApp();
+
+		mDailySwitch = (CompoundButton) findViewById(R.id.wallpaper_daily_switch);
+		mDailySwitch.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(Prefs.getInstance().doesWallpaperChangeDaily()) {
+					CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
+					Prefs.getInstance().setWallpaperChangeDaily(false);
+					mDailySwitch.setChecked(false);
+				} else {
+					com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
+				}
+			}
+		});
 	}
 
 	private void buildShareActionProviderForApp() {
@@ -651,22 +681,28 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	protected void onResume() {
 		buildShareActionProviderForApp();
 		super.onResume();
-		EventBus.getDefault().register(mWallpaperChangeDelegate);
+		EventBus.getDefault()
+		        .register(mWallpaperChangeDelegate);
 		revertLastSelectedListItemView();
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (mBinding.dialogFl.isContentShown()) {
+
+		if (mBinding.dialogFl.isContentShown()) {
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
 					mBinding.dialogFl.show();
+
 				}
-			}
-		}, 500);
+			}, 500);
+		}
+		mDailySwitch.setChecked(Prefs.getInstance()
+		                             .doesWallpaperChangeDaily());
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		EventBus.getDefault().unregister(mWallpaperChangeDelegate);
+		EventBus.getDefault()
+		        .unregister(mWallpaperChangeDelegate);
 	}
 
 	private void configListView(Context cxt, RecyclerView recyclerView) {
@@ -744,7 +780,8 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				}
 			}
 		}
-		if (Prefs.getInstance().isNeverLoaded()) {
+		if (Prefs.getInstance()
+		         .isNeverLoaded()) {
 			LL.w("shouldLoadLocal: Must be false, because you have never gona data.");
 			shouldLoadLocal = false;
 		}
