@@ -27,55 +27,61 @@
 
             <RadioGroup
                 android:id="@+id/time_plan_rp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/common_black_trans_100">
 
                 <RadioButton
                     android:id="@+id/time_plan_1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_1_hour"
                     android:textColor="@color/common_black"/>
 
                 <RadioButton
                     android:id="@+id/time_plan_2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_2_hour"
                     android:textColor="@color/common_black"/>
 
                 <RadioButton
                     android:id="@+id/time_plan_3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_3_hour"
                     android:textColor="@color/common_black"/>
 
                 <RadioButton
                     android:id="@+id/time_plan_4"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_4_hour"
                     android:textColor="@color/common_black"/>
 
                 <RadioButton
                     android:id="@+id/time_plan_5"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_5_hour"
                     android:textColor="@color/common_black"/>
 
                 <RadioButton
                     android:id="@+id/time_plan_6"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:gravity="center_vertical"
                     android:text="@string/wallpaper_daily_time_plan_6_hour"
                     android:textColor="@color/common_black"/>
             </RadioGroup>
