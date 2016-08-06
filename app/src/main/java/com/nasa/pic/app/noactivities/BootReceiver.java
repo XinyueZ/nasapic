@@ -15,9 +15,12 @@ import com.nasa.pic.utils.Prefs;
 public final class BootReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Prefs prefs = Prefs.getInstance();
-		if (prefs.doesWallpaperChangeDaily()) {
-			CreateWallpaperDaily.setDailyUpdate(context, prefs.getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
+		String action = intent.getAction();
+		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+			Prefs prefs = Prefs.getInstance();
+			if (prefs.doesWallpaperChangeDaily()) {
+				CreateWallpaperDaily.setDailyUpdate(context, prefs.getWallpaperDailyTimePlan() * Prefs.WALLPAPER_TIME_BASE);
+			}
 		}
 	}
 }

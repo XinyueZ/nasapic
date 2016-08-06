@@ -117,7 +117,7 @@
     <string name="wallpaper_changed">Wallpaper changed.</string>
     <string name="wallpaper_undo_finished">Wallpaper has been reset.</string>
     <string name="wallpaper_error">Wallpaper can not be changed, some errors.</string>
-    <string name="wallpaper_current_time_plan_dialog_title">Current update frequency, you can change:</string>
+    <string name="wallpaper_current_time_plan_dialog_title">You can update your system\'s wallpaper daily every:</string>
     <string name="wallpaper_update_frequency">Wallpaper update frequency has been changed: %s daily.</string>
     <string name="wallpaper_cancel_wallpaper_update">Stop changing wallpaper dynamically.</string>
     <string name="wallpaper_remind">Dynamical astronomy wallpaper by clicking.</string>
