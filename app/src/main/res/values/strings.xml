@@ -121,4 +121,7 @@
     <string name="wallpaper_update_frequency">Wallpaper update frequency has been changed: %s daily.</string>
     <string name="wallpaper_cancel_wallpaper_update">Stop changing wallpaper dynamically.</string>
     <string name="wallpaper_remind">Dynamical astronomy wallpaper by clicking.</string>
+    <string name="wallpaper_open">Daily wallpaper</string>
+    <string name="wallpaper_open_on">ON</string>
+    <string name="wallpaper_open_off">OFF</string>
 </resources>

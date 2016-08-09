@@ -58,7 +58,6 @@ import com.nasa.pic.app.fragments.AppListImpFragment;
 import com.nasa.pic.app.fragments.DailyTimePlanBottomDialogFragment;
 import com.nasa.pic.app.fragments.DatePickerDialogFragment;
 import com.nasa.pic.app.noactivities.AppGuardService;
-import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.app.noactivities.wallpaper.WallpaperChangeDelegate;
 import com.nasa.pic.databinding.ActivityAbstractMainBinding;
 import com.nasa.pic.databinding.ItemBinding;
@@ -67,6 +66,7 @@ import com.nasa.pic.ds.RequestPhotoDayList;
 import com.nasa.pic.ds.RequestPhotoLastThreeList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.ClickPhotoItemEvent;
+import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
@@ -137,6 +137,16 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
+
+	/**
+	 * Handler for {@link  CloseDialogEvent}.
+	 *
+	 * @param e Event {@link CloseDialogEvent}.
+	 */
+	public void onEventMainThread(@SuppressWarnings("UnusedParameters") CloseDialogEvent e) {
+		mDailySwitch.setChecked(Prefs.getInstance()
+		                             .doesWallpaperChangeDaily());
+	}
 
 	/**
 	 * Handler for {@link WallpaperDailyChangedEvent}.
@@ -423,13 +433,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mDailySwitch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (Prefs.getInstance()
-				         .doesWallpaperChangeDaily()) {
-					CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
-					updateDailyUIs();
-				} else {
-					com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
-				}
+				com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(true), null);
 			}
 		});
 		mDailyTimePlanTv = (TextView) findViewById(R.id.daily_time_plan_tv);

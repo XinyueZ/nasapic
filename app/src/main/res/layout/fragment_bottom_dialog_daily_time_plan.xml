@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data class="TimePlanBinding"/>
+    <data class="TimePlanBinding">
+
+        <import
+            alias="V"
+            type="android.view.View"/>
+
+        <variable
+            name="showSwitch"
+            type="boolean"/>
+
+
+        <variable
+            name="showGroup"
+            type="boolean"/>
+    </data>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -17,18 +32,40 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
 
-            <TextView
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/padding_detail_options"
-                android:text="@string/wallpaper_current_time_plan_dialog_title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/common_black"/>
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:text="@string/wallpaper_current_time_plan_dialog_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/common_black"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/daily_wallpaper_sc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/padding_detail_options"
+                    android:layout_marginTop="@dimen/padding_detail_options"
+                    android:checked="false"
+                    android:text="@string/wallpaper_open"
+                    android:textOff="@string/wallpaper_open_off"
+                    android:textOn="@string/wallpaper_open_on"
+                    android:visibility="@{showSwitch ? V.VISIBLE : V.GONE}"
+                    app:showText="true"/>
+            </LinearLayout>
 
             <RadioGroup
                 android:id="@+id/time_plan_rp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="@{showGroup ? V.VISIBLE : V.GONE}"
                 android:background="@color/common_black_trans_100">
 
                 <RadioButton

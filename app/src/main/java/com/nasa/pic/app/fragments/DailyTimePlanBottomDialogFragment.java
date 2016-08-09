@@ -10,23 +10,31 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
+import com.nasa.pic.BR;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.databinding.TimePlanBinding;
+import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.utils.Prefs;
+
+import de.greenrobot.event.EventBus;
 
 
 public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFragment implements RadioGroup.OnCheckedChangeListener {
-
 	private static final int LAYOUT = R.layout.fragment_bottom_dialog_daily_time_plan;
+	private static final String EXTRAS_SHOW_SWITCH = DailyTimePlanBottomDialogFragment.class.getName() + ".EXTRAS.show.switch";
 	private BottomSheetBehavior mBehavior;
 	private TimePlanBinding mBinding;
 
-	public static DailyTimePlanBottomDialogFragment newInstance() {
-		return (DailyTimePlanBottomDialogFragment) DailyTimePlanBottomDialogFragment.instantiate(App.Instance, DailyTimePlanBottomDialogFragment.class.getName(), null);
+
+	public static DailyTimePlanBottomDialogFragment newInstance(boolean showSwitch) {
+		Bundle args = new Bundle(1);
+		args.putBoolean(EXTRAS_SHOW_SWITCH, showSwitch);
+		return (DailyTimePlanBottomDialogFragment) DailyTimePlanBottomDialogFragment.instantiate(App.Instance, DailyTimePlanBottomDialogFragment.class.getName(), args);
 	}
 
 	@NonNull
@@ -39,6 +47,26 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 		mBinding.timePlanRp.setOnCheckedChangeListener(this);
 		dialog.setContentView(view);
 		mBehavior = BottomSheetBehavior.from((View) view.getParent());
+		final boolean showSwitch = getArguments().getBoolean(EXTRAS_SHOW_SWITCH);
+		mBinding.setVariable(BR.showSwitch, showSwitch);
+		if(!showSwitch) {
+			mBinding.dailyWallpaperSc.setChecked(true);
+			mBinding.setVariable(BR.showGroup, true);
+		} else {
+			final boolean doesWallpaperChangeDaily = Prefs.getInstance()
+			                       .doesWallpaperChangeDaily();
+			mBinding.dailyWallpaperSc.setChecked(doesWallpaperChangeDaily);
+			mBinding.setVariable(BR.showGroup, doesWallpaperChangeDaily);
+			mBinding.dailyWallpaperSc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+					if (!b) {
+						CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
+					}
+					mBinding.setVariable(BR.showGroup, b);
+				}
+			});
+		}
 		return dialog;
 	}
 
@@ -72,7 +100,6 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 	}
 
 
-
 	private int getSelectedPlanIndex() {
 		switch (mBinding.timePlanRp.getCheckedRadioButtonId()) {
 			case R.id.time_plan_1:
@@ -96,7 +123,11 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 	@Override
 	public final void onDismiss(DialogInterface dialog) {
 		super.onDismiss(dialog);
-		CreateWallpaperDaily.setDailyUpdate(App.Instance, getSelectedPlanIndex() * Prefs.WALLPAPER_TIME_BASE);
+		if (mBinding.dailyWallpaperSc.isChecked()) {
+			CreateWallpaperDaily.setDailyUpdate(App.Instance, getSelectedPlanIndex() * Prefs.WALLPAPER_TIME_BASE);
+		}
+		EventBus.getDefault()
+		        .post(new CloseDialogEvent());
 	}
 
 	@Override

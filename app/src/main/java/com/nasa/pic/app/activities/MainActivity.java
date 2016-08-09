@@ -41,7 +41,7 @@ public final class MainActivity extends AbstractMainActivity {
 
 	private void handleIntent(Intent intent) {
 		if(intent.getBooleanExtra(EXTRAS_SET_WALLPAPER_DAILY, false)) {
-			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
+			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(true), null);
 		}
 	}
 }

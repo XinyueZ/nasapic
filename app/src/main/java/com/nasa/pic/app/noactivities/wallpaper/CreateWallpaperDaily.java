@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.StringRes;
 
+import com.chopping.application.LL;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.events.WallpaperDailyChangedEvent;
@@ -33,6 +34,7 @@ public final class CreateWallpaperDaily {
 		                                                                                         .getTimeInMillis() + plan,
 		                                                                                 plan,
 		                                                                                 createDailyPendingIntent());
+		LL.d("setDailyUpdate");
 	}
 
 	public static void cancelDailyUpdate(Context cxt) {
@@ -44,6 +46,7 @@ public final class CreateWallpaperDaily {
 		        .post(new WallpaperDailyChangedEvent(App.Instance.getString(R.string.wallpaper_cancel_wallpaper_update)));
 
 		((AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE)).cancel(createDailyPendingIntent());
+		LL.d("cancelDailyUpdate");
 	}
 
 	private static

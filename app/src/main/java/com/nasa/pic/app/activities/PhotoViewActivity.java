@@ -105,7 +105,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 	 *
 	 * @param e Event {@link CloseDialogEvent}.
 	 */
-	public void onEvent(@SuppressWarnings("UnusedParameters") CloseDialogEvent e) {
+	public void onEventMainThread(@SuppressWarnings("UnusedParameters") CloseDialogEvent e) {
 		mBinding.wallpaperSettingLayout.wallpaperChangeDailyCtv.setChecked(Prefs.getInstance()
 		                                                                        .doesWallpaperChangeDaily());
 	}
@@ -533,8 +533,9 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		if (!Prefs.getInstance()
 		          .doesWallpaperChangeDaily()) {
 			checkedTextView.setChecked(true);
-			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(), null);
+			com.nasa.pic.utils.Utils.showDialogFragment(getSupportFragmentManager(), DailyTimePlanBottomDialogFragment.newInstance(false), null);
 		} else {
+			checkedTextView.setChecked(false);
 			CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
 		}
 	}
