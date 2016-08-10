@@ -55,6 +55,7 @@
                     android:layout_marginTop="@dimen/padding_detail_options"
                     android:checked="false"
                     android:text="@string/wallpaper_open"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textOff="@string/wallpaper_open_off"
                     android:textOn="@string/wallpaper_open_on"
                     android:visibility="@{showSwitch ? V.VISIBLE : V.GONE}"
@@ -65,8 +66,8 @@
                 android:id="@+id/time_plan_rp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{showGroup ? V.VISIBLE : V.GONE}"
-                android:background="@color/common_black_trans_100">
+                android:background="@color/common_black_trans_100"
+                android:visibility="@{showGroup ? V.VISIBLE : V.GONE}">
 
                 <RadioButton
                     android:id="@+id/time_plan_1"
