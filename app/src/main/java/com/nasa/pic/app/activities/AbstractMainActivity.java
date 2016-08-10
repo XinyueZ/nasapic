@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.chopping.application.LL;
@@ -131,7 +130,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 */
 	private InterstitialAd mInterstitialAd;
 
-	private CompoundButton mDailySwitch;
+	private View mDailySwitch;
 
 	private TextView mDailyTimePlanTv;
 	//------------------------------------------------
@@ -144,7 +143,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 * @param e Event {@link CloseDialogEvent}.
 	 */
 	public void onEventMainThread(@SuppressWarnings("UnusedParameters") CloseDialogEvent e) {
-		mDailySwitch.setChecked(Prefs.getInstance()
+		mDailySwitch.setSelected(Prefs.getInstance()
 		                             .doesWallpaperChangeDaily());
 	}
 
@@ -429,7 +428,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 
 		buildShareActionProviderForApp();
 
-		mDailySwitch = (CompoundButton) findViewById(R.id.wallpaper_daily_switch);
+		mDailySwitch =   findViewById(R.id.wallpaper_daily_switch);
 		mDailySwitch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -446,7 +445,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mDailyTimePlanTv.setVisibility(prefs.doesWallpaperChangeDaily() ?
 		                               View.VISIBLE :
 		                               View.GONE);
-		mDailySwitch.setChecked(prefs.doesWallpaperChangeDaily());
+		mDailySwitch.setSelected(prefs.doesWallpaperChangeDaily());
 		if (mDailyTimePlanTv.getVisibility() == View.VISIBLE) {
 			Animation shake = AnimationUtils.loadAnimation(App.Instance, R.anim.shake);
 			mDailyTimePlanTv.startAnimation(shake);

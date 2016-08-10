@@ -3,9 +3,9 @@
 
 
     <item android:drawable="@drawable/ic_wallpaper_daily_off"
-          android:state_checked="false"/>
+          android:state_selected="false"/>
     <item android:drawable="@drawable/ic_wallpaper_daily_on"
-          android:state_checked="true"/>
+          android:state_selected="true"/>
     <item android:drawable="@drawable/ic_wallpaper_daily_off"/>
 
 

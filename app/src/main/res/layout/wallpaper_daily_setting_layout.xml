@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content">
 
-    <CheckBox
+    <ImageButton
         android:id="@+id/wallpaper_daily_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:button="@drawable/state_ic_wallpaper_daily"
+        android:background="@color/common_transparent"
         android:orientation="vertical"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        app:srcCompat="@drawable/state_ic_wallpaper_daily"/>
 
     <TextView
         android:id="@+id/daily_time_plan_tv"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/circle_ball_indicator"
         android:gravity="center"
-        android:maxLength="1" android:background="@drawable/circle_ball_indicator"
+        android:maxLength="1"
         android:maxLines="1"
         android:minLines="1"
         android:textColor="@color/common_white"
