@@ -9,7 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorListenerCompat;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
@@ -19,6 +25,8 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.app.noactivities.wallpaper.CreateWallpaperDaily;
 import com.nasa.pic.databinding.TimePlanBinding;
 import com.nasa.pic.events.CloseDialogEvent;
+import com.nasa.pic.transition.BakedBezierInterpolator;
+import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
 import de.greenrobot.event.EventBus;
@@ -49,21 +57,69 @@ public final class DailyTimePlanBottomDialogFragment extends BottomSheetDialogFr
 		mBehavior = BottomSheetBehavior.from((View) view.getParent());
 		final boolean showSwitch = getArguments().getBoolean(EXTRAS_SHOW_SWITCH);
 		mBinding.setVariable(BR.showSwitch, showSwitch);
-		if(!showSwitch) {
+		if (!showSwitch) {
 			mBinding.dailyWallpaperSc.setChecked(true);
 			mBinding.setVariable(BR.showGroup, true);
 		} else {
 			final boolean doesWallpaperChangeDaily = Prefs.getInstance()
-			                       .doesWallpaperChangeDaily();
+			                                              .doesWallpaperChangeDaily();
 			mBinding.dailyWallpaperSc.setChecked(doesWallpaperChangeDaily);
 			mBinding.setVariable(BR.showGroup, doesWallpaperChangeDaily);
 			mBinding.dailyWallpaperSc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+				public void onCheckedChanged(CompoundButton compoundButton, final boolean b) {
 					if (!b) {
 						CreateWallpaperDaily.cancelDailyUpdate(App.Instance);
 					}
-					mBinding.setVariable(BR.showGroup, b);
+
+					ValueAnimatorCompat animator = AnimatorCompatHelper.emptyValueAnimator();
+					animator.setDuration(TransitCompat.ANIM_DURATION * 3);
+					animator.setTarget(mBinding.timePlanRp);
+					animator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+						private final float oldAlpha = !b ?
+						                               1 :
+						                               0;
+						private final float endAlpha = !b ?
+						                               0 :
+						                               1;
+						private final Interpolator interpolator2 = new BakedBezierInterpolator();
+
+						@Override
+						public void onAnimationUpdate(ValueAnimatorCompat animation) {
+							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+
+							//Set background alpha
+							float alpha = oldAlpha + (fraction * (endAlpha - oldAlpha));
+							ViewCompat.setAlpha(mBinding.timePlanRp, alpha);
+						}
+					});
+					animator.addListener(new AnimatorListenerCompat() {
+						@Override
+						public void onAnimationEnd(ValueAnimatorCompat animation) {
+							if (!b) {
+								mBinding.setVariable(BR.showGroup, false);
+							}
+						}
+
+						@Override
+						public void onAnimationStart(ValueAnimatorCompat animation) {
+							if (b) {
+								mBinding.setVariable(BR.showGroup, true);
+							}
+						}
+
+
+						@Override
+						public void onAnimationCancel(ValueAnimatorCompat animation) {
+
+						}
+
+						@Override
+						public void onAnimationRepeat(ValueAnimatorCompat animation) {
+
+						}
+					});
+					animator.start();
 				}
 			});
 		}
