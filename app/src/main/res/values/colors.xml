@@ -10,7 +10,7 @@
     <color name="common_transparent">@android:color/transparent</color>
     <color name="grey">#616161</color>
     <color name="greyDark">#212121</color>
-    <color name="grey_half">#80616161</color>
+    <color name="grey_transparent">#33616161</color>
 
     <color name="linkColor">
         #3F51B5

@@ -25,6 +25,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,6 +40,7 @@ import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -150,6 +152,18 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		mBinding.loadingFab.hide();
 		setUpErrorHandling((ViewGroup) findViewById(R.id.error_content));
 		initChromeCustomTabActivityHelper();
+		mBinding.brightnessBackgroundBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if(!view.isSelected()) {
+					mBinding.bottomSheet.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.grey, null));
+					view.setSelected(true);
+				} else {
+					view.setSelected(false);
+					mBinding.bottomSheet.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.grey_transparent, null));
+				}
+			}
+		});
 
 
 		StringBuilder description;
@@ -299,19 +313,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 			                .toASCIIString())
 			     .diskCacheStrategy(DiskCacheStrategy.ALL)
 			     .skipMemoryCache(false)
-			     .listener(new RequestListener<String, GlideDrawable>() {
-				     @Override
-				     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-					     return false;
-				     }
-
-				     @Override
-				     public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-					     //Important to set background from transparent to black.
-					     mBinding.errorContent.setBackgroundResource(R.color.common_black);
-					     return false;
-				     }
-			     })
+			     .listener(mLoadedHandler)
 			     .into(mBinding.bigImgIv);
 		}
 	}
@@ -427,22 +429,6 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		}
 	}
 
-	private final RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
-		@Override
-		public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-			stopLoadingIndicator();
-			switchHd(false);
-			Snackbar.make(mBinding.errorContent, R.string.error_switch_hd, Snackbar.LENGTH_SHORT)
-			        .show();
-			return false;
-		}
-
-		@Override
-		public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-			stopLoadingIndicator();
-			return false;
-		}
-	};
 
 	/**
 	 * Change quality of photo when check switch on top-bar.
@@ -608,4 +594,58 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		EventBus.getDefault()
 		        .unregister(mWallpaperChangeDelegate);
 	}
+
+
+	private final RequestListener<String, GlideDrawable> mHdSwitchListener = new RequestListener<String, GlideDrawable>() {
+		@Override
+		public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+			stopLoadingIndicator();
+			switchHd(false);
+			Snackbar.make(mBinding.errorContent, R.string.error_switch_hd, Snackbar.LENGTH_SHORT)
+			        .show();
+			return false;
+		}
+
+		@Override
+		public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+			stopLoadingIndicator();
+			Palette.Builder b = new Palette.Builder(((GlideBitmapDrawable) resource).getBitmap());
+			b.maximumColorCount(1);
+			b.generate(listener);
+			return false;
+		}
+	};
+
+
+	private final RequestListener<String, GlideDrawable> mLoadedHandler = new RequestListener<String, GlideDrawable>() {
+		@Override
+		public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+			mBinding.errorContent.setBackgroundResource(R.color.common_black);
+			return false;
+		}
+
+		@Override
+		public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+			//Important to set background from transparent to black.
+			mBinding.errorContent.setBackgroundResource(R.color.common_black);
+			Palette.Builder b = new Palette.Builder(((GlideBitmapDrawable) resource).getBitmap());
+			b.maximumColorCount(1);
+			b.generate(listener);
+			return false;
+		}
+	};
+
+	private Palette.PaletteAsyncListener listener = new Palette.PaletteAsyncListener() {
+		public void onGenerated(Palette palette) {
+			if (palette.getSwatches()
+			           .isEmpty()) {
+				return;
+			}
+			int color = palette.getSwatches()
+			                   .get(0)
+			                   .getBodyTextColor();
+			mBinding.descriptionTv.setTextColor(color);
+			mBinding.datetimeTv.setTextColor(color);
+		}
+	};
 }
