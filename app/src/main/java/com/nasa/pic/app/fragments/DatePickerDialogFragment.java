@@ -4,7 +4,11 @@ package com.nasa.pic.app.fragments;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.animation.AnimatorCompatHelper;
+import android.support.v4.animation.AnimatorUpdateListenerCompat;
+import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.os.ResultReceiver;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
@@ -12,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Interpolator;
 
 import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
@@ -19,6 +24,7 @@ import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.DatePickerBinding;
 import com.nasa.pic.events.CloseDatePickerDialogEvent;
 import com.nasa.pic.events.PopupDatePickerDialogEvent;
+import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
@@ -73,12 +79,14 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		EventBus.getDefault().register(this);
+		EventBus.getDefault()
+		        .register(this);
 	}
 
 	@Override
 	public void onPause() {
-		EventBus.getDefault().unregister(this);
+		EventBus.getDefault()
+		        .unregister(this);
 		super.onPause();
 	}
 
@@ -96,10 +104,16 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 			public void onClick(View view) {
 
 				int thisYear = Calendar.getInstance()
-				                   .get(Calendar.YEAR);
-				if (TextUtils.isEmpty(mBinding.yearEt.getText().toString()) || TextUtils.isEmpty(mBinding.monthEt.getText().toString()) ||
-						(Integer.valueOf(mBinding.yearEt.getText().toString()) <= 0 || Integer.valueOf(mBinding.yearEt.getText().toString()) > thisYear) ||
-						(Integer.valueOf(mBinding.monthEt.getText().toString()) <= 0 || Integer.valueOf(mBinding.monthEt.getText().toString()) > 12)) {
+				                       .get(Calendar.YEAR);
+				if (TextUtils.isEmpty(mBinding.yearEt.getText()
+				                                     .toString()) || TextUtils.isEmpty(mBinding.monthEt.getText()
+				                                                                                       .toString()) ||
+						(Integer.valueOf(mBinding.yearEt.getText()
+						                                .toString()) <= 0 || Integer.valueOf(mBinding.yearEt.getText()
+						                                                                                    .toString()) > thisYear) ||
+						(Integer.valueOf(mBinding.monthEt.getText()
+						                                 .toString()) <= 0 || Integer.valueOf(mBinding.monthEt.getText()
+						                                                                                      .toString()) > 12)) {
 					mBinding.warningTv.setVisibility(View.VISIBLE);
 					mBinding.warningTv.setText(R.string.lbl_year_month_day_wrong);
 				} else {
@@ -139,18 +153,40 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 		if (thumbnail != null) {
 			// Only run the animation if we're coming from the parent activity, not if
 			// we're recreated automatically by the window manager (e.g., device rotation)
-			ViewTreeObserver observer = mBinding.getRoot().getViewTreeObserver();
+			ViewTreeObserver observer = mBinding.getRoot()
+			                                    .getViewTreeObserver();
 			observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
 				@Override
 				public boolean onPreDraw() {
-					Object object = getArguments().getSerializable(EXTRAS_THUMBNAIL);
-					mBinding.getRoot().getViewTreeObserver()
-					                .removeOnPreDrawListener(this);
+					Thumbnail thumbnail = (Thumbnail)getArguments().getSerializable(EXTRAS_THUMBNAIL);
+					mBinding.getRoot()
+					        .getViewTreeObserver()
+					        .removeOnPreDrawListener(this);
 
+					ValueAnimatorCompat beforeExitAnimator = AnimatorCompatHelper.emptyValueAnimator();
+					beforeExitAnimator.setDuration(TransitCompat.ANIM_DURATION);
+					final Interpolator interpolator2 = new BakedBezierInterpolator();
+					beforeExitAnimator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+						private final float old = 1;
+						private final float end = 0;
+						private Thumbnail thumbnail = (Thumbnail)getArguments().getSerializable(EXTRAS_THUMBNAIL);
 
+						@Override
+						public void onAnimationUpdate(ValueAnimatorCompat animation) {
+							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
 
-					mTransition = new TransitCompat.Builder().setThumbnail((Thumbnail) object)
+							//Set height
+							float cur = old + (fraction * (end - old));
+							ViewCompat.setPivotX(mBinding.getRoot(),  mBinding.getRoot().getRight() - thumbnail.getWidth() );
+							ViewCompat.setPivotY(mBinding.getRoot(), mBinding.getRoot().getBottom() - thumbnail.getHeight() );
+							ViewCompat.setScaleX(mBinding.getRoot(), cur);
+							ViewCompat.setScaleY(mBinding.getRoot(), cur);
+						}
+					});
+
+					mTransition = new TransitCompat.Builder().setThumbnail( thumbnail)
 					                                         .setTarget(mBinding.getRoot())
+					                                         .setPlayTogetherBeforeExitTransition(beforeExitAnimator)
 					                                         .build();
 
 					mTransition.enter(new ViewPropertyAnimatorListenerAdapter());
@@ -159,6 +195,7 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 			});
 		}
 	}
+
 	private void closeThisFragment() {
 		if (mTransition != null) {
 			mTransition.exit(new ViewPropertyAnimatorListenerAdapter() {

@@ -70,7 +70,7 @@ public final class SplashActivity extends BaseActivity {
 	}
 
 
-	@NeedsPermission({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE  })
+	@NeedsPermission({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE   })
 	void getPermissions() {
 		if (mAlive) {
 			MainActivity.showInstance(this);
@@ -79,7 +79,7 @@ public final class SplashActivity extends BaseActivity {
 	}
 
 
-	@OnPermissionDenied({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE })
+	@OnPermissionDenied({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE})
 	void noPermissions() {
 		Snackbar.make(findViewById(R.id.error_content), R.string.msg_permission_prompt, Snackbar.LENGTH_INDEFINITE)
 				.setAction(R.string.btn_app_close, new OnClickListener() {
@@ -125,7 +125,7 @@ public final class SplashActivity extends BaseActivity {
 	}
 
 
-	public static void startAppGuardService(Context cxt) {
+	private static void startAppGuardService(Context cxt) {
 		AppGuardService.buildRetrofit();
 		long scheduleSec = Prefs.API_SERVER_SWITCH_SCHEDULE;
 		long flexSecs = 60L;

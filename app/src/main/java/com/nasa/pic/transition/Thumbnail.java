@@ -14,7 +14,7 @@ public final class Thumbnail implements Serializable {
 	private int mHeight;
 	private String mSource;
 
-	public Thumbnail(int top, int left, int width, int height ) {
+	public Thumbnail(int top, int left, int width, int height) {
 		mTop = top;
 		mLeft = left;
 		mWidth = width;
@@ -33,11 +33,11 @@ public final class Thumbnail implements Serializable {
 		return mLeft;
 	}
 
-	int getWidth() {
+	public int getWidth() {
 		return mWidth;
 	}
 
-	int getHeight() {
+	public int getHeight() {
 		return mHeight;
 	}
 
