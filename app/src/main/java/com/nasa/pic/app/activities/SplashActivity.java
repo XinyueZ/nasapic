@@ -41,6 +41,7 @@ public final class SplashActivity extends BaseActivity {
 	 */
 	private ActivitySplashBinding mBinding;
 
+	private boolean mAlive;
 
 	private void showSplash() {
 		mBinding.splashFl.post(new Runnable() {
@@ -71,7 +72,9 @@ public final class SplashActivity extends BaseActivity {
 
 	@NeedsPermission({ permission.READ_PHONE_STATE, permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE  })
 	void getPermissions() {
-		MainActivity.showInstance(this);
+		if (mAlive) {
+			MainActivity.showInstance(this);
+		}
 		finish();
 	}
 
@@ -91,6 +94,7 @@ public final class SplashActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		mAlive  = true;
 		Utils.fullScreen(this);
 		super.onCreate(savedInstanceState);
 		mBinding = DataBindingUtil.setContentView(this, LAYOUT);
@@ -131,4 +135,11 @@ public final class SplashActivity extends BaseActivity {
 						com.google.android.gms.gcm.Task.NETWORK_STATE_ANY).setRequiresCharging(false).build();
 		GcmNetworkManager.getInstance(cxt).schedule(scheduleTask);
 	}
+
+	@Override
+	protected void onDestroy() {
+		mAlive = false;
+		super.onDestroy();
+	}
+
 }
