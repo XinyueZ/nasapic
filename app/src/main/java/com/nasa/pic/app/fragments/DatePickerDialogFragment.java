@@ -5,18 +5,27 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.os.ResultReceiver;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.DatePickerBinding;
+import com.nasa.pic.events.CloseDatePickerDialogEvent;
+import com.nasa.pic.events.PopupDatePickerDialogEvent;
+import com.nasa.pic.transition.Thumbnail;
+import com.nasa.pic.transition.TransitCompat;
 import com.nasa.pic.utils.Prefs;
 
 import java.util.Calendar;
+
+import de.greenrobot.event.EventBus;
 
 public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	private static final String EXTRAS_LISTENER = DatePickerDialogFragment.class.getName() + ".EXTRAS.listener";
@@ -24,20 +33,53 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	public static final String EXTRAS_DAY_OF_MONTH = DatePickerDialogFragment.class.getName() + ".EXTRAS.dayOfMonth";
 	public static final String EXTRAS_MONTH = DatePickerDialogFragment.class.getName() + ".EXTRAS.month";
 	public static final String EXTRAS_YEAR = DatePickerDialogFragment.class.getName() + ".EXTRAS.year";
+	private static final String EXTRAS_THUMBNAIL = DatePickerDialogFragment.class.getName() + ".EXTRAS.thumbnail";
 	public static final int IGNORED_DAY = -1;
+	private static final int LAYOUT = R.layout.fragment_date_picker;
 	private DatePickerBinding mBinding;
+	private TransitCompat mTransition;
 
-	public static DatePickerDialogFragment newInstance(ResultReceiver listener) {
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link CloseDatePickerDialogEvent}.
+	 *
+	 * @param e Event {@link CloseDatePickerDialogEvent}.
+	 */
+	@Subscribe
+	public void onEvent(@SuppressWarnings("UnusedParameters") CloseDatePickerDialogEvent e) {
+		closeThisFragment();
+	}
+
+
+	//------------------------------------------------
+
+	public static DatePickerDialogFragment newInstance(ResultReceiver listener, Thumbnail thumbnail) {
 		Bundle args = new Bundle(1);
 		args.putParcelable(EXTRAS_LISTENER, listener);
+		args.putSerializable(EXTRAS_THUMBNAIL, thumbnail);
 		return (DatePickerDialogFragment) AppCompatDialogFragment.instantiate(App.Instance, DatePickerDialogFragment.class.getName(), args);
 	}
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_date_picker, container, false);
+		mBinding = DataBindingUtil.inflate(inflater, LAYOUT, container, false);
 		return mBinding.getRoot();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		EventBus.getDefault().register(this);
+	}
+
+	@Override
+	public void onPause() {
+		EventBus.getDefault().unregister(this);
+		super.onPause();
 	}
 
 	@Override
@@ -87,6 +129,49 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 				}
 			}
 		});
+
+		transitCompat();
 	}
 
+
+	private void transitCompat() {
+		Object thumbnail = getArguments().getSerializable(EXTRAS_THUMBNAIL);
+		if (thumbnail != null) {
+			// Only run the animation if we're coming from the parent activity, not if
+			// we're recreated automatically by the window manager (e.g., device rotation)
+			ViewTreeObserver observer = mBinding.getRoot().getViewTreeObserver();
+			observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+				@Override
+				public boolean onPreDraw() {
+					Object object = getArguments().getSerializable(EXTRAS_THUMBNAIL);
+					mBinding.getRoot().getViewTreeObserver()
+					                .removeOnPreDrawListener(this);
+
+
+
+					mTransition = new TransitCompat.Builder().setThumbnail((Thumbnail) object)
+					                                         .setTarget(mBinding.getRoot())
+					                                         .build();
+
+					mTransition.enter(new ViewPropertyAnimatorListenerAdapter());
+					return true;
+				}
+			});
+		}
+	}
+	private void closeThisFragment() {
+		if (mTransition != null) {
+			mTransition.exit(new ViewPropertyAnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(View v) {
+					super.onAnimationEnd(v);
+					EventBus.getDefault()
+					        .post(new PopupDatePickerDialogEvent());
+				}
+			});
+		} else {
+			EventBus.getDefault()
+			        .post(new PopupDatePickerDialogEvent());
+		}
+	}
 }

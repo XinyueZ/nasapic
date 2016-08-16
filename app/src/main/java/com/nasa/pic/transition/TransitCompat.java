@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.view.View;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ import java.util.List;
 
 
 public final class TransitCompat {
-	public static final int ANIM_DURATION = 600;
+	public static final int ANIM_DURATION = 500;
 
 
 	private List<ValueAnimatorCompat> mPlayTogetherAfterEnterValueAnimators;
@@ -45,7 +44,7 @@ public final class TransitCompat {
 			return this;
 		}
 
-		public Builder setTarget(ImageView target) {
+		public Builder setTarget(View target) {
 			mTransit.mTarget = new WeakReference<>(target);
 			return this;
 		}

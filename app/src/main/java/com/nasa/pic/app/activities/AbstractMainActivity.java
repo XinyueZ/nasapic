@@ -47,6 +47,7 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
@@ -65,10 +66,12 @@ import com.nasa.pic.ds.RequestPhotoDayList;
 import com.nasa.pic.ds.RequestPhotoLastThreeList;
 import com.nasa.pic.ds.RequestPhotoList;
 import com.nasa.pic.events.ClickPhotoItemEvent;
+import com.nasa.pic.events.CloseDatePickerDialogEvent;
 import com.nasa.pic.events.CloseDialogEvent;
 import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
+import com.nasa.pic.events.PopupDatePickerDialogEvent;
 import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
@@ -238,6 +241,17 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 			        .post(new OpenPhotoEvent(getData().get(pos), null, null));
 			mItemBinding = null;
 		}
+	}
+
+
+	/**
+	 * Handler for {@link PopupDatePickerDialogEvent}.
+	 *
+	 * @param e Event {@link PopupDatePickerDialogEvent}.
+	 */
+	@Subscribe
+	public void onEvent(@SuppressWarnings("UnusedParameters") PopupDatePickerDialogEvent e) {
+		super.onBackPressed();
 	}
 	//------------------------------------------------
 
@@ -591,6 +605,10 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		mBinding.searchFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				int[] screenLocation = new int[2];
+				view.getLocationOnScreen(screenLocation);
+				Thumbnail thumbnail = new Thumbnail(screenLocation[1], screenLocation[0], view.getWidth(), view.getHeight());
+
 				Fragment fragment = DatePickerDialogFragment.newInstance(new ResultReceiver(new Handler(getMainLooper())) {
 					@Override
 					protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -614,12 +632,11 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 								break;
 						}
 					}
-				});
+				},thumbnail);
 				getSupportFragmentManager().beginTransaction()
 				                           .add(R.id.dialog_fl, fragment)
 				                           .addToBackStack(null)
 				                           .commit();
-				mBinding.dialogFl.show();
 				mBinding.searchFab.hide();
 			}
 		});
@@ -628,7 +645,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 			@Override
 			public void onBackStackChanged() {
 				if (getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null) {
-					mBinding.dialogFl.hide();
 					mBinding.searchFab.show();
 				}
 			}
@@ -705,16 +721,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		EventBus.getDefault()
 		        .register(mWallpaperChangeDelegate);
 		revertLastSelectedListItemView();
-
-		if (mBinding.dialogFl.isContentShown()) {
-			new Handler().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					mBinding.dialogFl.show();
-
-				}
-			}, 500);
-		}
 		updateDailyUIs();
 	}
 
@@ -878,4 +884,16 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 		swipeRefreshLayout.setRefreshing(true);
 	}
 
+
+
+
+	@Override
+	public void onBackPressed() {
+		if (getSupportFragmentManager().findFragmentById(R.id.dialog_fl) == null) {
+			super.onBackPressed();
+		} else {
+			EventBus.getDefault()
+			        .post(new CloseDatePickerDialogEvent());
+		}
+	}
 }
