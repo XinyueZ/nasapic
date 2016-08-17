@@ -550,7 +550,7 @@ public final class PhotoViewActivity extends AppNormalActivity implements OnPhot
 		@NonNull
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			return new AlertDialog.Builder(getActivity()).setTitle(R.string.wallpaper_as)
+			return new AlertDialog.Builder(getActivity(), R.style.AlertDialogStyle).setTitle(R.string.wallpaper_as)
 			                                             .setMessage(R.string.wallpaper_change_daily_cancel)
 			                                             .setPositiveButton(R.string.btn_yes, null)
 			                                             .setNegativeButton(R.string.btn_no, new DialogInterface.OnClickListener() {

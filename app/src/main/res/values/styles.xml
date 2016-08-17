@@ -17,6 +17,16 @@
     <style name="AppTheme" parent="AppTheme.Base"/>
 
 
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Used for the buttons -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">@color/common_black</item>
+        <!-- Used for the background -->
+        <item name="android:background">@color/common_white</item>
+    </style>
+
+
     <style name="TransparentTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/common_transparent</item>
