@@ -1,7 +1,11 @@
 package com.nasa.pic.app.fragments;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.animation.AnimatorCompatHelper;
@@ -14,16 +18,17 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Interpolator;
 
-import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.app.App;
 import com.nasa.pic.databinding.DatePickerBinding;
 import com.nasa.pic.events.CloseDatePickerDialogEvent;
 import com.nasa.pic.events.PopupDatePickerDialogEvent;
+import com.nasa.pic.events.ShowDatePickerDialogEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
 import com.nasa.pic.transition.TransitCompat;
@@ -32,6 +37,9 @@ import com.nasa.pic.utils.Prefs;
 import java.util.Calendar;
 
 import de.greenrobot.event.EventBus;
+
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static com.nasa.pic.transition.TransitCompat.ANIM_DURATION;
 
 public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	private static final String EXTRAS_LISTENER = DatePickerDialogFragment.class.getName() + ".EXTRAS.listener";
@@ -44,7 +52,8 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	private static final int LAYOUT = R.layout.fragment_date_picker;
 	private DatePickerBinding mBinding;
 	private TransitCompat mTransition;
-
+	private int mElevation = (int) App.Instance.getResources()
+	                                           .getDimension(R.dimen.date_picker_elevation);
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -54,9 +63,13 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 	 *
 	 * @param e Event {@link CloseDatePickerDialogEvent}.
 	 */
-	@Subscribe
 	public void onEvent(@SuppressWarnings("UnusedParameters") CloseDatePickerDialogEvent e) {
-		closeThisFragment();
+		if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+			closeTransit();
+		}
+		if (Build.VERSION.SDK_INT < LOLLIPOP) {
+			closeTransitCompat();
+		}
 	}
 
 
@@ -144,59 +157,94 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 			}
 		});
 
-		transitCompat();
+
+		if (Build.VERSION.SDK_INT >= LOLLIPOP) {
+			transit();
+		}
+		if (Build.VERSION.SDK_INT < LOLLIPOP) {
+			transitCompat();
+		}
 	}
 
-
-	private void transitCompat() {
-		Object thumbnail = getArguments().getSerializable(EXTRAS_THUMBNAIL);
-		if (thumbnail != null) {
-			// Only run the animation if we're coming from the parent activity, not if
-			// we're recreated automatically by the window manager (e.g., device rotation)
-			ViewTreeObserver observer = mBinding.getRoot()
-			                                    .getViewTreeObserver();
-			observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+	private void transit() {
+		ViewTreeObserver viewTreeObserver = mBinding.getRoot()
+		                                            .getViewTreeObserver();
+		if (viewTreeObserver.isAlive()) {
+			viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 				@Override
-				public boolean onPreDraw() {
-					Thumbnail thumbnail = (Thumbnail)getArguments().getSerializable(EXTRAS_THUMBNAIL);
-					mBinding.getRoot()
-					        .getViewTreeObserver()
-					        .removeOnPreDrawListener(this);
-
-					ValueAnimatorCompat beforeExitAnimator = AnimatorCompatHelper.emptyValueAnimator();
-					beforeExitAnimator.setDuration(TransitCompat.ANIM_DURATION);
-					final Interpolator interpolator2 = new BakedBezierInterpolator();
-					beforeExitAnimator.addUpdateListener(new AnimatorUpdateListenerCompat() {
-						private final float old = 1;
-						private final float end = 0;
-						private Thumbnail thumbnail = (Thumbnail)getArguments().getSerializable(EXTRAS_THUMBNAIL);
-
-						@Override
-						public void onAnimationUpdate(ValueAnimatorCompat animation) {
-							float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
-
-							//Set height
-							float cur = old + (fraction * (end - old));
-							ViewCompat.setPivotX(mBinding.getRoot(),  mBinding.getRoot().getRight() - thumbnail.getWidth() );
-							ViewCompat.setPivotY(mBinding.getRoot(), mBinding.getRoot().getBottom() - thumbnail.getHeight() );
-							ViewCompat.setScaleX(mBinding.getRoot(), cur);
-							ViewCompat.setScaleY(mBinding.getRoot(), cur);
+				@TargetApi(LOLLIPOP)
+				public void onGlobalLayout() {
+					Thumbnail thumbnail = (Thumbnail) getArguments().getSerializable(EXTRAS_THUMBNAIL);
+					View parentV = mBinding.getRoot();
+					int centerX = parentV.getWidth() - thumbnail.getWidth() / 2 - mElevation;
+					int centerY = parentV.getHeight() - thumbnail.getHeight() / 2 - mElevation;
+					int startRadius = 0;
+					int endRadius = Math.max(parentV.getWidth(), parentV.getHeight());
+					Animator reveal = ViewAnimationUtils.createCircularReveal(parentV, centerX, centerY, startRadius, endRadius * 2);
+					reveal.setInterpolator(new BakedBezierInterpolator());
+					reveal.setDuration(ANIM_DURATION * 4);
+					reveal.addListener(new AnimatorListenerAdapter() {
+						public void onAnimationStart(Animator animation) {
+							super.onAnimationStart(animation);
+							EventBus.getDefault()
+							        .post(new ShowDatePickerDialogEvent());
 						}
 					});
-
-					mTransition = new TransitCompat.Builder().setThumbnail( thumbnail)
-					                                         .setTarget(mBinding.getRoot())
-					                                         .setPlayTogetherBeforeExitTransition(beforeExitAnimator)
-					                                         .build();
-
-					mTransition.enter(new ViewPropertyAnimatorListenerAdapter());
-					return true;
+					reveal.start();
+					parentV.getViewTreeObserver()
+					       .removeOnGlobalLayoutListener(this);
 				}
 			});
 		}
 	}
 
-	private void closeThisFragment() {
+
+	private void transitCompat() {
+		mBinding.getRoot()
+		        .getViewTreeObserver()
+		        .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+			        @Override
+			        public boolean onPreDraw() {
+				        View view = mBinding.getRoot();
+				        Thumbnail thumbnail = (Thumbnail) getArguments().getSerializable(EXTRAS_THUMBNAIL);
+				        view.getViewTreeObserver()
+				            .removeOnPreDrawListener(this);
+
+				        ValueAnimatorCompat beforeExitAnimator = AnimatorCompatHelper.emptyValueAnimator();
+				        beforeExitAnimator.setDuration(ANIM_DURATION);
+				        final Interpolator interpolator2 = new BakedBezierInterpolator();
+				        beforeExitAnimator.addUpdateListener(new AnimatorUpdateListenerCompat() {
+					        private final float old = 1;
+					        private final float end = 0;
+					        private Thumbnail thumbnail = (Thumbnail) getArguments().getSerializable(EXTRAS_THUMBNAIL);
+
+					        @Override
+					        public void onAnimationUpdate(ValueAnimatorCompat animation) {
+						        float fraction = interpolator2.getInterpolation(animation.getAnimatedFraction());
+						        View view = mBinding.getRoot();
+						        //Set height
+						        float cur = old + (fraction * (end - old));
+						        ViewCompat.setPivotX(view, view.getRight() - thumbnail.getWidth());
+						        ViewCompat.setPivotY(view, view.getBottom() - thumbnail.getHeight());
+						        ViewCompat.setScaleX(view, cur);
+						        ViewCompat.setScaleY(view, cur);
+					        }
+				        });
+
+				        mTransition = new TransitCompat.Builder().setThumbnail(thumbnail)
+				                                                 .setTarget(view)
+				                                                 .setPlayTogetherBeforeExitTransition(beforeExitAnimator)
+				                                                 .build();
+
+				        mTransition.enter(new ViewPropertyAnimatorListenerAdapter());
+				        EventBus.getDefault()
+				                .post(new ShowDatePickerDialogEvent());
+				        return true;
+			        }
+		        });
+	}
+
+	private void closeTransitCompat() {
 		if (mTransition != null) {
 			mTransition.exit(new ViewPropertyAnimatorListenerAdapter() {
 				@Override
@@ -210,5 +258,27 @@ public final class DatePickerDialogFragment extends AppCompatDialogFragment {
 			EventBus.getDefault()
 			        .post(new PopupDatePickerDialogEvent());
 		}
+	}
+
+	@TargetApi(LOLLIPOP)
+	private void closeTransit() {
+		Thumbnail thumbnail = (Thumbnail) getArguments().getSerializable(EXTRAS_THUMBNAIL);
+		View parentV = mBinding.getRoot();
+		int centerX = parentV.getWidth() - thumbnail.getWidth() / 2 - mElevation;
+		int centerY = parentV.getHeight() - thumbnail.getHeight() / 2 - mElevation;
+		int startRadius = Math.max(parentV.getWidth(), parentV.getHeight());
+		int endRadius = 0;
+		Animator reveal = ViewAnimationUtils.createCircularReveal(parentV, centerX, centerY, startRadius, endRadius);
+		reveal.setInterpolator(new BakedBezierInterpolator());
+		reveal.setDuration(ANIM_DURATION * 2);
+		reveal.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				EventBus.getDefault()
+				        .post(new PopupDatePickerDialogEvent());
+			}
+		});
+		reveal.start();
 	}
 }

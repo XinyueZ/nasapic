@@ -47,7 +47,6 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.common.eventbus.Subscribe;
 import com.nasa.pic.R;
 import com.nasa.pic.api.Api;
 import com.nasa.pic.app.App;
@@ -72,6 +71,7 @@ import com.nasa.pic.events.EULAConfirmedEvent;
 import com.nasa.pic.events.EULARejectEvent;
 import com.nasa.pic.events.OpenPhotoEvent;
 import com.nasa.pic.events.PopupDatePickerDialogEvent;
+import com.nasa.pic.events.ShowDatePickerDialogEvent;
 import com.nasa.pic.events.WallpaperDailyChangedEvent;
 import com.nasa.pic.transition.BakedBezierInterpolator;
 import com.nasa.pic.transition.Thumbnail;
@@ -155,7 +155,7 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 *
 	 * @param e Event {@link WallpaperDailyChangedEvent}.
 	 */
-	public void onEventMainThread(WallpaperDailyChangedEvent e) {
+	public void onEventMainThread(@SuppressWarnings("UnusedParameters") WallpaperDailyChangedEvent e) {
 		updateDailyUIs();
 	}
 
@@ -249,9 +249,17 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 	 *
 	 * @param e Event {@link PopupDatePickerDialogEvent}.
 	 */
-	@Subscribe
 	public void onEvent(@SuppressWarnings("UnusedParameters") PopupDatePickerDialogEvent e) {
 		super.onBackPressed();
+	}
+
+	/**
+	 * Handler for {@link ShowDatePickerDialogEvent}.
+	 *
+	 * @param e Event {@link ShowDatePickerDialogEvent}.
+	 */
+	public void onEvent(@SuppressWarnings("UnusedParameters") ShowDatePickerDialogEvent e) {
+		mBinding.searchFab.hide();
 	}
 	//------------------------------------------------
 
@@ -637,7 +645,6 @@ public abstract class AbstractMainActivity extends AppRestfulActivity implements
 				                           .add(R.id.dialog_fl, fragment)
 				                           .addToBackStack(null)
 				                           .commit();
-				mBinding.searchFab.hide();
 			}
 		});
 
